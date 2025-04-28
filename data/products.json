@@ -3,8 +3,8 @@
         "id": "p001",
         "name": "杏仁 1 600g",
         "price": "$850",
-        "thumbnailUrl": "../image/almond1.jpg",
-        "largeImageUrl": "../image/almond.webp",
+        "thumbnailUrl": "/image/almond1.jpg",
+        "largeImageUrl": "/image/almond.webp",
         "title": "最好的杏仁",
         "flipper": "../image/almond2.jpg",
         "category": "堅果"
