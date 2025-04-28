@@ -677,10 +677,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function init() {
         // Fetch all necessary data concurrently
         const [bannerData, aboutData, productsData, itemDetailsData] = await Promise.all([
-            fetchData('./data/banner.json'), // Adjust paths as needed
-            fetchData('./data/about.json'),
-            fetchData('./data/products.json'),
-            fetchData('./data/items.json') // Assuming one file with all details keyed by ID
+            fetchData('banner.json'), // Adjust paths as needed
+            fetchData('about.json'),
+            fetchData('products.json'),
+            fetchData('items.json') // Assuming one file with all details keyed by ID
         ]);
 
         // Store fetched data

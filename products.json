@@ -1,0 +1,112 @@
+[
+    {
+        "id": "p001",
+        "name": "杏仁 1 600g",
+        "price": "$850",
+        "thumbnailUrl": "image/almond1.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "../image/almond2.jpg",
+        "category": "堅果"
+    },
+    {
+        "id": "p002",
+        "name": "杏仁 2 600g",
+        "price": "$850",
+        "thumbnailUrl": "image/almond2.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/almond2.jpg",
+        "category": "堅果"
+    },
+    {
+        "id": "p003",
+        "name": "杏仁 3 300g",
+        "price": "$350",
+        "thumbnailUrl": "image/almond3.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "綜合杏仁",
+        "flipper": "images/grapes2.jpg",
+        "category": "乾果"
+    },
+    {
+        "id": "p004",
+        "name": "杏仁 4 300g",
+        "price": "$350",
+        "thumbnailUrl": "image/almond4.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/grapes2.jpg",
+        "category": "乾果"
+    },
+    {
+        "id": "p005",
+        "name": "杏仁 5 300g",
+        "price": "$350",
+        "thumbnailUrl": "image/almond1.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/grapes2.jpg",
+        "category": "乾果"
+    },
+    {
+        "id": "p006",
+        "name": "杏仁 6 300g",
+        "price": "$350",
+        "thumbnailUrl": "image/almond2.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/grapes2.jpg",
+        "category": "乾果"
+    },
+    {
+        "id": "p007",
+        "name": "杏仁 7 300g",
+        "price": "$450",
+        "thumbnailUrl": "image/almond3.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/dairy2.jpg",
+        "category": "其他"
+    },
+    {
+        "id": "p008",
+        "name": "杏仁 8 300g",
+        "price": "$450",
+        "thumbnailUrl": "image/almond4.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/dairy2.jpg",
+        "category": "其他"
+    },
+    {
+        "id": "p009",
+        "name": "杏仁 9 300g",
+        "price": "$450",
+        "thumbnailUrl": "image/almond1.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/dairy2.jpg",
+        "category": "其他"
+    },
+    {
+        "id": "p010",
+        "name": "杏仁 10 300g",
+        "price": "$450",
+        "thumbnailUrl": "image/almond2.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/dairy2.jpg",
+        "category": "其他"
+    },
+    {
+        "id": "p011",
+        "name": "杏仁 11 300g",
+        "price": "$450",
+        "thumbnailUrl": "image/almond2.jpg",
+        "largeImageUrl": "image/almond.webp",
+        "title": "最好的杏仁",
+        "flipper": "images/dairy2.jpg",
+        "category": "其他"
+    }
+]

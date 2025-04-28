@@ -1,5 +1,5 @@
 [
-  { "id": "banner1", "imageUrl": "image/coffee_house.jpg", "altText": "Special Offer Banner" },
-  { "id": "banner2", "imageUrl": "../image/south_park1.jpg", "altText": "New Arrivals Banner" },
-  { "id": "banner3", "imageUrl": "../image/meimei.webp", "altText": "Seasonal Sale Banner" }
+  { "id": "banner1", "imageUrl": "image/banner1.webp", "altText": "Special Offer Banner" },
+  { "id": "banner2", "imageUrl": "image/banner2.webp", "altText": "New Arrivals Banner" },
+  { "id": "banner3", "imageUrl": "image/banner3.jpg", "altText": "Seasonal Sale Banner" }
 ]
