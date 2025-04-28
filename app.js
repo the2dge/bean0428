@@ -693,7 +693,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
         sideCart.checkoutBtn.addEventListener('click', () => {
             if (cart.length > 0) {
                 renderCheckoutPage(cart); // ⬅️ Pass current cart
-                cart = []; // Clear cart
+                //cart = []; // Clear cart
                 renderSideCart(); // Update side cart visually
                 switchView('checkout');
                 sideCart.aside.classList.remove('open'); // Close side cart
