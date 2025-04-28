@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       // Open the Cloud Function, passing orderId to ECPay
       const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
-      window.open(url, "_blank");
+      window.open(url, "_self");
     }
     function ECpayStoreDataBackTransfer() {
     const urlParams = new URLSearchParams(window.location.search);
