@@ -1,0 +1,216 @@
+/* Basic Reset & Body */
+body { margin: 0; font-family: sans-serif; }
+.wrapper { display: none; } /* Hide wrappers by default */
+.wrapper.active { display: block; } /* Show the active wrapper */
+
+/* Navbar */
+.navbar { background-color: #f8f8f8; border-bottom: 1px solid #e7e7e7; padding: 10px 20px; }
+.navbar-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+.logo img { max-height: 50px; }
+.nav-links ul { list-style: none; padding: 0; margin: 0; display: flex; }
+.nav-links li { margin-left: 20px; }
+.nav-links a { text-decoration: none; color: #333; font-weight: bold; }
+.cart-icon-container button { background: none; border: none; cursor: pointer; position: relative; }
+.cart-icon-container img { height: 25px; }
+#cart-item-count { position: absolute; top: -5px; right: -10px; background: red; color: white; border-radius: 50%; padding: 2px 5px; font-size: 12px; }
+
+/* Main Body */
+.main-body { padding: 20px; max-width: 1200px; margin: 20px auto; min-height: 60vh; } /* Ensure footer isn't too high */
+
+/* Content Wrapper Specifics */
+/* Add these styles to your existing style.css */
+
+#banner-slider-container {
+    position: relative; /* Needed for absolute positioning of slides */
+    width: 100%;
+    height: 500px; /* Or your desired height */
+    overflow: hidden; /* Hide parts of images outside the container */
+    margin-bottom: 30px;
+}
+
+.banner-slide {
+    position: absolute; /* Position slides on top of each other */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none; /* Hide all slides initially */
+}
+
+.banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the container, might crop */
+}
+
+/* Style for the first slide to be visible initially */
+.banner-slide:first-child {
+    display: block;
+}
+#about-container { background: #f0f0f0;padding: 10px; margin-bottom: 30px; }
+#about-container p{font-size: 1.3rem;}
+
+#product-container h2 { text-align: center; margin: 30px; font-size:2rem; color: orange }
+.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.product-item { border: 1px solid #ddd; padding: 10px; text-align: center; cursor: pointer; transition: box-shadow 0.3s ease; }
+.product-item:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.product-item img { max-width: 100%; max-height: 250px; object-fit: cover; margin-bottom: 10px; border-radius: 5px}
+.back-to-products-btn{background: #fee; font-size: 1.2rem}
+.category-filters {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.category-btn {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.category-btn:hover, .category-btn.active {
+    background-color: orange;
+    color: white;
+}
+/* Add these styles or similar to your style.css */
+
+.category-section {
+    margin-bottom: 40px; /* Space between categories */
+}
+
+.category-section h3 {
+    font-size: 1.5em; /* Make category titles stand out */
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff; /* Example accent border */
+    display: inline-block; /* Keep border only under text */
+}
+
+/* Optional: Style for the product title if you added it */
+.product-item .product-title {
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* Ensure product grid still works within category sections */
+.category-section .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+/* Item Wrapper Specifics */
+.item-detail { display: flex; gap: 30px; }
+.item-detail img { max-width: 40%; height: auto; }
+.item-info h2 { margin-top: 0; }
+.item-info .price { font-size: 1.2em; font-weight: bold; margin: 15px 0; }
+.add-to-cart-btn { padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; }
+
+/* Checkout Wrapper Specifics */
+#checkout-form { max-width: 600px; margin: 0 auto; }
+#checkout-form label { display: block; margin-bottom: 5px; }
+#checkout-form input, #checkout-form textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; box-sizing: border-box; }
+#checkout-form button { padding: 12px 25px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+
+/* Side Cart */
+.side-cart { position: fixed; top: 0; right: -370px; /* Initially hidden */ width: 350px; height: 100%; background-color: white; box-shadow: -2px 0 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; transition: right 0.3s ease-in-out; z-index: 1000; padding: 20px; box-sizing: border-box; }
+.side-cart.open { right: 0; /* Slides in */ }
+.side-cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+.side-cart-header h3 { margin: 0; }
+#close-cart-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; }
+.side-cart-items { flex-grow: 1; overflow-y: auto; } /* Allows scrolling if many items */
+.side-cart-item { display: flex; align-items: center; margin-bottom: 15px; gap: 10px; }
+.side-cart-item img { width: 50px; height: 50px; object-fit: cover; }
+.side-cart-item .item-info { flex-grow: 1; }
+.side-cart-item p { margin: 2px 0; font-size: 0.9em; }
+.side-cart-item .name { font-weight: bold; }
+.remove-item-btn { background: #dc3545; color: white; border: none; cursor: pointer; font-size: 0.8em; padding: 3px 6px; }
+.side-cart-footer { border-top: 1px solid #eee; padding-top: 15px; margin-top: auto; /* Pushes footer to bottom */ }
+.side-cart-footer p { font-weight: bold; margin-bottom: 10px; }
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.quantity-control button {
+    background-color: orange;
+    border: none;
+    color: white;
+    padding: 5px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.quantity-control span {
+    min-width: 20px;
+    text-align: center;
+}
+#checkout-btn { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; text-align: center; }
+.checkout-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.member-login-btn {
+    padding: 8px 15px;
+    background-color: orange;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.member-login-btn:hover {
+    background-color: darkorange;
+}
+.checkout-list {
+	padding: 0 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.checkout-item-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.checkout-item-row img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.checkout-name {
+    flex: 1;
+    font-weight: bold;
+}
+
+.checkout-quantity,
+.checkout-price {
+    min-width: 60px;
+    text-align: center;
+}
+.checkout-total {
+    font-size: 1.2em;
+    margin-top: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+/* Footer */
+.footer { background-color: #aaa; color: #fff; text-align: center; padding: 20px; margin-top: 40px; }
+.footer-container { max-width: 1200px; margin: 0 auto; }
+.footer p { margin: 5px 0; font-size: 0.9em; }

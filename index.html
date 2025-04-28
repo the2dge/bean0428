@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr.Bean websit </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="logo">
+                <img src="image/logo.png" alt="Mr.Bean Logo">
+            </div>
+            <nav class="nav-links">
+                <ul>
+                    <li><a href="#" id="nav-about">關於荳荳</a></li>
+                    <li><a href="#" id="nav-product">荳荳精選</a></li>
+                    <li><a href="#" id="nav-contact">聯絡我們</a></li>
+                </ul>
+            </nav>
+            <div class="cart-icon-container">
+                <button id="cart-icon">
+                    <img src="image/shopping-cart.png" alt="Shopping Cart">
+                    <span id="cart-item-count">0</span> </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-body">
+        <div id="content-wrapper" class="wrapper active">
+            <section id="banner-slider-container">
+                </section>
+
+            <section id="about-container">
+                </section>
+
+            <section id="product-container">
+                <h2>荳荳精選</h2>
+                        <!-- Category Tabs -->
+                <div class="category-filters center">
+                    <button class="category-btn active" data-category="All">全部</button>
+                    <button class="category-btn" data-category="堅果">堅果</button>
+                    <button class="category-btn" data-category="乾果">乾果</button>
+                    <button class="category-btn" data-category="其他">其他</button>
+                </div>
+                <div class="product-grid">
+                    </div>
+            </section>
+        </div>
+
+        <div id="item-wrapper" class="wrapper">
+            </div>
+
+        <div id="checkout-wrapper" class="wrapper">
+            
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <img src="image/logo.png" width="100px">
+            <p>&copy; [2025] [荳荳先生]. All rights reserved.</p>
+            <p>客服信箱： mrbean20210510@gmail.com | [客服專線： 0925 528 072]</p>
+            <p>[台北市內湖區康寧路三段99巷10弄1號]</p>
+            <p>食品業者登錄字號： A-12345678910</p>
+            <p>本公司已投保產品責任險一千萬元(投保金額不等同理賠金額)</p>
+            </div>
+    </footer>
+
+    <aside id="side-cart" class="side-cart">
+        <div class="side-cart-header">
+            <h3>🛒 🛒 購物車</h3>
+            <button id="close-cart-btn">X</button>
+        </div>
+        <div id="side-cart-items" class="side-cart-items">
+            </div>
+        <div class="side-cart-footer">
+            <p>Total: <span id="cart-total">$0.00</span></p>
+            <button id="checkout-btn">Checkout</button>
+        </div>
+    </aside>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

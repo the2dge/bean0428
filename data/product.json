@@ -1,0 +1,26 @@
+{
+  "prod001": {
+    "id": "prod001",
+    "name": "Product Alpha",
+    "largeImageUrl": "..image/almond.webp",
+    "description": "Detailed description of Product Alpha, highlighting its features and benefits.",
+    "price": "$19.99",
+    "specs": { "color": "Red", "material": "Cotton" }
+  },
+  "prod002": {
+    "id": "prod002",
+    "name": "Product Beta",
+    "largeImageUrl": "..image/almond.webp",
+    "description": "Product Beta is known for its durability and style. Perfect for everyday use.",
+    "price": "$24.50",
+    "specs": { "color": "Blue", "material": "Polyester" }
+  },
+  "prod003": {
+    "id": "prod003",
+    "name": "Product Beta",
+    "largeImageUrl": "..image/almond.webp",
+    "description": "Product Beta is known for its durability and style. Perfect for everyday use.",
+    "price": "$24.50",
+    "specs": { "color": "Blue", "material": "Polyester" }
+  }
+}

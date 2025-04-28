@@ -1,0 +1,11 @@
+Please design an ecommerce website. Here is the structure: Navbar, main body and footer. 
+1) Standard Navbar with Company Logo at the left, then 3 quick link tabs: ABOUT, PRODUCT, CONTACT. A shopping cart icon is at the right hand side.
+2) The main body. It will be exslusively to display either I) content_wrapper, II) item_wrapper or III)checkout_wrapper.
+3) footer. Area to show the basic company info and contact.
+4) side_cart
+
+All main body content will be rendered per json files.
+First, in the content_wrapper, it is first a banner slider to show 3 images(banner.json). Then a about_container(about.json). Then product_container to show 10 product items.(products.json).
+* When one of the 10 items is clicked. The content_wrapper is gone and the clicked item will be shown "item_wrapper". (item.json)
+* when the "add to cart" icon is clicked. The specific product is added to the cart. It will be shown with a thumbe nail image and product info to the side-cart if the shopping icon in the navbar is clicked.
+Lastly, when the "Checkout" is clicked. The "item_wrapper" will be gone and the customer form will be shown in "checkout_wrapper" .
