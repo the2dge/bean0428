@@ -376,6 +376,64 @@ document.addEventListener('DOMContentLoaded', () => {
       window.open(url, "_blank");
     }
     function ECpayStoreDataBackTransfer() {
+    // 1. Get the URL search params
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // 2. Extract ECPay returned values
+    const MerchantID = urlParams.get('MerchantID');
+    const CVSStoreID = urlParams.get('CVSStoreID');
+    const CVSStoreName = urlParams.get('CVSStoreName');
+    const CVSAddress = urlParams.get('CVSAddress');
+    const MerchantTradeNo = urlParams.get('MerchantTradeNo'); // Your OrderId
+    const ExtraData = urlParams.get('ExtraData'); // Optional
+
+    // 3. Check if this page is loaded via ECPay response
+    if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
+        console.log("Received Store Info from ECPay:", {
+            MerchantID,
+            CVSStoreID,
+            CVSStoreName,
+            CVSAddress,
+            MerchantTradeNo,
+            ExtraData
+        });
+
+        // 4. Pass the data back into your webpage
+        // Example: populate form fields or display on screen
+        const addressSelect = document.getElementById('address');
+        const pickupInfoDiv = document.getElementById('pickup-store-info');
+
+        if (pickupInfoDiv) {
+            pickupInfoDiv.innerHTML = `
+                <p><strong>7-11 門市資訊</strong></p>
+                <p>店號: ${CVSStoreID}</p>
+                <p>店名: ${CVSStoreName}</p>
+                <p>地址: ${CVSAddress}</p>
+            `;
+        } else {
+            console.warn("No pickup-store-info div found to display store info.");
+        }
+
+        if (addressSelect) {
+            addressSelect.value = "7-11 商店取貨"; // Auto-select 7-11 pickup if not already selected
+        }
+
+        // 5. (Optional) Save the selected store info globally if needed
+        window.selectedStoreInfo = {
+            CVSStoreID,
+            CVSStoreName,
+            CVSAddress,
+            MerchantTradeNo
+        };
+
+        // 6. Clean up URL (optional, for better UX)
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+        console.log("No ECPay store data returned, normal page load.");
+    }
+}
+    /* This version will check orderId!!!
+    function ECpayStoreDataBackTransfer() {
     const urlParams = new URLSearchParams(window.location.search);
 
     const MerchantID = urlParams.get('MerchantID');
@@ -416,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("門市資訊不正確，請重新選擇。");
         }
     }
-}
+} */
     function renderCheckoutPage(cartItems) {
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
 
