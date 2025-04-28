@@ -520,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             String(now.getHours()).padStart(2, '0') +
                             String(now.getMinutes()).padStart(2, '0') +
                             String(now.getSeconds()).padStart(2, '0');
+            window.currentOrderId = orderId; // 🛡️ Save the current order ID
             openLogisticsMap(orderId);
         }
     });
