@@ -550,8 +550,8 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
                             String(now.getMinutes()).padStart(2, '0') +
                             String(now.getSeconds()).padStart(2, '0');
             window.currentOrderId = orderId; // 🛡️ Save the current order ID
-            sessionStorage.setItem('cart', JSON.stringify(cart));
-            sessionStorage.setItem('currentOrderId', orderId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('currentOrderId', orderId);
 
             openLogisticsMap(orderId);
         }
