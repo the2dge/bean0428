@@ -358,46 +358,48 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       // Open the Cloud Function, passing orderId to ECPay
       const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
-      window.open(url, "_self");
+      window.open(url, "_blank");
     }
     function ECpayStoreDataBackTransfer() {
-    // 1. Get the URL search params
     const urlParams = new URLSearchParams(window.location.search);
 
-    // 2. Extract ECPay returned values
     const MerchantID = urlParams.get('MerchantID');
     const CVSStoreID = urlParams.get('CVSStoreID');
     const CVSStoreName = urlParams.get('CVSStoreName');
     const CVSAddress = urlParams.get('CVSAddress');
-    const MerchantTradeNo = urlParams.get('MerchantTradeNo'); // Your OrderId
-    const ExtraData = urlParams.get('ExtraData'); // Optional
+    const MerchantTradeNo = urlParams.get('MerchantTradeNo');
 
-    // 3. Check if this page is loaded via ECPay response
-    if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
+    if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress && MerchantTradeNo) {
         console.log("Received Store Info from ECPay:", {
             MerchantID,
             CVSStoreID,
             CVSStoreName,
             CVSAddress,
-            MerchantTradeNo,
-            ExtraData
+            MerchantTradeNo
         });
+
+        // 🛑 First, restore cart from sessionStorage
+        const savedCart = sessionStorage.getItem('cart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+            console.log("Restored cart inside ECpayStoreDataBackTransfer:", cart);
+        } else {
+            console.warn("No saved cart found in sessionStorage.");
+        }
+
         const storeInfo = {
             CVSStoreID,
             CVSStoreName,
             CVSAddress,
             MerchantTradeNo
         };
-        // 🛠 NEW: Render Checkout with store info
-        renderCheckoutPage(cart, storeInfo);
+
+        renderCheckoutPage(cart, storeInfo); // ✅ Now use correct cart
         switchView('checkout');
 
-        // 4. (Optional) Save the selected store info globally if needed
         window.selectedStoreInfo = storeInfo;
-        
-        // 5. Clean up URL (optional, for better UX)
+
         window.history.replaceState({}, document.title, window.location.pathname);
-        
     } else {
         console.log("No ECPay store data returned, normal page load.");
     }
@@ -552,6 +554,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             window.currentOrderId = orderId; // 🛡️ Save the current order ID
             localStorage.setItem('cart', JSON.stringify(cart));
             localStorage.setItem('currentOrderId', orderId);
+            console.log("Saving cart to sessionStorage before going to ECPay:", cart); // 👈 Important log
 
             openLogisticsMap(orderId);
         }
