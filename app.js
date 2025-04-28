@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+//document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // --- DOM Element References ---
     const navbar = {
         logo: document.querySelector('.logo'),
@@ -66,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create slides using jQuery
         bannerData.forEach((banner, index) => {
-            console.log("bannerLoop!");
+            
             const slide = $('<div>') // Create <div>
                 .addClass('banner-slide') // Add class
                 .append( // Add image inside
@@ -248,23 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 sideCart.itemsContainer.appendChild(cartItemDiv);
             });
-            /*
-            cart.forEach(item => {
-                const cartItemDiv = document.createElement('div');
-                cartItemDiv.classList.add('side-cart-item');
-                // Use product ID as data attribute for removal
-                cartItemDiv.setAttribute('data-cart-item-id', item.id);
-                cartItemDiv.innerHTML = `
-                    <img src="${item.img}" alt="${item.name}">
-                    <div class="item-info">
-                        <p class="name">${item.name}</p>
-                        <p class="price">${item.price}</p>
-                        <p class="quantity">Qty: ${item.quantity}</p>
-                    </div>
-                    <button class="remove-item-btn">Remove</button>
-                `;
-                sideCart.itemsContainer.appendChild(cartItemDiv);
-            });*/
+            
         }
 
         // Update total and item count
@@ -397,43 +382,29 @@ document.addEventListener('DOMContentLoaded', () => {
             MerchantTradeNo,
             ExtraData
         });
-
-        // 4. Pass the data back into your webpage
-        // Example: populate form fields or display on screen
-        const addressSelect = document.getElementById('address');
-        const pickupInfoDiv = document.getElementById('pickup-store-info');
-
-        if (pickupInfoDiv) {
-            pickupInfoDiv.innerHTML = `
-                <p><strong>7-11 門市資訊</strong></p>
-                <p>店號: ${CVSStoreID}</p>
-                <p>店名: ${CVSStoreName}</p>
-                <p>地址: ${CVSAddress}</p>
-            `;
-        } else {
-            console.warn("No pickup-store-info div found to display store info.");
-        }
-
-        if (addressSelect) {
-            addressSelect.value = "7-11 商店取貨"; // Auto-select 7-11 pickup if not already selected
-        }
-
-        // 5. (Optional) Save the selected store info globally if needed
-        window.selectedStoreInfo = {
+        const storeInfo = {
             CVSStoreID,
             CVSStoreName,
             CVSAddress,
             MerchantTradeNo
         };
+        // 🛠 NEW: Render Checkout with store info
+        renderCheckoutPage(cart, storeInfo);
+        switchView('checkout');
 
-        // 6. Clean up URL (optional, for better UX)
+        // 4. (Optional) Save the selected store info globally if needed
+        window.selectedStoreInfo = storeInfo;
+        
+        // 5. Clean up URL (optional, for better UX)
         window.history.replaceState({}, document.title, window.location.pathname);
+        
     } else {
         console.log("No ECPay store data returned, normal page load.");
     }
 }
-    /* This version will check orderId!!!
+    /* THIS new also check orderId(Timestamp)
     function ECpayStoreDataBackTransfer() {
+    console.log("data from ECPay received!");
     const urlParams = new URLSearchParams(window.location.search);
 
     const MerchantID = urlParams.get('MerchantID');
@@ -474,8 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("門市資訊不正確，請重新選擇。");
         }
     }
-} */
-    function renderCheckoutPage(cartItems) {
+}*/
+
+function renderCheckoutPage(cartItems, storeInfo = null) {
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
 
     // --- Checkout Main Title + Member Login Button ---
@@ -561,11 +533,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <option value="來商店取貨">來商店取貨</option>
             <option value="7-11 商店取貨">7-11 商店取貨</option>
         </select>
-
+        <div id="pickup-store-info"></div>
         <button type="submit">下單</button>
     `;
     mainBody.checkoutWrapper.appendChild(checkoutForm);
-
     // --- Event Listener: Monitor Address Dropdown ---
     const addressSelect = checkoutForm.querySelector('#address');
     addressSelect.addEventListener('change', (e) => {
@@ -579,14 +550,32 @@ document.addEventListener('DOMContentLoaded', () => {
                             String(now.getMinutes()).padStart(2, '0') +
                             String(now.getSeconds()).padStart(2, '0');
             window.currentOrderId = orderId; // 🛡️ Save the current order ID
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            sessionStorage.setItem('currentOrderId', orderId);
+
             openLogisticsMap(orderId);
         }
     });
 
-    // --- Form Submit ---
+    // --- Inject Store Info if available ---
+    if (storeInfo) {
+        const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
+        if (pickupInfoDiv) {
+            pickupInfoDiv.innerHTML = `
+                <p><strong>7-11 門市資訊</strong></p>
+                <p>店號: ${storeInfo.CVSStoreID}</p>
+                <p>店名: ${storeInfo.CVSStoreName}</p>
+                <p>地址: ${storeInfo.CVSAddress}</p>
+            `;
+        }
+    }
+
+    // --- Form Submit Event Listener ---
     checkoutForm.addEventListener('submit', (e) => {
         e.preventDefault();
         alert("Thank you for your order! (This is a simulation)");
+        sessionStorage.removeItem('cart');
+        sessionStorage.removeItem('currentOrderId');
         checkoutForm.reset();
         switchView('content');
     });
@@ -736,34 +725,42 @@ document.addEventListener('DOMContentLoaded', () => {
     async function init() {
         // Fetch all necessary data concurrently
         const [bannerData, aboutData, productsData, itemDetailsData] = await Promise.all([
-            fetchData('banner.json'), // Adjust paths as needed
+            fetchData('banner.json'),
             fetchData('about.json'),
             fetchData('products.json'),
-            fetchData('items.json') // Assuming one file with all details keyed by ID
+            fetchData('items.json')
         ]);
 
-        // Store fetched data
-        allProductsData = productsData || []; // Use fetched data or empty array
-        allItemDetails = itemDetailsData || {}; // Use fetched data or empty object
+        // --- Restore Cart & OrderId from SessionStorage ---
+        const savedCart = sessionStorage.getItem('cart');
+        const savedOrderId = sessionStorage.getItem('currentOrderId');
 
-        // Initial Render
-        const bannerRendered = renderBanner(bannerData); // Check if banner was rendered
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+            console.log("Restored cart from session:", cart);
+        }
+
+        if (savedOrderId) {
+            window.currentOrderId = savedOrderId;
+            console.log("Restored orderId from session:", savedOrderId);
+        }
+
+        // --- Now render ---
+        allProductsData = productsData || [];
+        allItemDetails = itemDetailsData || {};
+
+        const bannerRendered = renderBanner(bannerData);
         renderAbout(aboutData);
         renderProductGrid(allProductsData);
         renderSideCart();
-
-        // Set Initial View
-        switchView('content');
-
-        // Setup Event Listeners
         setupEventListeners();
 
-        // START SLIDESHOW *AFTER* banner is rendered
         if (bannerRendered) {
-             startBannerSlideshow();
+            startBannerSlideshow();
         }
+
         console.log("E-commerce site initialized.");
-    }
+    }//END of init()
 
     // --- Start the application ---
     init();
