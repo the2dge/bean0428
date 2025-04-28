@@ -709,5 +709,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Start the application ---
     init();
+    ECpayStoreDataBackTransfer();
 
 }); // End DOMContentLoaded
