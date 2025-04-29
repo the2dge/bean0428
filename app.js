@@ -905,12 +905,35 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
         }
 
         console.log("E-commerce site initialized.");
-    }//END of init()
+        // --- 🟡 Put login + state logic HERE ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  const state = urlParams.get('state');
+
+  if (code) {
+    console.log('Detected LINE login code:', code);
+    console.log('Detected state:', state);
+
+    await exchangeCodeForToken(code); // fetch LINE user info
+
+    if (state === 'checkout') {
+      console.log('State=checkout → Render Checkout Page');
+      renderCheckoutPage(cart); // ⬅️ Ensure checkout is ready
+      switchView('checkout');
+    } else {
+      switchView('content');
+    }
+
+    // Clean up URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else {
+    switchView('content'); // default homepage
+  }
+}//END of init()
 
     // --- Start the application ---
     await loadMembershipData();
     init();
     ECpayStoreDataBackTransfer();
-    checkLINELogin();
 
 }); // End DOMContentLoaded
