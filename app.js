@@ -53,7 +53,48 @@ document.addEventListener('DOMContentLoaded', async () => {
             return null; // Return null or appropriate error indicator
         }
     }
+    //Re-calculate Cart Total
+    function calculateCartTotal() {
+        let total = 0;
+        cart.forEach(item => {
+            const price = parseFloat(item.price.replace(/[^0-9.-]+/g,""));
+            if (!isNaN(price)) {
+                total += price * item.quantity;
+            }
+        });
+        return total;
+    }
+    //Validate Promo Code
+    function validateDiscountCode(inputCode) {
+        const member = membershipData.find(m => m.discountCode.toLowerCase() === inputCode.trim().toLowerCase());
+        if (member) {
+            switch (member.tier.toLowerCase()) {
+                case 'gold':
+                    return 0.05; // 5% off
+                case 'silver':
+                    return 0.03; // 3% off
+                case 'bronze':
+                    return 0.01; // 1% off
+                default:
+                    return 0;
+            }
+        } else {
+            return 0; // No match
+        }
+    }
 
+    //Read Discount Code pushed from GAS!
+        let membershipData = []; // Store membership data globally
+
+        async function loadMembershipData() {
+            try {
+                const response = await fetch(' https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec'); // Replace with your Web App URL
+                membershipData = await response.json();
+                console.log("Loaded membership promo codes:", membershipData);
+            } catch (error) {
+                console.error('Failed to load membership data:', error);
+            }
+        }
     // --- Rendering Functions ---
 
      function renderBanner(bannerData) {
@@ -358,7 +399,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       // Open the Cloud Function, passing orderId to ECPay
       const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
-      window.open(url, "_self");
+      window.open(url, "_blank");
     }
     function ECpayStoreDataBackTransfer() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -461,9 +502,10 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     titleRow.appendChild(checkoutTitle);
 
     const memberLoginBtn = document.createElement('button');
-    memberLoginBtn.textContent = 'Member Login';
+    memberLoginBtn.textContent = '會員登入';
     memberLoginBtn.classList.add('member-login-btn');
     memberLoginBtn.addEventListener('click', () => {
+        loginWithLINE();
         alert('Redirecting to Member Login... (simulate)');
     });
     titleRow.appendChild(memberLoginBtn);
@@ -509,6 +551,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
         // --- Total Price ---
         const totalRow = document.createElement('div');
         totalRow.classList.add('checkout-total');
+        totalRow.id = 'checkout-total-row'; // <-- add ID for updating later(DiscountCode)
         totalRow.innerHTML = `<strong>Total:</strong> $${totalPrice.toFixed(2)}`;
         mainBody.checkoutWrapper.appendChild(totalRow);
     }
@@ -518,26 +561,40 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     checkoutForm.id = 'checkout-form';
 
     checkoutForm.innerHTML = `
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
 
-        <label for="telephone">電話:</label>
-        <input type="tel" id="telephone" name="telephone" required>
+    <label for="telephone">電話:</label>
+    <input type="tel" id="telephone" name="telephone" required>
 
+    <label for="payment-method">付款方式:</label>
+    <select id="payment-method" name="payment-method" required>
+        <option value="store">到店付款 (Pay at Store)</option>
+        <option value="credit-card">信用卡付款 (Pay by Credit Card)</option>
+        <option value="credit-point">點數付款 (Pay by Credit Point)</option>
+    </select>
+    <div id="credit-proof-wrapper" style="display: none;">
+    <label for="credit_payment">信用卡付款:</label>
+    <img src ="image/creditcard.png" width="80px">
+    </div>
+    <div id="discount-code-wrapper" style="display: none;">
         <label for="discount_code">折扣碼:</label>
         <input type="text" id="discount_code" name="discount_code">
+    </div>
 
-        <label for="address">取貨方式:</label>
-        <select id="address" name="address" required>
-            <option value="來商店取貨">來商店取貨</option>
-            <option value="7-11 商店取貨">7-11 商店取貨</option>
-        </select>
-        <div id="pickup-store-info"></div>
-        <button type="submit">下單</button>
-    `;
+    <label for="address">取貨方式:</label>
+    <select id="address" name="address" required>
+        <option value="來商店取貨">來商店取貨</option>
+        <option value="7-11 商店取貨">7-11 商店取貨</option>
+    </select>
+
+    <div id="pickup-store-info"></div>
+
+    <button type="submit">下單</button>
+`;
     mainBody.checkoutWrapper.appendChild(checkoutForm);
     // --- Event Listener: Monitor Address Dropdown ---
     const addressSelect = checkoutForm.querySelector('#address');
@@ -552,14 +609,57 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
                             String(now.getMinutes()).padStart(2, '0') +
                             String(now.getSeconds()).padStart(2, '0');
             window.currentOrderId = orderId; // 🛡️ Save the current order ID
-            sessionStorage.setItem('cart', JSON.stringify(cart));
-            sessionStorage.setItem('currentOrderId', orderId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            localStorage.setItem('currentOrderId', orderId);
             console.log("Saving cart to sessionStorage before going to ECPay:", cart); // 👈 Important log
 
             openLogisticsMap(orderId);
         }
     });
+    
+    const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
+    const discountCodeWrapper = checkoutForm.querySelector('#discount-code-wrapper');
+    const creditProofWrapper = checkoutForm.querySelector('#credit-proof-wrapper');
 
+    paymentMethodSelect.addEventListener('change', (e) => {
+    if (e.target.value === 'credit-point') {
+        discountCodeWrapper.style.display = 'block';
+        creditProofWrapper.style.display = 'none';
+    } else if (e.target.value === 'credit-card') {
+        discountCodeWrapper.style.display = 'none';
+        creditProofWrapper.style.display = 'block';
+    } else {
+        discountCodeWrapper.style.display = 'none';
+        creditProofWrapper.style.display = 'none';
+    }
+});
+    // -- Use Discount Code case --
+    const discountInput = checkoutForm.querySelector('#discount_code');
+
+    discountInput.addEventListener('blur', () => {
+        const discountRate = validateDiscountCode(discountInput.value);
+        if (discountRate > 0) {
+            const originalTotal = calculateCartTotal();
+            const discountedTotal = originalTotal * (1 - discountRate);
+
+            // Update the Total Row
+            const totalRow = document.getElementById('checkout-total-row');
+            if (totalRow) {
+                totalRow.innerHTML = `<strong>折扣後總額：</strong> $${discountedTotal.toFixed(2)} 🎉 (${(discountRate * 100).toFixed(0)}% off)`;
+            }
+
+            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
+
+        } else {
+            alert('❌ 折扣碼無效或不存在');
+            // (Optional) Reset total to original if invalid
+            const totalRow = document.getElementById('checkout-total-row');
+            if (totalRow) {
+                const originalTotal = calculateCartTotal();
+                totalRow.innerHTML = `<strong>Total:</strong> $${originalTotal.toFixed(2)}`;
+            }
+        }
+    });
     // --- Inject Store Info if available ---
     if (storeInfo) {
         const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
@@ -723,7 +823,27 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             switchView('content');
         });
     }
+    async function checkLINELogin() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state'); // optional
 
+        if (code) {
+            console.log('Detected LINE Login Callback Code:', code);
+
+            // Exchange code for id_token and access_token
+            await exchangeCodeForToken(code);
+
+            // After exchanging, clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            // Not logged in yet
+            const storedUserName = sessionStorage.getItem('lineUserName');
+            if (storedUserName) {
+                updateNavbarWithUserName(storedUserName);
+            }
+        }
+    }
     // --- Initialization Function ---
     async function init() {
         // Fetch all necessary data concurrently
@@ -747,7 +867,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             window.currentOrderId = savedOrderId;
             console.log("Restored orderId from session:", savedOrderId);
         }
-
+        
         // --- Now render ---
         allProductsData = productsData || [];
         allItemDetails = itemDetailsData || {};
@@ -766,6 +886,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     }//END of init()
 
     // --- Start the application ---
+    await loadMembershipData();
     init();
     ECpayStoreDataBackTransfer();
 
