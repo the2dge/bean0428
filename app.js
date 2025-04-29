@@ -911,5 +911,6 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     await loadMembershipData();
     init();
     ECpayStoreDataBackTransfer();
+    checkLINELogin();
 
 }); // End DOMContentLoaded
