@@ -676,7 +676,13 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     // --- Form Submit Event Listener ---
     checkoutForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert("Thank you for your order! (This is a simulation)");
+        alert("Thank you for your order!");
+        const formData = new FormData(checkoutForm);
+        const orderData = Object.fromEntries(formData.entries());
+        console.log("Placing order with:", orderData);
+        console.log("Final Cart items:", cart);
+        submitOrderToWebApp(orderData);
+        cart = []; // Clear cart
         sessionStorage.removeItem('cart');
         sessionStorage.removeItem('currentOrderId');
         checkoutForm.reset();
@@ -805,43 +811,59 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             }
         });
 
-        // Checkout Form Submission
-        checkoutForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevent actual form submission
-            // In a real app, you'd collect form data and send it to a server
-            const formData = new FormData(checkoutForm);
-            const orderData = Object.fromEntries(formData.entries());
-            console.log("Placing order with:", orderData);
-            console.log("Cart items:", cart);
-
-            alert("Thank you for your order! (This is a simulation)");
-
-            // Clear cart and go back to content view after "successful" submission
-            cart = [];
-            renderSideCart(); // Update cart display (empty)
-            checkoutForm.reset(); // Clear form fields
-            switchView('content');
-        });
+        
     }
     async function checkLINELogin() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
-        const state = urlParams.get('state'); // optional
+        const state = urlParams.get('state'); // <-- Get "state"
 
         if (code) {
-            console.log('Detected LINE Login Callback Code:', code);
+            console.log('Detected LINE login code:', code);
+            console.log('Detected state:', state);
 
-            // Exchange code for id_token and access_token
-            await exchangeCodeForToken(code);
+            await exchangeCodeForToken(code); // Do the login exchange
 
-            // After exchanging, clean up URL
+            // After login success, check state
+            if (state === 'checkout') {
+                console.log('State=checkout → Switch to checkout page');
+                switchView('checkout');
+            } else {
+                switchView('content'); // Default
+            }
+
+            // Clean up URL (remove code/state)
             window.history.replaceState({}, document.title, window.location.pathname);
+
         } else {
-            // Not logged in yet
+            // Normal page load
             const storedUserName = sessionStorage.getItem('lineUserName');
             if (storedUserName) {
                 updateNavbarWithUserName(storedUserName);
             }
+        }
+    }
+    async function submitOrderToWebApp(orderData) {
+        try {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+                method: 'POST',
+                mode: "no-cors", // Required for Google Apps Script
+                body: JSON.stringify({
+                    action: 'saveOrder',
+                    orderData: orderData
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const text = await response.text();
+            console.log('Order Save Result:', text);
+
+            alert('✅ 訂單已成功送出！謝謝您的購買！');
+        } catch (error) {
+            console.error('Failed to submit order:', error);
+            alert('❌ 訂單提交失敗，請稍後再試。');
         }
     }
     // --- Initialization Function ---

@@ -4,10 +4,14 @@ function loginWithLINE() {
   // Store current scroll position
   localStorage.setItem("scrollPosition", window.scrollY);
   
-  // Build the LINE OAuth URL
-  const loginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=profile%20openid%20email&state=12345`;
+   // Set a custom "state" to tell after login go to checkout
+  const loginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=profile%20openid%20email&state=checkout`;
+
+  //const loginUrl = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=profile%20openid%20email&state=12345`;
   
   // Redirect the browser to the LINE login page
   window.location.href = loginUrl;
 }
+
+
   
