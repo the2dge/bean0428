@@ -890,6 +890,19 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             alert('❌ 訂單提交失敗，請稍後再試。');
         }
     }
+    function updateNavbarWithUserName(userName) {
+      const loginBtn = document.getElementById('member-login-btn');
+      if (loginBtn) {
+        loginBtn.textContent = `👤 ${userName}`;
+        loginBtn.disabled = true; // Optional: prevent re-clicking
+      }
+    }
+
+    // Call this after login is confirmed
+    const storedUserName = sessionStorage.getItem('lineUserName');
+    if (storedUserName) updateNavbarWithUserName(storedUserName);
+
+
     // --- Initialization Function ---
     async function init() {
         // Fetch all necessary data concurrently
