@@ -843,6 +843,30 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             }
         }
     }
+    async function exchangeCodeForToken(code) {
+      const cloudFunctionURL = 'https://save-to-sheet-545199463340.asia-east1.run.app'; // <-- replace with your real function URL
+
+      try {
+        const response = await fetch(`${cloudFunctionURL}?mode=getLineProfile&code=${encodeURIComponent(code)}`);
+        const data = await response.json();
+
+        if (data.status === 'success' && data.profile) {
+          const { name, email, sub } = data.profile;
+          console.log('✅ LINE Login Success:', data.profile);
+
+          // Store in sessionStorage
+          sessionStorage.setItem('lineUserName', name);
+          sessionStorage.setItem('lineUserEmail', email);
+          sessionStorage.setItem('lineUserId', sub);
+
+          updateNavbarWithUserName(name); // Optional UI update
+        } else {
+          console.warn('LINE profile fetch failed:', data);
+        }
+      } catch (err) {
+        console.error('exchangeCodeForToken error:', err);
+      }
+    }
     async function submitOrderToWebApp(orderData) {
         try {
             const response = await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
