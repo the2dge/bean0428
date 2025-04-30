@@ -610,7 +610,7 @@ if (lineUserName) {
     checkoutForm.id = 'checkout-form';
 
     checkoutForm.innerHTML = `
-    <label for="name">Name:</label>
+    <label for="name">收件人姓名:</label>
     <input type="text" id="name" name="name" required>
 
     <label for="email">Email:</label>
