@@ -978,11 +978,11 @@ if (lineUserName) {
         ]);
 
         // --- Restore Cart & OrderId from SessionStorage ---
-        //const savedCart = sessionStorage.getItem('cart');
-        //const savedOrderId = sessionStorage.getItem('currentOrderId');
+        const savedCart = sessionStorage.getItem('cart');
+        const savedOrderId = sessionStorage.getItem('currentOrderId');
         // --- Restore Cart & OrderId from Storage ---
-        const savedCart = localStorage.getItem('cart');
-        const savedOrderId = localStorage.getItem('currentOrderId');
+        //const savedCart = localStorage.getItem('cart');
+        //const savedOrderId = localStorage.getItem('currentOrderId');
         if (savedCart) {
             cart = JSON.parse(savedCart);
             console.log("Restored cart from session:", cart);
