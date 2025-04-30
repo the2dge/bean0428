@@ -438,6 +438,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         renderCheckoutPage(cart, storeInfo); // ✅ Now use correct cart
+        console.log("checkPt only");
         switchView('checkout');
 
         window.selectedStoreInfo = storeInfo;
