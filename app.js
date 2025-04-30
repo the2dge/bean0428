@@ -505,11 +505,62 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const lineUserName = sessionStorage.getItem('lineUserName');
 
 if (lineUserName) {
-    // ✅ Already logged in → show user name instead of button
-    const memberInfoSpan = document.createElement('span');
-    memberInfoSpan.textContent = `👤 ${lineUserName}`;
-    memberInfoSpan.classList.add('member-name-display');
-    titleRow.appendChild(memberInfoSpan);
+    const memberWrapper = document.createElement('div');
+    memberWrapper.classList.add('member-dropdown-wrapper');
+
+    // Display name button
+    const nameBtn = document.createElement('button');
+    nameBtn.textContent = `👤 ${lineUserName} ▾`;
+    nameBtn.classList.add('member-name-btn');
+
+    // Dropdown menu
+    const dropdown = document.createElement('div');
+    dropdown.classList.add('member-dropdown');
+    dropdown.style.display = 'none';
+
+    // View Orders
+    const viewOrders = document.createElement('div');
+    viewOrders.textContent = '查看訂單';
+    viewOrders.classList.add('dropdown-item');
+    viewOrders.addEventListener('click', () => {
+        alert('📦 顯示訂單列表 (模擬)');
+        dropdown.style.display = 'none';
+    });
+
+    // Credit Balance
+    const creditBalance = document.createElement('div');
+    creditBalance.textContent = 'CreditBalance';
+    creditBalance.classList.add('dropdown-item');
+    creditBalance.addEventListener('click', () => {
+        alert('💰 顯示點數餘額 (模擬)');
+        dropdown.style.display = 'none';
+    });
+
+    // Logout
+    const logout = document.createElement('div');
+    logout.textContent = 'Logout';
+    logout.classList.add('dropdown-item');
+    logout.addEventListener('click', () => {
+        sessionStorage.removeItem('lineUserName');
+        sessionStorage.removeItem('lineUserEmail');
+        sessionStorage.removeItem('lineUserId');
+        localStorage.removeItem('cart');
+        localStorage.removeItem('currentOrderId');
+        alert('已登出，請重新登入');
+        window.location.reload(); // refresh the site
+    });
+
+    dropdown.appendChild(viewOrders);
+    dropdown.appendChild(creditBalance);
+    dropdown.appendChild(logout);
+
+    nameBtn.addEventListener('click', () => {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    });
+
+    memberWrapper.appendChild(nameBtn);
+    memberWrapper.appendChild(dropdown);
+    titleRow.appendChild(memberWrapper);
 } else {
     // ❌ Not logged in → show login button
     const memberLoginBtn = document.createElement('button');
