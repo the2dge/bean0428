@@ -632,6 +632,12 @@ if (lineUserName) {
     <label for="telephone">電話:</label>
     <input type="tel" id="telephone" name="telephone" required>
 
+    <label for="address">取貨方式:</label>
+    <select id="address" name="address" required>
+        <option value="取貨選擇">請選擇 7-11 或來店取</option>
+        <option value="來商店取貨">來商店取貨</option>
+        <option value="7-11 商店取貨">7-11 商店取貨</option>
+    </select>
     <label for="payment-method">付款方式:</label>
     <select id="payment-method" name="payment-method" required>
         <option value="store">到店付款 (Pay at Store)</option>
@@ -647,11 +653,6 @@ if (lineUserName) {
         <input type="text" id="discount_code" name="discount_code">
     </div>
 
-    <label for="address">取貨方式:</label>
-    <select id="address" name="address" required>
-        <option value="來商店取貨">來商店取貨</option>
-        <option value="7-11 商店取貨">7-11 商店取貨</option>
-    </select>
 
     <div id="pickup-store-info"></div>
 
