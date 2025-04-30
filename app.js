@@ -956,7 +956,11 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     console.log('Detected state:', state);
 
     await exchangeCodeForToken(code); // fetch LINE user info
-
+    // ✅ update button AFTER DOM is rendered
+    const storedUserName = sessionStorage.getItem('lineUserName');
+    if (storedUserName) {
+        updateNavbarWithUserName(storedUserName);
+    }
     if (state === 'checkout') {
       console.log('State=checkout → Render Checkout Page');
       renderCheckoutPage(cart); // ⬅️ Ensure checkout is ready
