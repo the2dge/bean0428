@@ -1,4 +1,5 @@
 //document.addEventListener('DOMContentLoaded', () => {
+let cart =[];
 document.addEventListener('DOMContentLoaded', async () => {
     // --- DOM Element References ---
     const navbar = {
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         productGrid: document.querySelector('#product-container .product-grid') // ADD Single grid ref
     };
      // --- State Variables ---
-    let cart = [];
+    // let cart = []; a Global parameter now
     let currentView = 'content';
     let allProductsData = []; // Store the original full list of products
     let allItemDetails = {};
