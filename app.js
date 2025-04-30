@@ -610,7 +610,7 @@ if (lineUserName) {
     checkoutForm.id = 'checkout-form';
 
     checkoutForm.innerHTML = `
-    <label for="name">收件人姓名:</label>
+    <label for="name">收件人姓名</label>
     <input type="text" id="name" name="name" required>
 
     <label for="email">Email:</label>
@@ -725,6 +725,53 @@ if (lineUserName) {
     }
 
     // --- Form Submit Event Listener ---
+    checkoutForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(checkoutForm);
+      const data = Object.fromEntries(formData.entries());
+
+      const lineUserName = sessionStorage.getItem('lineUserName') || '';
+      const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
+      const orderId = generateCustomOrderId();
+
+      // Replace address with actual store if 7-11
+      let finalAddress = data.address;
+      if (finalAddress === '7-11 商店取貨' && window.selectedStoreInfo?.CVSStoreName) {
+        finalAddress = window.selectedStoreInfo.CVSStoreName;
+      }
+
+      const orderData = {
+        orderId,
+        name: data.name,
+        email: data.email,
+        telephone: data.telephone,
+        paymentMethod: data['payment-method'],
+        address: finalAddress,
+        discountCode: data['discount_code'],
+        totalAmount,
+        lineUserName,
+        cartItems: cart.map(item => `${item.name} x${item.quantity}`) // optional
+      };
+
+      console.log("📦 Final orderData:", orderData);
+
+      // Send to your Cloud Function or Web App here
+      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+        method: 'POST',
+       // mode: "no-cors",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      // Reset state
+      cart = [];
+      renderSideCart();
+      checkoutForm.reset();
+      switchView('content');
+      alert('✅ Thank you for your order!');
+    });
+    /*
     checkoutForm.addEventListener('submit', (e) => {
         e.preventDefault();
         alert("Thank you for your order!");
@@ -739,6 +786,7 @@ if (lineUserName) {
         checkoutForm.reset();
         switchView('content');
     });
+    */
 }
     // --- Event Listeners Setup ---
     function setupEventListeners() {
@@ -1001,7 +1049,7 @@ if (lineUserName) {
   const code = urlParams.get('code');
   const state = urlParams.get('state');
   const CVSStoreID = urlParams.get('CVSStoreID');
-  
+
     // --- Case 1: Returning from LINE login ---
     if (code) {
       await exchangeCodeForToken(code);
