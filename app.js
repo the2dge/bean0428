@@ -402,6 +402,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
       window.open(url, "_self");
     }
+function ECpayStoreDataBackTransfer() {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const MerchantID = urlParams.get('MerchantID');
+  const CVSStoreID = urlParams.get('CVSStoreID');
+  const CVSStoreName = urlParams.get('CVSStoreName');
+  const CVSAddress = urlParams.get('CVSAddress');
+  const MerchantTradeNo = urlParams.get('MerchantTradeNo');
+
+  if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
+    console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
+
+    const pickupInfoDiv = document.getElementById('pickup-store-info');
+    if (pickupInfoDiv) {
+      pickupInfoDiv.innerHTML = `
+        <p><strong>7-11 門市資訊</strong></p>
+        <p>店號: ${CVSStoreID}</p>
+        <p>店名: ${CVSStoreName}</p>
+        <p>地址: ${CVSAddress}</p>
+      `;
+    }
+
+    const addressSelect = document.getElementById('address');
+    if (addressSelect) addressSelect.value = '7-11 商店取貨';
+
+    window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
+  }
+}
+    /*
     function ECpayStoreDataBackTransfer() {
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -421,8 +450,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // 🛑 First, restore cart from sessionStorage
-        //const savedCart = sessionStorage.getItem('cart');
-        const savedCart = localStorage.getItem('cart');
+        const savedCart = sessionStorage.getItem('cart');
         if (savedCart) {
             cart = JSON.parse(savedCart);
             console.log("Restored cart inside ECpayStoreDataBackTransfer:", cart);
@@ -448,50 +476,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("No ECPay store data returned, normal page load.");
     }
 }
-    /* THIS new also check orderId(Timestamp)
-    function ECpayStoreDataBackTransfer() {
-    console.log("data from ECPay received!");
-    const urlParams = new URLSearchParams(window.location.search);
-
-    const MerchantID = urlParams.get('MerchantID');
-    const CVSStoreID = urlParams.get('CVSStoreID');
-    const CVSStoreName = urlParams.get('CVSStoreName');
-    const CVSAddress = urlParams.get('CVSAddress');
-    const MerchantTradeNo = urlParams.get('MerchantTradeNo');
-
-    if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress && MerchantTradeNo) {
-        console.log("Received Store Info:", { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo });
-
-        // 🛡️ Secure check: Only accept if MerchantTradeNo matches currentOrderId
-        if (window.currentOrderId && MerchantTradeNo === window.currentOrderId) {
-            console.log("Order ID match, accepting store info.");
-
-            const pickupInfoDiv = document.getElementById('pickup-store-info');
-            if (pickupInfoDiv) {
-                pickupInfoDiv.innerHTML = `
-                    <p><strong>7-11 門市資訊</strong></p>
-                    <p>店號: ${CVSStoreID}</p>
-                    <p>店名: ${CVSStoreName}</p>
-                    <p>地址: ${CVSAddress}</p>
-                `;
-            }
-
-            window.selectedStoreInfo = {
-                CVSStoreID,
-                CVSStoreName,
-                CVSAddress,
-                MerchantTradeNo
-            };
-
-            // Optional clean URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-
-        } else {
-            console.warn("Order ID mismatch! Ignoring returned store info.");
-            alert("門市資訊不正確，請重新選擇。");
-        }
-    }
-}*/
+*/
 
 function renderCheckoutPage(cartItems, storeInfo = null) {
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
@@ -1015,31 +1000,46 @@ if (lineUserName) {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
   const state = urlParams.get('state');
+  const CVSStoreID = urlParams.get('CVSStoreID');
+  
+    // --- Case 1: Returning from LINE login ---
+    if (code) {
+      await exchangeCodeForToken(code);
 
-  if (code) {
-    console.log('Detected LINE login code:', code);
-    console.log('Detected state:', state);
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) cart = JSON.parse(savedCart);
 
-    await exchangeCodeForToken(code); // fetch LINE user info
-    // ✅ update button AFTER DOM is rendered
-    const storedUserName = sessionStorage.getItem('lineUserName');
-      console.log("LINE USER:", storedUserName);
-    if (storedUserName) {
-        updateNavbarWithUserName(storedUserName);
+      if (state === 'checkout') {
+        renderCheckoutPage(cart); // cart + user
+        switchView('checkout');
+      } else {
+        switchView('content');
+      }
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return; // ✅ exit early
     }
-    if (state === 'checkout') {
-      console.log('State=checkout → Render Checkout Page');
-      renderCheckoutPage(cart); // ⬅️ Ensure checkout is ready
+
+    // --- Case 2: Returning from 7-11 store selection ---
+    if (CVSStoreID) {
+      console.log("Detected 7-11 store info via CVSStoreID");
+      
+      // 🟡 Restore cart before rendering
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) cart = JSON.parse(savedCart);
+
+      renderCheckoutPage(cart); // store info will be handled inside
       switchView('checkout');
-    } else {
-      switchView('content');
+      
+      // 🧠 Call the transfer function only to update UI
+      ECpayStoreDataBackTransfer(); 
+
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
     }
 
-    // Clean up URL
-    window.history.replaceState({}, document.title, window.location.pathname);
-  } else {
-    switchView('content'); // default homepage
-  }
+    // --- Normal load ---
+    switchView('content');
 }//END of init()
 
     // --- Start the application ---
