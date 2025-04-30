@@ -827,6 +827,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
             // After login success, check state
             if (state === 'checkout') {
                 console.log('State=checkout → Switch to checkout page');
+                renderCheckoutPage(cart); // ⬅️ Must render using restored cart
                 switchView('checkout');
             } else {
                 switchView('content'); // Default
