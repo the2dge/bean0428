@@ -421,7 +421,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // 🛑 First, restore cart from sessionStorage
-        const savedCart = sessionStorage.getItem('cart');
+        //const savedCart = sessionStorage.getItem('cart');
+        const savedCart = localStorage.getItem('cart');
         if (savedCart) {
             cart = JSON.parse(savedCart);
             console.log("Restored cart inside ECpayStoreDataBackTransfer:", cart);
@@ -979,11 +980,11 @@ if (lineUserName) {
         ]);
 
         // --- Restore Cart & OrderId from SessionStorage ---
-        const savedCart = sessionStorage.getItem('cart');
-        const savedOrderId = sessionStorage.getItem('currentOrderId');
+        //const savedCart = sessionStorage.getItem('cart');
+        //const savedOrderId = sessionStorage.getItem('currentOrderId');
         // --- Restore Cart & OrderId from Storage ---
-        //const savedCart = localStorage.getItem('cart');
-        //const savedOrderId = localStorage.getItem('currentOrderId');
+        const savedCart = localStorage.getItem('cart');
+        const savedOrderId = localStorage.getItem('currentOrderId');
         if (savedCart) {
             cart = JSON.parse(savedCart);
             console.log("Restored cart from session:", cart);
