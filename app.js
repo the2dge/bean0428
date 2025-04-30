@@ -502,14 +502,24 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     checkoutTitle.textContent = '- 結帳 -';
     titleRow.appendChild(checkoutTitle);
 
+    const lineUserName = sessionStorage.getItem('lineUserName');
+
+if (lineUserName) {
+    // ✅ Already logged in → show user name instead of button
+    const memberInfoSpan = document.createElement('span');
+    memberInfoSpan.textContent = `👤 ${lineUserName}`;
+    memberInfoSpan.classList.add('member-name-display');
+    titleRow.appendChild(memberInfoSpan);
+} else {
+    // ❌ Not logged in → show login button
     const memberLoginBtn = document.createElement('button');
     memberLoginBtn.textContent = '會員登入';
     memberLoginBtn.classList.add('member-login-btn');
     memberLoginBtn.addEventListener('click', () => {
         loginWithLINE();
-        alert('Redirecting to Member Login... (simulate)');
     });
     titleRow.appendChild(memberLoginBtn);
+}
 
     mainBody.checkoutWrapper.appendChild(titleRow);
 
