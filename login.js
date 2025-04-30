@@ -1,13 +1,7 @@
 const CLIENT_ID = "2006943877"; // LINE Channel ID
 const REDIRECT_URI = "https://the2dge.github.io/bean0428"; //網站 callback URL
 function loginWithLINE() {
-  let currentCart = cart || []; // if cart is defined globally
-  if (!currentCart.length) {
-    const stored = localStorage.getItem('cart') || sessionStorage.getItem('cart');
-    if (stored) {
-      currentCart = JSON.parse(stored);
-    }
-  }
+  
   localStorage.setItem("cart", JSON.stringify(cart));
   localStorage.setItem("currentOrderId", window.currentOrderId || '');
 
