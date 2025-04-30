@@ -958,6 +958,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     await exchangeCodeForToken(code); // fetch LINE user info
     // ✅ update button AFTER DOM is rendered
     const storedUserName = sessionStorage.getItem('lineUserName');
+      console.log("LINE USER:", storedUserName);
     if (storedUserName) {
         updateNavbarWithUserName(storedUserName);
     }
