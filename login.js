@@ -27,10 +27,16 @@ function loginWithLINE() {
 }
 */
 function updateNavbarWithUserName(userName) {
+  console.log('🔁 Updating login button with user:', userName);
+
   const loginBtn = document.getElementById('member-login-btn');
   if (loginBtn) {
-    loginBtn.textContent = `👤 ${userName}`;
-    loginBtn.disabled = true; // Optional: prevent re-clicking
+    const userDisplay = document.createElement('span');
+    userDisplay.id = 'member-name-display';
+    userDisplay.textContent = `👤 ${userName}`;
+    loginBtn.replaceWith(userDisplay);
+  } else {
+    console.warn('⚠️ member-login-btn not found in DOM');
   }
 }
 
