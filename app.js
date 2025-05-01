@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderSideCart() {
         sideCart.itemsContainer.innerHTML = ''; // Clear current items
         if (cart.length === 0) {
-            sideCart.itemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+            sideCart.itemsContainer.innerHTML = '<p>您的購物車是空的。</p>';
         } else {
             cart.forEach(item => {
                 const cartItemDiv = document.createElement('div');
@@ -516,11 +516,35 @@ if (lineUserName) {
 
     // Credit Balance
     const creditBalance = document.createElement('div');
-    creditBalance.textContent = 'CreditBalance';
+    creditBalance.textContent = 'Credit Balance';
     creditBalance.classList.add('dropdown-item');
-    creditBalance.addEventListener('click', () => {
-        alert('💰 顯示點數餘額 (模擬)');
+
+    creditBalance.addEventListener('click', async () => {
+      const lineUserId = sessionStorage.getItem('lineUserId');
+
+      if (!lineUserId) {
+        alert('⚠️ 尚未登入 LINE 帳號，請先登入會員');
         dropdown.style.display = 'none';
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
+        const data = await res.json();
+
+        if (data.status === 'success') {
+          alert(`💰 目前點數餘額：${data.creditBalance}`);
+        } else if (data.status === 'not_found') {
+          alert('⚠️ 查無此會員資料，請聯絡客服');
+        } else {
+          alert('❌ 無法取得點數資料，請稍後再試');
+        }
+      } catch (err) {
+        console.error('Error fetching credit balance:', err);
+        alert('🚫 發生錯誤，請檢查網路或稍後再試');
+      }
+
+      dropdown.style.display = 'none';
     });
 
     // Logout
@@ -906,7 +930,7 @@ if (lineUserName) {
                 switchView('checkout');
                 sideCart.aside.classList.remove('open'); // Close side cart
             } else {
-                alert("Your cart is empty. Add some items before checking out.");
+                alert("您的購物車是空的, 無法結帳。");
             }
         });
 
