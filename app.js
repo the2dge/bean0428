@@ -365,18 +365,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderSideCart(); // Update the visual cart display
     }
 
-    function calculateTotal() {
-        let total = 0;
-        cart.forEach(item => {
-            // Remove '$' and convert to number for calculation
-            const price = parseFloat(item.price.replace(/[^0-9.-]+/g,""));
-            if (!isNaN(price)) {
-                total += price * item.quantity;
-            } else {
-                console.warn(`Could not parse price for item ${item.id}: ${item.price}`);
-            }
-        });
-        return `$${total.toFixed(2)}`; // Format as currency
+    function calculateTotal(discountPercent = 0) {
+      let total = 0;
+
+      cart.forEach(item => {
+        const price = parseFloat(item.price.replace(/[^0-9.-]+/g, ''));
+        if (!isNaN(price)) {
+          total += price * item.quantity;
+        }
+      });
+
+      if (discountPercent > 0) {
+        total *= (1 - discountPercent / 100);
+      }
+
+      return `$${total.toFixed(2)}`;
     }
     function changeCartQuantity(productId, changeAmount) {
         const cartItemIndex = cart.findIndex(item => item.id === productId);
@@ -701,7 +704,7 @@ if (lineUserName) {
         discountCodeWrapper.style.display = 'block';
         creditProofWrapper.style.display = 'none';
     } else if (e.target.value === 'credit-card') {
-        discountCodeWrapper.style.display = 'none';
+        discountCodeWrapper.style.display = 'block';
         creditProofWrapper.style.display = 'block';
     } else {
         discountCodeWrapper.style.display = 'none';
@@ -720,7 +723,7 @@ if (lineUserName) {
             // Update the Total Row
             const totalRow = document.getElementById('checkout-total-row');
             if (totalRow) {
-                totalRow.innerHTML = `<strong>折扣後總額：</strong> $${discountedTotal.toFixed(2)} 🎉 (${(discountRate * 100).toFixed(0)}% off)`;
+                totalRow.innerHTML = `<strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)`;
             }
 
             alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
@@ -755,8 +758,23 @@ if (lineUserName) {
       const formData = new FormData(checkoutForm);
       const data = Object.fromEntries(formData.entries());
 
+      const discountCode = data['discount_code']?.trim();
+      const discountTierMap = {
+        'GOLD': 5,
+        'SILVER': 3,
+        'BRONZE': 1
+      };
+      // Use pre-fetched membership discount (from sessionStorage)
+      const memberDiscountCode = sessionStorage.getItem('discountCode');
+      const memberTier = sessionStorage.getItem('discountTier');
+
+      let appliedDiscountPercent = 0;
+      if (discountCode && memberDiscountCode && discountCode === memberDiscountCode && memberTier) {
+    appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
+  }
+      const totalAmount = calculateTotal(appliedDiscountPercent); 
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
-      const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
+      //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
       const orderId = generateCustomOrderId();
 
       // Replace address with actual store if 7-11
@@ -795,22 +813,7 @@ if (lineUserName) {
       switchView('content');
       alert('✅ Thank you for your order!');
     });
-    /*
-    checkoutForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert("Thank you for your order!");
-        const formData = new FormData(checkoutForm);
-        const orderData = Object.fromEntries(formData.entries());
-        console.log("Placing order with:", orderData);
-        console.log("Final Cart items:", cart);
-        submitOrderToWebApp(orderData);
-        cart = []; // Clear cart
-        sessionStorage.removeItem('cart');
-        sessionStorage.removeItem('currentOrderId');
-        checkoutForm.reset();
-        switchView('content');
-    });
-    */
+
 }
     // --- Event Listeners Setup ---
     function setupEventListeners() {
