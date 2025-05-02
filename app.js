@@ -767,7 +767,7 @@ if (lineUserName) {
       // Use pre-fetched membership discount (from sessionStorage)
       const memberDiscountCode = sessionStorage.getItem('discountCode');
       const memberTier = sessionStorage.getItem('discountTier');
-
+      console.log("dCode, mdCode, Tier are: ", discountCode, memberDiscountCode, memberTier );
       let appliedDiscountPercent = 0;
       if (discountCode && memberDiscountCode && discountCode === memberDiscountCode && memberTier) {
     appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
