@@ -772,6 +772,7 @@ if (lineUserName) {
       if (discountCode && memberDiscountCode && discountCode === memberDiscountCode && memberTier) {
     appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
   }
+      console.log("DiscountPercent is: ", appliedDiscountPercent);
       const totalAmount = calculateTotal(appliedDiscountPercent); 
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
