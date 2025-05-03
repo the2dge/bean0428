@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ✅ Save for later use (reward, display, etc.)
         sessionStorage.setItem('discountCode', member.discountCode);
         sessionStorage.setItem('discountTier', member.tier);
-        sessionStorage.setItem('discountRate', rate); // <--- Save rate here too!
+        sessionStorage.setItem('discountRate', member.tier); // <--- Save rate here too!
 
 
         switch (tier) {
