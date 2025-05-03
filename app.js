@@ -77,6 +77,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ✅ Save for later use (reward, display, etc.)
         sessionStorage.setItem('discountCode', member.discountCode);
         sessionStorage.setItem('discountTier', member.tier);
+        sessionStorage.setItem('discountRate', rate); // <--- Save rate here too!
+
 
         switch (tier) {
           case 'gold':
@@ -92,6 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // ❌ Clear old values if invalid
         sessionStorage.removeItem('discountCode');
         sessionStorage.removeItem('discountTier');
+        sessionStorage.removeItem('discountRate');
         return 0;
       }
     }
@@ -791,9 +794,9 @@ if (lineUserName) {
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
       let rewardToCodeOwner = 0;
-
+      const discountRate = parseFloat(sessionStorage.getItem('discountRate') || '0');
       if (discountRate > 0) {
-          rewardToCodeOwner = discountedTotal * (discountRate / 100);
+          rewardToCodeOwner = totalAmount * (discountRate / 100);
         }
       const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
       const orderId = generateCustomOrderId();
