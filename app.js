@@ -795,7 +795,8 @@ if (lineUserName) {
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
       let rewardToCodeOwner = 0;
       const discountRate = parseFloat(sessionStorage.getItem('discountRate') || '0');
-      if (discountRate > 0) {
+      console.log("rewardRate is: ", discountRate);
+        if (discountRate > 0) {
           rewardToCodeOwner = totalAmount * (discountRate / 100);
         }
       const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
