@@ -717,6 +717,8 @@ if (lineUserName) {
     discountInput.addEventListener('blur', () => {
         const discountRate = validateDiscountCode(discountInput.value);
         if (discountRate > 0) {
+            sessionStorage.setItem('discountCode', data.discountCode);
+            sessionStorage.setItem('discountTier', data.membershipLevel); // Must be passed from backend
             const originalTotal = calculateCartTotal();
             const discountedTotal = originalTotal * (1 - discountRate);
 
