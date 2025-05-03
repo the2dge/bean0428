@@ -786,10 +786,16 @@ if (lineUserName) {
       if (discountCode && memberDiscountCode && discountCode === memberDiscountCode && memberTier) {
     appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
   }
-      
+
       const totalAmount = calculateTotal(appliedDiscountPercent); 
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
+      let rewardToCodeOwner = 0;
+
+      if (discountRate > 0) {
+          rewardToCodeOwner = discountedTotal * (discountRate / 100);
+        }
+      const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
       const orderId = generateCustomOrderId();
 
       // Replace address with actual store if 7-11
@@ -807,6 +813,7 @@ if (lineUserName) {
         address: finalAddress,
         discountCode: data['discount_code'],
         totalAmount,
+        rewardAmount,
         lineUserName,
         cartItems: cart.map(item => `${item.name} x${item.quantity}`) // optional
       };
