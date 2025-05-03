@@ -794,8 +794,9 @@ if (lineUserName) {
       let rewardToCodeOwner = 0;
       const discountRate = validateDiscountCode(discountCode);
       console.log("rewardRate is: ", discountRate);
+      const numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
       if (discountRate > 0) {
-          rewardToCodeOwner = totalAmount * (discountRate / 100);
+          rewardToCodeOwner = numericTotal * (discountRate / 100);
         }
       const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
       const orderId = generateCustomOrderId();
