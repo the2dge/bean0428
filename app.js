@@ -67,21 +67,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     //Validate Promo Code
     function validateDiscountCode(inputCode) {
-        const member = membershipData.find(m => m.discountCode.toLowerCase() === inputCode.trim().toLowerCase());
-        if (member) {
-            switch (member.tier.toLowerCase()) {
-                case 'gold':
-                    return 0.05; // 5% off
-                case 'silver':
-                    return 0.03; // 3% off
-                case 'bronze':
-                    return 0.01; // 1% off
-                default:
-                    return 0;
-            }
-        } else {
-            return 0; // No match
+      const member = membershipData.find(m =>
+        m.discountCode.toLowerCase() === inputCode.trim().toLowerCase()
+      );
+
+      if (member) {
+        const tier = member.tier.toLowerCase();
+
+        // ✅ Save for later use (reward, display, etc.)
+        sessionStorage.setItem('discountCode', member.discountCode);
+        sessionStorage.setItem('discountTier', member.tier);
+
+        switch (tier) {
+          case 'gold':
+            return 0.05;
+          case 'silver':
+            return 0.03;
+          case 'bronze':
+            return 0.01;
+          default:
+            return 0;
         }
+      } else {
+        // ❌ Clear old values if invalid
+        sessionStorage.removeItem('discountCode');
+        sessionStorage.removeItem('discountTier');
+        return 0;
+      }
     }
 
     //Read Discount Code pushed from GAS!
@@ -768,12 +780,13 @@ if (lineUserName) {
       // Use pre-fetched membership discount (from sessionStorage)
       const memberDiscountCode = sessionStorage.getItem('discountCode');
       const memberTier = sessionStorage.getItem('discountTier');
-      console.log("dCode, mdCode, Tier are: ", discountCode, memberDiscountCode, memberTier );
+
       let appliedDiscountPercent = 0;
+      console.log("dCode, mdCode, Tier are: ", discountCode, memberDiscountCode, memberTier );
       if (discountCode && memberDiscountCode && discountCode === memberDiscountCode && memberTier) {
     appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
   }
-      console.log("DiscountPercent is: ", appliedDiscountPercent);
+      
       const totalAmount = calculateTotal(appliedDiscountPercent); 
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
