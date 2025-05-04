@@ -551,6 +551,17 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const lineUserName = sessionStorage.getItem('lineUserName');
 
 if (lineUserName) {
+    const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
+    const data = await res.json();
+    if (data.status === 'success') {
+    const creditBalance = parseFloat(data.creditBalance);
+    sessionStorage.setItem('creditBalance', creditBalance); // 🔐 Save for later use
+
+    // Display balance info (optional)
+    const note = document.createElement('p');
+    note.textContent = `💰 可用點數餘額：$${creditBalance.toFixed(2)}`;
+    checkoutForm.appendChild(note);
+  };
     const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
     const creditOption = document.createElement('option');
     creditOption.value = 'credit-point';
