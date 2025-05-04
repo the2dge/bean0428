@@ -38,7 +38,7 @@ async function setupCreditPointValidation() {
     if (data.status === 'success') {
       const creditBalance = parseFloat(data.creditBalance || '0');
       sessionStorage.setItem('creditBalance', creditBalance);
-
+      console.log("For Checkout: creditBalance --", creditBalance);
       // Optionally show balance
       const note = document.createElement('p');
       note.textContent = `💰 可用點數餘額：$${creditBalance.toFixed(2)}`;
