@@ -244,6 +244,12 @@ body { margin: 0; font-family: sans-serif; }
 .dropdown-item:hover {
   background-color: #f0f0f0;
 }
+#submit-order-btn:disabled {
+  background-color: #ccc;     /* Light gray background */
+  color: #666;                /* Gray text */
+  cursor: not-allowed;        /* Cursor changes to blocked */
+  opacity: 0.6;
+}
 /* Footer */
 .footer { background-color: #aaa; color: #fff; text-align: center; padding: 20px; margin-top: 40px; }
 .footer-container { max-width: 1200px; margin: 0 auto; }
