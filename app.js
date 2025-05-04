@@ -512,7 +512,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const lineUserName = sessionStorage.getItem('lineUserName');
 
 if (lineUserName) {
-    const paymentMethodSelect = document.getElementbyId('payment-method');
+    const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
     const creditOption = document.createElement('option');
     creditOption.value = 'credit-point';
     creditOption.textContent = '點數付款 (Pay by Credit Point)';
