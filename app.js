@@ -496,17 +496,18 @@ function ECpayStoreDataBackTransfer() {
 
 function renderCheckoutPage(cartItems, storeInfo = null) {
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
-
         // --- Checkout Form ---
     const checkoutForm = document.createElement('form');
     checkoutForm.id = 'checkout-form';
-    
+    const storedName = sessionStorage.getItem('lineUserName') || '';
+    const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
+
     checkoutForm.innerHTML = `
     <label for="name">收件人姓名</label>
-    <input type="text" id="name" name="name" required>
+    <input type="text" id="name" name="name" value="${storedName}" required>
 
     <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
+    <input type="email" id="email" name="email"  value="${storedEmail}" required>
 
     <label for="telephone">電話:</label>
     <input type="tel" id="telephone" name="telephone" required>
