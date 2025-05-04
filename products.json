@@ -1,8 +1,8 @@
 [
     {
         "id": "p001",
-        "name": "杏仁 1 600g",
-        "price": "$850",
+        "name": "杏仁 1 300g",
+        "price": "$10",
         "thumbnailUrl": "image/almond1.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -11,8 +11,8 @@
     },
     {
         "id": "p002",
-        "name": "杏仁 2 600g",
-        "price": "$850",
+        "name": "杏仁 2 300g",
+        "price": "$20",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -22,7 +22,7 @@
     {
         "id": "p003",
         "name": "杏仁 3 300g",
-        "price": "$350",
+        "price": "$30",
         "thumbnailUrl": "image/almond3.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "綜合杏仁",
@@ -32,7 +32,7 @@
     {
         "id": "p004",
         "name": "杏仁 4 300g",
-        "price": "$350",
+        "price": "$40",
         "thumbnailUrl": "image/almond4.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -42,7 +42,7 @@
     {
         "id": "p005",
         "name": "杏仁 5 300g",
-        "price": "$350",
+        "price": "$50",
         "thumbnailUrl": "image/almond1.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -52,7 +52,7 @@
     {
         "id": "p006",
         "name": "杏仁 6 300g",
-        "price": "$350",
+        "price": "$60",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -62,7 +62,7 @@
     {
         "id": "p007",
         "name": "杏仁 7 300g",
-        "price": "$450",
+        "price": "$70",
         "thumbnailUrl": "image/almond3.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -72,7 +72,7 @@
     {
         "id": "p008",
         "name": "杏仁 8 300g",
-        "price": "$450",
+        "price": "$80",
         "thumbnailUrl": "image/almond4.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -82,7 +82,7 @@
     {
         "id": "p009",
         "name": "杏仁 9 300g",
-        "price": "$450",
+        "price": "$90",
         "thumbnailUrl": "image/almond1.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -92,7 +92,7 @@
     {
         "id": "p010",
         "name": "杏仁 10 300g",
-        "price": "$450",
+        "price": "$100",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
@@ -102,7 +102,7 @@
     {
         "id": "p011",
         "name": "杏仁 11 300g",
-        "price": "$450",
+        "price": "$110",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
