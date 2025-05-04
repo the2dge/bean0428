@@ -26,6 +26,50 @@ function loginWithLINE() {
   window.location.href = loginUrl;
 }
 */
+
+async function setupCreditPointValidation() {
+  const lineUserId = sessionStorage.getItem('lineUserId');
+  if (!lineUserId) return;
+
+  try {
+    const res = await fetch(' https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}')
+    const data = await res.json();
+
+    if (data.status === 'success') {
+      const creditBalance = parseFloat(data.creditBalance || '0');
+      sessionStorage.setItem('creditBalance', creditBalance);
+
+      // Optionally show balance
+      const note = document.createElement('p');
+      note.textContent = `💰 可用點數餘額：$${creditBalance.toFixed(2)}`;
+      document.getElementById('checkout-form').appendChild(note);
+
+      const paymentSelect = document.getElementById('payment-method');
+      const submitBtn = document.getElementById('submit-order-btn');
+      const totalText = document.querySelector('.checkout-total')?.textContent || '';
+      const totalAmount = parseFloat(totalText.replace(/[^0-9.]/g, ''));
+
+      paymentSelect.addEventListener('change', () => {
+        const selected = paymentSelect.value;
+        if (selected === 'credit-point') {
+          if (creditBalance >= totalAmount) {
+            submitBtn.disabled = false;
+          } else {
+            submitBtn.disabled = true;
+            alert('❌ 點數不足，無法使用點數付款');
+          }
+        } else {
+          // Enable for other payment types if shipping method is valid
+          const addressVal = document.getElementById('address').value;
+          submitBtn.disabled = !(addressVal === '7-11 商店取貨' || addressVal === '來商店取貨');
+        }
+      });
+    }
+
+  } catch (err) {
+    console.error('Failed to fetch credit balance:', err);
+  }
+}
 function generateCustomOrderId() {
   const now = new Date();
 
