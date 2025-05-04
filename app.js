@@ -501,6 +501,44 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const checkoutForm = document.createElement('form');
     checkoutForm.id = 'checkout-form';
     
+    checkoutForm.innerHTML = `
+    <label for="name">收件人姓名</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="telephone">電話:</label>
+    <input type="tel" id="telephone" name="telephone" required>
+    
+    <label for="address">取貨方式:</label>
+    <select id="address" name="address" required>
+        <option value="取貨選擇">請選擇 7-11 或來店取</option>
+        <option value="來商店取貨">來商店取貨</option>
+        <option value="7-11 商店取貨">7-11 商店取貨</option>
+    </select>
+
+    <div id="pickup-store-info"></div>
+    <label for="payment-method">付款方式:</label>
+    <select id="payment-method" name="payment-method" required>
+        <option value="store">到店付款 (Pay at Store)</option>
+        <option value="credit-card">信用卡付款 (Pay by Credit Card)</option>
+        
+    </select>
+    <div id="credit-proof-wrapper" style="display: none;">
+    <label for="credit_payment">信用卡付款:</label>
+    <img src ="image/creditcard.png" width="80px">
+    </div>
+    <div id="discount-code-wrapper" style="display: none;">
+        <label for="discount_code">折扣碼:</label>
+        <input type="text" id="discount_code" name="discount_code">
+    </div>
+
+
+
+    <button  id="submit-order-btn" type="submit">下單</button>
+`;
+    
     // --- Checkout Main Title + Member Login Button ---
     const titleRow = document.createElement('div');
     titleRow.classList.add('checkout-title-row');
@@ -657,43 +695,6 @@ if (lineUserName) {
 
 
 
-    checkoutForm.innerHTML = `
-    <label for="name">收件人姓名</label>
-    <input type="text" id="name" name="name" required>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-
-    <label for="telephone">電話:</label>
-    <input type="tel" id="telephone" name="telephone" required>
-    
-    <label for="address">取貨方式:</label>
-    <select id="address" name="address" required>
-        <option value="取貨選擇">請選擇 7-11 或來店取</option>
-        <option value="來商店取貨">來商店取貨</option>
-        <option value="7-11 商店取貨">7-11 商店取貨</option>
-    </select>
-
-    <div id="pickup-store-info"></div>
-    <label for="payment-method">付款方式:</label>
-    <select id="payment-method" name="payment-method" required>
-        <option value="store">到店付款 (Pay at Store)</option>
-        <option value="credit-card">信用卡付款 (Pay by Credit Card)</option>
-        
-    </select>
-    <div id="credit-proof-wrapper" style="display: none;">
-    <label for="credit_payment">信用卡付款:</label>
-    <img src ="image/creditcard.png" width="80px">
-    </div>
-    <div id="discount-code-wrapper" style="display: none;">
-        <label for="discount_code">折扣碼:</label>
-        <input type="text" id="discount_code" name="discount_code">
-    </div>
-
-
-
-    <button  id="submit-order-btn" type="submit">下單</button>
-`;
     mainBody.checkoutWrapper.appendChild(checkoutForm);
     // --- Event Listener: Monitor Address Dropdown ---
     
