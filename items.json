@@ -4,88 +4,88 @@
     "name": "精選核桃 1",
     "largeImageUrl": "image/almond1.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$2500",
-    "specs": { "color": "Red", "material": "Cotton" }
+    "price": "$10",
+    "specs": { "原產地": "國家01", "成分": "成分01" }
   },
   "p002": {
     "id": "p002",
     "name": "精選核桃 2",
     "largeImageUrl": "image/almond2.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$250",
-    "specs": { "color": "Blue", "material": "Polyester" }
+    "price": "$20",
+    "specs": { "原產地": "國家02", "material": "Polyester" }
   },
   "p003": {
     "id": "p003",
     "name": "精選核桃 3",
     "largeImageUrl": "image/almond3.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$199",
-    "specs": { "color": "Red", "material": "Cotton" }
+    "price": "$30",
+    "specs": { "原產地": "國家03", "成分": "成分02" }
   },
   "p004": {
     "id": "p004",
     "name": "精選核桃 4",
     "largeImageUrl": "image/almond4.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$250",
-    "specs": { "color": "Blue", "material": "Polyester" }
+    "price": "$40",
+    "specs": { "原產地": "國家04", "成分": "成分01,成分02" }
   },
   "p005": {
     "id": "p005",
     "name": "精選核桃 5",
     "largeImageUrl": "image/almond1.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$199",
-    "specs": { "color": "Red", "material": "Cotton" }
+    "price": "$50",
+    "specs": { "原產地": "國家05", "成分": "成分05" }
   },
   "p006": {
     "id": "p006",
     "name": "精選核桃 6",
     "largeImageUrl": "image/almond2.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$250",
-    "specs": { "color": "Blue", "material": "Polyester" }
+    "price": "$60",
+    "specs": { "原產地": "國家06", "成分": "成分06" }
   },
   "p007": {
     "id": "p007",
     "name": "精選核桃 7",
     "largeImageUrl": "image/almond3.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$199",
-    "specs": { "color": "Red", "material": "Cotton" }
+    "price": "$70",
+    "specs": { "原產地": "國家07", "成分": "07" }
   },
   "p008": {
     "id": "p008",
     "name": "精選核桃 8",
     "largeImageUrl": "image/almond4.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$240",
-    "specs": { "color": "Blue", "material": "Polyester" }
+    "price": "$80",
+    "specs": { "原產地": "國家08", "成分": "成分07" }
   },
   "p009": {
     "id": "p009",
     "name": "精選核桃 9",
     "largeImageUrl": "../image/almond1.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$199",
-    "specs": { "color": "Red", "material": "Cotton" }
+    "price": "$90",
+    "specs": { "原產地": "國家09", "成分": "成分09" }
   },
   "p010": {
     "id": "p010",
     "name": "精選核桃 10",
     "largeImageUrl": "../image/almond2.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$250",
-    "specs": { "color": "Blue", "material": "Polyester" }
+    "price": "$100",
+    "specs": { "原產地": "國家10", "成分": "成分10" }
   },
-  "p010": {
+  "p011": {
     "id": "p011",
     "name": "精選核桃 11",
     "largeImageUrl": "../image/almond2.jpg",
     "description": "精選美國核桃，低溫烘焙，讓堅果內外質地均勻，入口香氣濃厚。",
-    "price": "$250",
-    "specs": { "color": "Blue", "material": "Polyester" }
+    "price": "$110",
+    "specs": { "原產地": "國家11", "成分": "成分11" }
   }
 
 }
