@@ -497,6 +497,10 @@ function ECpayStoreDataBackTransfer() {
 function renderCheckoutPage(cartItems, storeInfo = null) {
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
 
+        // --- Checkout Form ---
+    const checkoutForm = document.createElement('form');
+    checkoutForm.id = 'checkout-form';
+    
     // --- Checkout Main Title + Member Login Button ---
     const titleRow = document.createElement('div');
     titleRow.classList.add('checkout-title-row');
@@ -651,9 +655,7 @@ if (lineUserName) {
         mainBody.checkoutWrapper.appendChild(totalRow);
     }
 
-    // --- Checkout Form ---
-    const checkoutForm = document.createElement('form');
-    checkoutForm.id = 'checkout-form';
+
 
     checkoutForm.innerHTML = `
     <label for="name">收件人姓名</label>
