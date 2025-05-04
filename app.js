@@ -508,11 +508,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const lineUserName = sessionStorage.getItem('lineUserName');
 
 if (lineUserName) {
-    const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
-    const creditOption = document.createElement('option');
-    creditOption.value = 'credit-point';
-    creditOption.textContent = '點數付款 (Pay by Credit Point)';
-    paymentMethodSelect.appendChild(creditOption);
+    
       
     const memberWrapper = document.createElement('div');
     memberWrapper.classList.add('member-dropdown-wrapper');
