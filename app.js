@@ -508,6 +508,11 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const lineUserName = sessionStorage.getItem('lineUserName');
 
 if (lineUserName) {
+    const creditOption = document.createElement('option');
+      creditOption.value = 'credit-point';
+      creditOption.textContent = '點數付款 Pay by Credit Point';
+      paymentMethodSelect.appendChild(creditOption);
+      
     const memberWrapper = document.createElement('div');
     memberWrapper.classList.add('member-dropdown-wrapper');
 
@@ -671,7 +676,7 @@ if (lineUserName) {
     <select id="payment-method" name="payment-method" required>
         <option value="store">到店付款 (Pay at Store)</option>
         <option value="credit-card">信用卡付款 (Pay by Credit Card)</option>
-        <option value="credit-point">點數付款 (Pay by Credit Point)</option>
+        
     </select>
     <div id="credit-proof-wrapper" style="display: none;">
     <label for="credit_payment">信用卡付款:</label>
@@ -684,12 +689,23 @@ if (lineUserName) {
 
 
 
-    <button type="submit">下單</button>
+    <button  id="submit-order-btn" type="submit">下單</button>
 `;
     mainBody.checkoutWrapper.appendChild(checkoutForm);
     // --- Event Listener: Monitor Address Dropdown ---
+    
     const addressSelect = checkoutForm.querySelector('#address');
+    const submitBtn = document.getElementById('submit-order-btn');
+    // Disable on initial load
+    submitBtn.disabled = true;
     addressSelect.addEventListener('change', (e) => {
+        const selected = addressSelect.value;
+        if (selected === '7-11 商店取貨' || selected === '來商店取貨') {
+            submitBtn.disabled = false;
+          } else {
+            submitBtn.disabled = true;
+          }
+
         if (e.target.value === '7-11 商店取貨') {
             // Generate timestamp orderId
             const now = new Date();
@@ -796,7 +812,7 @@ if (lineUserName) {
       console.log("rewardRate is: ", discountRate);
       const numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
       if (discountRate > 0) {
-          rewardToCodeOwner = numericTotal * (discountRate / 1);
+          rewardToCodeOwner = numericTotal * (discountRate / 100);
         }
       const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
       const orderId = generateCustomOrderId();
