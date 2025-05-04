@@ -557,9 +557,6 @@ if (lineUserName) {
     creditOption.textContent = '點數付款 (Pay by Credit Point)';
     paymentMethodSelect.appendChild(creditOption);
     
-    const creditBalance = parseFloat(sessionStorage.getItem('creditBalance') || '0');
-    console.log("CreditBalance is: ", creditBalance);
-    
     const memberWrapper = document.createElement('div');
     memberWrapper.classList.add('member-dropdown-wrapper');
 
