@@ -882,6 +882,7 @@ if (lineUserName) {
         totalAmount,
         rewardAmount,
         lineUserName,
+        lineUserId,
         cartItems: cart.map(item => `${item.name} x${item.quantity}`) // optional
       };
 
