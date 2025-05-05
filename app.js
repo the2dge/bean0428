@@ -854,6 +854,7 @@ if (lineUserName) {
 
       const totalAmount = calculateTotal(appliedDiscountPercent); 
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
+      const lineUserId = sessionStorage.getItem('lineUserId') || '';
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
       let rewardToCodeOwner = 0;
       const discountRate = validateDiscountCode(discountCode);
