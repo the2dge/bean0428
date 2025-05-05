@@ -67,7 +67,7 @@
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
         "flipper": "images/dairy2.jpg",
-        "category": "其他"
+        "category": "休閒養生"
     },
     {
         "id": "p008",
@@ -77,7 +77,7 @@
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
         "flipper": "images/dairy2.jpg",
-        "category": "其他"
+        "category": "休閒養生"
     },
     {
         "id": "p009",
@@ -87,7 +87,7 @@
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
         "flipper": "images/dairy2.jpg",
-        "category": "其他"
+        "category": "雜糧"
     },
     {
         "id": "p010",
@@ -97,7 +97,7 @@
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
         "flipper": "images/dairy2.jpg",
-        "category": "其他"
+        "category": "雜糧"
     },
     {
         "id": "p011",
@@ -107,6 +107,6 @@
         "largeImageUrl": "image/almond.webp",
         "title": "最好的杏仁",
         "flipper": "images/dairy2.jpg",
-        "category": "其他"
+        "category": "雜糧"
     }
 ]
