@@ -735,7 +735,7 @@ if (lineUserName) {
 
     paymentMethodSelect.addEventListener('change', (e) => {
     if (e.target.value === 'credit-point') {
-        setupCreditPointValidation();
+        await setupCreditPointValidation();
         discountCodeWrapper.style.display = 'block';
         creditProofWrapper.style.display = 'none';
     } else if (e.target.value === 'credit-card') {
