@@ -733,17 +733,60 @@ if (lineUserName) {
     const discountCodeWrapper = checkoutForm.querySelector('#discount-code-wrapper');
     const creditProofWrapper = checkoutForm.querySelector('#credit-proof-wrapper');
 
-    paymentMethodSelect.addEventListener('change', (e) => {
-    if (e.target.value === 'credit-point') {
-        discountCodeWrapper.style.display = 'block';
-        creditProofWrapper.style.display = 'none';
-    } else if (e.target.value === 'credit-card') {
-        discountCodeWrapper.style.display = 'block';
-        creditProofWrapper.style.display = 'block';
-    } else {
-        discountCodeWrapper.style.display = 'none';
-        creditProofWrapper.style.display = 'none';
+    paymentMethodSelect.addEventListener('change', async (e) => {
+  const selectedMethod = e.target.value;
+  const addressValue = document.getElementById('address').value;
+  const submitBtn = document.getElementById('submit-order-btn');
+
+  if (selectedMethod === 'credit-point') {
+    discountCodeWrapper.style.display = 'block';
+    creditProofWrapper.style.display = 'none';
+
+    // Run credit point balance check
+    const lineUserId = sessionStorage.getItem('lineUserId');
+    const totalText = document.querySelector('.checkout-total')?.textContent || '';
+    const totalAmount = parseFloat(totalText.replace(/[^0-9.]/g, ''));
+
+    if (!lineUserId) {
+      alert('⚠️ 尚未登入會員，無法使用點數付款');
+      submitBtn.disabled = true;
+      return;
     }
+
+    try {
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
+      const data = await res.json();
+
+      if (data.status === 'success') {
+        const creditBalance = parseFloat(data.creditBalance || '0');
+        sessionStorage.setItem('creditBalance', creditBalance); // Cache
+
+        if (creditBalance >= totalAmount) {
+          submitBtn.disabled = false;
+        } else {
+          submitBtn.disabled = true;
+          alert(`❌ 點數不足：目前餘額 $${creditBalance.toFixed(2)}，訂單金額 $${totalAmount.toFixed(2)}`);
+        }
+      } else {
+        submitBtn.disabled = true;
+        alert('⚠️ 會員資料取得失敗');
+      }
+    } catch (err) {
+      console.error('信用點數驗證錯誤:', err);
+      submitBtn.disabled = true;
+      alert('⚠️ 無法驗證點數餘額');
+    }
+
+  } else if (selectedMethod === 'credit-card') {
+    discountCodeWrapper.style.display = 'block';
+    creditProofWrapper.style.display = 'block';
+    submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
+
+  } else {
+    discountCodeWrapper.style.display = 'none';
+    creditProofWrapper.style.display = 'none';
+    submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
+  }
 });
     // -- Use Discount Code case --
     const discountInput = checkoutForm.querySelector('#discount_code');
