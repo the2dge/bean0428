@@ -955,6 +955,10 @@ if (lineUserName) {
       const discountRate = validateDiscountCode(discountCode);
       console.log("totalAmount and rewardRate are: ", totalAmount, discountRate);
       const numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
+        // Deduct shipping fee if applied
+    if (is711Pickup && numericTotal >= 60 && numericTotal < 1060) {
+      numericTotal -= 60;
+    }
       if (discountRate > 0) {
           rewardToCodeOwner = numericTotal * (discountRate / 1);
         }
