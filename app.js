@@ -430,7 +430,7 @@ function ECpayStoreDataBackTransfer() {
   if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
     console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
 
-    // Show store info
+    // Fill store info
     const pickupInfoDiv = document.getElementById('pickup-store-info');
     if (pickupInfoDiv) {
       pickupInfoDiv.innerHTML = `
@@ -441,33 +441,36 @@ function ECpayStoreDataBackTransfer() {
       `;
     }
 
-    // Set dropdown value
+    // Update address select
     const addressSelect = document.getElementById('address');
     if (addressSelect) addressSelect.value = '7-11 商店取貨';
 
-    // 🧠 Now update the total block with or without discount
-    const totalRow = document.getElementById('checkout-total-row');
-    if (totalRow) {
-      const baseTotal = calculateCartTotal();
-      const discountRate = window.validDiscountRate || 0;
-      const discountedTotal = window.discountedTotalBeforeShipping || baseTotal;
-      const shippingFee = discountedTotal < 1000 ? 60 : 0;
-      const grandTotal = discountedTotal + shippingFee;
-
-      totalRow.innerHTML = `
-        ${discountRate > 0 ? `<div><strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)</div>` : ''}
-        ${shippingFee > 0 ? `<div style="color:red;">🚚 運費 (未滿$1000)：$60</div>` : ''}
-        <div><strong>總計：</strong> $${grandTotal.toFixed(0)}</div>
-      `;
-
-      window.finalCheckoutTotal = grandTotal; // Save for order submission
+    // 🧠 Recalculate Total and Display Summary
+    const totalDiv = document.querySelector('.checkout-total');
+    let totalAmount = 0;
+    if (totalDiv) {
+      const match = totalDiv.textContent.match(/\$([\d.]+)/);
+      if (match) {
+        totalAmount = parseFloat(match[1]);
+      }
     }
 
+    const shippingFee = totalAmount < 1000 ? 60 : 0;
+    const finalTotal = totalAmount + shippingFee;
+
+    // Update checkout total block
+    if (totalDiv) {
+      totalDiv.innerHTML = `
+        <div><strong>Subtotal:</strong> $${totalAmount.toFixed(2)}</div>
+        ${shippingFee > 0 ? `<div style="color:red;"><strong>Shipping Fee (7-11 未滿 $1000):</strong> $60</div>` : ''}
+        <div><strong>Grand Total:</strong> $${finalTotal.toFixed(2)}</div>
+      `;
+    }
+
+    // Save store info globally
     window.selectedStoreInfo = {
-      CVSStoreID,
-      CVSStoreName,
-      CVSAddress,
-      MerchantTradeNo
+      CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
+      shippingFee, finalTotal // optional for reuse
     };
   }
 }
