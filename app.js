@@ -865,11 +865,10 @@ if (lineUserName) {
 });*/
     // -- Use Discount Code case --
     const discountInput = checkoutForm.querySelector('#discount_code');
-    console.log("discountCode is: ", discountInput);
     discountInput.addEventListener('blur', () => {
     const discountRate = validateDiscountCode(discountInput.value);
     const originalTotal = calculateCartTotal();
-
+    console.log("discountCode and Total are: ", discountRate, originalTotal);
     // Check if 7-11 selected and under $1000
     const addressSelect = document.getElementById('address');
     const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
