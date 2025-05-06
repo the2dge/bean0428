@@ -557,10 +557,6 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
 
     checkoutForm.innerHTML = `
-    <div id="discount-code-wrapper">
-    <label for="discount_code">折扣碼:</label>
-    <input type="text" id="discount_code" name="discount_code">
-    </div>
     <label for="name">收件人姓名</label>
     <input type="text" id="name" name="name" value="${storedName}" required>
 
@@ -578,6 +574,10 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     </select>
 
     <div id="pickup-store-info"></div>
+    <div id="discount-code-wrapper" style="display: none>
+    <label for="discount_code">折扣碼:</label>
+    <input type="text" id="discount_code" name="discount_code">
+    </div>
     <label for="payment-method">付款方式:</label>
     <select id="payment-method" name="payment-method" required>
         <option value="store">到店付款 (Pay at Store)</option>
