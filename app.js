@@ -472,6 +472,7 @@ function ECpayStoreDataBackTransfer() {
     }
 
     // Save store info globally
+    window.finalCheckoutTotal = finalTotal;
     window.selectedStoreInfo = {
       CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
       shippingFee, finalTotal // optional for reuse
