@@ -954,7 +954,7 @@ if (lineUserName) {
       let rewardToCodeOwner = 0;
       const discountRate = validateDiscountCode(discountCode);
       console.log("totalAmount and rewardRate are: ", totalAmount, discountRate);
-      const numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
+      let numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
         // Deduct shipping fee if applied
     const address = document.getElementById('address')?.value;
     const is711Pickup = address === '7-11 商店取貨';
