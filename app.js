@@ -931,7 +931,6 @@ if (lineUserName) {
 
       // Get total from the updated total DOM (Grand Total)
         const totalBlock = document.querySelector('.checkout-total');
-        let totalAmount = 0;
         
         if (totalBlock) {
           const grandMatch = totalBlock.textContent.match(/Grand Total:\s*\$([\d.]+)/);
