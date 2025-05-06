@@ -929,6 +929,16 @@ if (lineUserName) {
         finalAddress = window.selectedStoreInfo.CVSStoreName;
       }
 
+      // Get total from the updated total DOM (Grand Total)
+        const totalBlock = document.querySelector('.checkout-total');
+        let totalAmount = 0;
+        
+        if (totalBlock) {
+          const grandMatch = totalBlock.textContent.match(/Grand Total:\s*\$([\d.]+)/);
+          if (grandMatch) {
+            totalAmount = parseFloat(grandMatch[1]);
+          }
+        }
       const orderData = {
         orderId,
         name: data.name,
@@ -937,7 +947,7 @@ if (lineUserName) {
         paymentMethod: data['payment-method'],
         address: finalAddress,
         discountCode: data['discount_code'],
-        totalAmount,
+        totalAmount: `$${totalAmount.toFixed(0)}`,
         rewardAmount,
         lineUserName,
         lineUserId,
