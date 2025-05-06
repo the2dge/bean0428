@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           case 'silver':
             return 0.03;
           case 'bronze':
-            return 0.1;
+            return 0.01;
           default:
             return 0;
         }
