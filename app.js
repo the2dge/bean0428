@@ -506,7 +506,14 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
 
     checkoutForm.innerHTML = `
-
+    <label for="address">取貨方式:</label>
+    <select id="address" name="address" required>
+        <option value="取貨選擇">請選擇 7-11 或來店取</option>
+        <option value="來商店取貨">來商店取貨</option>
+        <option value="7-11 商店取貨">7-11 商店取貨</option>
+    </select>
+    
+    <div id="pickup-store-info"></div>
     <label for="name">收件人姓名</label>
     <input type="text" id="name" name="name" value="${storedName}" required>
 
@@ -516,14 +523,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     <label for="telephone">電話:</label>
     <input type="tel" id="telephone" name="telephone" required>
     
-    <label for="address">取貨方式:</label>
-    <select id="address" name="address" required>
-        <option value="取貨選擇">請選擇 7-11 或來店取</option>
-        <option value="來商店取貨">來商店取貨</option>
-        <option value="7-11 商店取貨">7-11 商店取貨</option>
-    </select>
-    
-    <div id="pickup-store-info"></div>
+
     <label for="discount-code-wrapper">使用折扣碼:</label>
     <div id="discount-code-wrapper" style="display: none">
         <label for="discount_code">折扣碼:</label>
