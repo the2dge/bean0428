@@ -807,7 +807,7 @@ if (lineUserName) {
     const lineUserId = sessionStorage.getItem('lineUserId');
     const totalText = document.querySelector('.checkout-total')?.textContent || '';
     const totalAmount = parseFloat(totalText.replace(/[^0-9.]/g, ''));
-
+    console.log("total is: ", totalAmount);
     if (!lineUserId) {
       alert('⚠️ 尚未登入會員，無法使用點數付款');
       submitBtn.disabled = true;
