@@ -444,7 +444,11 @@ function ECpayStoreDataBackTransfer() {
     // Update address select
     const addressSelect = document.getElementById('address');
     if (addressSelect) addressSelect.value = '7-11 商店取貨';
-
+    // Show discount code input field
+    const discountCodeWrapper = document.getElementById('discount-code-wrapper');
+    if (discountCodeWrapper) {
+      discountCodeWrapper.style.display = 'block';
+    }
     // 🧠 Recalculate Total and Display Summary
     const totalDiv = document.querySelector('.checkout-total');
     let totalAmount = 0;
