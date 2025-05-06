@@ -574,7 +574,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     </select>
 
     <div id="pickup-store-info"></div>
-    <div id="discount-code-wrapper" style="display: none>
+    <div id="discount-code-wrapper" style="display: none">
     <label for="discount_code">折扣碼:</label>
     <input type="text" id="discount_code" name="discount_code">
     </div>
