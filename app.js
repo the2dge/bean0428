@@ -824,11 +824,10 @@ if (lineUserName) {
         sessionStorage.setItem('creditBalance', creditBalance); // Cache
 
         if (creditBalance >= totalAmount) {
-            alert(`目前餘額 $${creditBalance.toFixed(2)}，訂單金額 $${totalAmount.toFixed(2)}`);
           submitBtn.disabled = false;
         } else {
           submitBtn.disabled = true;
-          alert(`❌ 點數不足：目前餘額 $${creditBalance.toFixed(2)}，訂單金額 $${totalAmount.toFixed(2)}`);
+          alert(`❌ 點數不足：目前餘額 $${creditBalance.toFixed(0)}，訂單金額 $${totalAmount.toFixed(0)}`);
         }
       } else {
         submitBtn.disabled = true;
