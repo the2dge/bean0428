@@ -947,7 +947,7 @@ if (lineUserName) {
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
       let rewardToCodeOwner = 0;
       const discountRate = validateDiscountCode(discountCode);
-      console.log("rewardRate is: ", discountRate);
+      console.log("totalAmount and rewardRate are: ", totalAmount, discountRate);
       const numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
       if (discountRate > 0) {
           rewardToCodeOwner = numericTotal * (discountRate / 1);
