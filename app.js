@@ -433,6 +433,7 @@ function ECpayStoreDataBackTransfer() {
   if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
     console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
 
+    // Fill store info
     const pickupInfoDiv = document.getElementById('pickup-store-info');
     if (pickupInfoDiv) {
       pickupInfoDiv.innerHTML = `
@@ -443,10 +444,37 @@ function ECpayStoreDataBackTransfer() {
       `;
     }
 
+    // Update address select
     const addressSelect = document.getElementById('address');
     if (addressSelect) addressSelect.value = '7-11 商店取貨';
 
-    window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
+    // 🧠 Recalculate Total and Display Summary
+    const totalDiv = document.querySelector('.checkout-total');
+    let totalAmount = 0;
+    if (totalDiv) {
+      const match = totalDiv.textContent.match(/\$([\d.]+)/);
+      if (match) {
+        totalAmount = parseFloat(match[1]);
+      }
+    }
+
+    const shippingFee = totalAmount < 1000 ? 60 : 0;
+    const finalTotal = totalAmount + shippingFee;
+
+    // Update checkout total block
+    if (totalDiv) {
+      totalDiv.innerHTML = `
+        <div><strong>Subtotal:</strong> $${totalAmount.toFixed(2)}</div>
+        ${shippingFee > 0 ? `<div style="color:red;"><strong>Shipping Fee (7-11 未滿 $1000):</strong> $60</div>` : ''}
+        <div><strong>Grand Total:</strong> $${finalTotal.toFixed(2)}</div>
+      `;
+    }
+
+    // Save store info globally
+    window.selectedStoreInfo = {
+      CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
+      shippingFee, finalTotal // optional for reuse
+    };
   }
 }
     /*
