@@ -1,6 +1,7 @@
 //document.addEventListener('DOMContentLoaded', () => {
 let cart =[];
 document.addEventListener('DOMContentLoaded', async () => {
+
     // --- DOM Element References ---
     const navbar = {
         logo: document.querySelector('.logo'),
@@ -407,74 +408,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderSideCart(); // Re-render cart after change
         }
     }
-    function openLogisticsMap(orderId) {
+
+function openLogisticsMap(orderId) {
       //const orderId = window.currentOrderId;
         
-      if (!orderId) {
+    if (!orderId) {
         alert("Order ID 尚未生成，無法開啟門市選擇頁面");
         return;
-      }
-      // Open the Cloud Function, passing orderId to ECPay
-      const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
-      window.open(url, "_self");
     }
-function ECpayStoreDataBackTransfer() {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  const MerchantID = urlParams.get('MerchantID');
-  const CVSStoreID = urlParams.get('CVSStoreID');
-  const CVSStoreName = urlParams.get('CVSStoreName');
-  const CVSAddress = urlParams.get('CVSAddress');
-  const MerchantTradeNo = urlParams.get('MerchantTradeNo');
-
-  if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
-    console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
-
-    // Fill store info
-    const pickupInfoDiv = document.getElementById('pickup-store-info');
-    if (pickupInfoDiv) {
-      pickupInfoDiv.innerHTML = `
-        <p><strong>7-11 門市資訊</strong></p>
-        <p>店號: ${CVSStoreID}</p>
-        <p>店名: ${CVSStoreName}</p>
-        <p>地址: ${CVSAddress}</p>
-      `;
-    }
-
-    // Update address select
-    const addressSelect = document.getElementById('address');
-    if (addressSelect) addressSelect.value = '7-11 商店取貨';
-
-    // 🧠 Recalculate Total and Display Summary
-    const totalDiv = document.querySelector('.checkout-total');
-    let totalAmount = 0;
-    if (totalDiv) {
-      const match = totalDiv.textContent.match(/\$([\d.]+)/);
-      if (match) {
-        totalAmount = parseFloat(match[1]);
-      }
-    }
-
-    const shippingFee = totalAmount < 1000 ? 60 : 0;
-    const finalTotal = totalAmount + shippingFee;
-
-    // Update checkout total block
-    if (totalDiv) {
-      totalDiv.innerHTML = `
-        <div><strong>Subtotal:</strong> $${totalAmount.toFixed(2)}</div>
-        ${shippingFee > 0 ? `<div style="color:red;"><strong>Shipping Fee (7-11 未滿 $1000):</strong> $60</div>` : ''}
-        <div><strong>Grand Total:</strong> $${finalTotal.toFixed(2)}</div>
-      `;
-    }
-
-    // Save store info globally
-    window.selectedStoreInfo = {
-      CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
-      shippingFee, finalTotal // optional for reuse
-    };
-  }
+    // Open the Cloud Function, passing orderId to ECPay
+    const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
+    window.open(url, "_self");
 }
-    /*
+
 function ECpayStoreDataBackTransfer() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -502,7 +448,7 @@ function ECpayStoreDataBackTransfer() {
 
     window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
   }
-} */
+}
     /*
     function ECpayStoreDataBackTransfer() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -560,6 +506,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
 
     checkoutForm.innerHTML = `
+
     <label for="name">收件人姓名</label>
     <input type="text" id="name" name="name" value="${storedName}" required>
 
@@ -575,12 +522,12 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
         <option value="來商店取貨">來商店取貨</option>
         <option value="7-11 商店取貨">7-11 商店取貨</option>
     </select>
-
+    
     <div id="pickup-store-info"></div>
     <label for="discount-code-wrapper">使用折扣碼:</label>
     <div id="discount-code-wrapper" style="display: none">
-    <label for="discount_code">折扣碼:</label>
-    <input type="text" id="discount_code" name="discount_code">
+        <label for="discount_code">折扣碼:</label>
+        <input type="text" id="discount_code" name="discount_code">
     </div>
     <label for="payment-method">付款方式:</label>
     <select id="payment-method" name="payment-method" required>
@@ -592,10 +539,10 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     <label for="credit_payment">信用卡付款:</label>
     <img src ="image/creditcard.png" width="80px">
     </div>
-
+    
     <button  id="submit-order-btn" type="submit">下單</button>
 `;
-    
+
     // --- Checkout Main Title + Member Login Button ---
     const titleRow = document.createElement('div');
     titleRow.classList.add('checkout-title-row');
@@ -612,7 +559,7 @@ if (lineUserName) {
     creditOption.value = 'credit-point';
     creditOption.textContent = '點數付款 (Pay by Credit Point)';
     paymentMethodSelect.appendChild(creditOption);
-    
+
     const memberWrapper = document.createElement('div');
     memberWrapper.classList.add('member-dropdown-wrapper');
 
@@ -705,19 +652,7 @@ if (lineUserName) {
 }
 
     mainBody.checkoutWrapper.appendChild(titleRow);
-// ✅ Add label click listener here
-    const discountLabel = document.querySelector('label[for="discount-code-wrapper"]');
-    if (discountLabel) {
-      discountLabel.addEventListener('click', () => {
-        const discountWrapper = document.getElementById('discount-code-wrapper');
-        if (discountWrapper) {
-          discountWrapper.style.display = 'block';
 
-          const discountInput = document.getElementById('discount_code');
-          if (discountInput) discountInput.focus();
-        }
-      });
-    }
     // --- Ordered Items Title ---
     const orderedItemsTitle = document.createElement('h2');
     orderedItemsTitle.textContent = '我訂購的商品';
@@ -765,6 +700,19 @@ if (lineUserName) {
 
 
     mainBody.checkoutWrapper.appendChild(checkoutForm);
+    // ✅ Add label click listener here
+    const discountLabel = document.querySelector('label[for="discount-code-wrapper"]');
+    if (discountLabel) {
+      discountLabel.addEventListener('click', () => {
+        const discountWrapper = document.getElementById('discount-code-wrapper');
+        if (discountWrapper) {
+          discountWrapper.style.display = 'block';
+
+          const discountInput = document.getElementById('discount_code');
+          if (discountInput) discountInput.focus();
+        }
+      });
+    }
     // --- Event Listener: Monitor Address Dropdown ---
     
     const addressSelect = checkoutForm.querySelector('#address');
@@ -780,13 +728,8 @@ if (lineUserName) {
 
     // ✅ Show discount code input
     const discountWrapper = document.getElementById('discount-code-wrapper');
-        if (discountWrapper) {
+    if (discountWrapper) {
       discountWrapper.style.display = 'block';
-    
-      const discountInput = document.getElementById('discount_code');
-      if (discountInput) {
-        discountInput.focus(); // Optional: focus the input
-      }
     }
 
   } else {
@@ -868,7 +811,7 @@ if (lineUserName) {
     }
 
   } else if (selectedMethod === 'credit-card') {
-   // discountCodeWrapper.style.display = 'block';
+    discountCodeWrapper.style.display = 'block';
     creditProofWrapper.style.display = 'block';
     submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
 
@@ -878,48 +821,47 @@ if (lineUserName) {
     submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
   }
 });
+/*
+    paymentMethodSelect.addEventListener('change', (e) => {
+    if (e.target.value === 'credit-point') {
+        discountCodeWrapper.style.display = 'block';
+        creditProofWrapper.style.display = 'none';
+    } else if (e.target.value === 'credit-card') {
+        discountCodeWrapper.style.display = 'block';
+        creditProofWrapper.style.display = 'block';
+    } else {
+        discountCodeWrapper.style.display = 'none';
+        creditProofWrapper.style.display = 'none';
+    }
+});*/
     // -- Use Discount Code case --
     const discountInput = checkoutForm.querySelector('#discount_code');
 
-discountInput.addEventListener('blur', () => {
-    const discountRate = validateDiscountCode(discountInput.value);
-    const originalTotal = calculateCartTotal();
-
-    // Check if 7-11 selected and under $1000
-    const addressSelect = document.getElementById('address');
-    const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
-
-    const baseTotal = originalTotal;
-    const discountedTotal = baseTotal * (1 - discountRate);
-
-    let shippingFee = 0;
-    if (is711Pickup && discountedTotal < 1000) {
-        shippingFee = 60;
-    }
-
-    const grandTotal = discountedTotal + shippingFee;
-
-    const totalRow = document.getElementById('checkout-total-row');
-    if (totalRow) {
+    discountInput.addEventListener('blur', () => {
+        const discountRate = validateDiscountCode(discountInput.value);
         if (discountRate > 0) {
-            totalRow.innerHTML = `
-                <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
-                ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
-                <strong>總計：</strong> $${grandTotal.toFixed(0)}
-            `;
-            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
-        } else {
-            totalRow.innerHTML = `
-                <strong>Total:</strong> $${baseTotal.toFixed(2)}
-                ${is711Pickup && baseTotal < 1000 ? `<br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br><strong>總計：</strong> $${(baseTotal + 60).toFixed(2)}` : ''}
-            `;
-            alert('❌ 折扣碼無效或不存在');
-        }
-    }
+            
+            const originalTotal = calculateCartTotal();
+            const discountedTotal = originalTotal * (1 - discountRate);
 
-    // Store updated total for form submission
-    window.finalCheckoutTotal = grandTotal; // Optional: for use during form submission
-});
+            // Update the Total Row
+            const totalRow = document.getElementById('checkout-total-row');
+            if (totalRow) {
+                totalRow.innerHTML = `<strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)`;
+            }
+
+            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
+
+        } else {
+            alert('❌ 折扣碼無效或不存在');
+            // (Optional) Reset total to original if invalid
+            const totalRow = document.getElementById('checkout-total-row');
+            if (totalRow) {
+                const originalTotal = calculateCartTotal();
+                totalRow.innerHTML = `<strong>Total:</strong> $${originalTotal.toFixed(2)}`;
+            }
+        }
+    });
     // --- Inject Store Info if available ---
     if (storeInfo) {
         const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
@@ -936,6 +878,7 @@ discountInput.addEventListener('blur', () => {
     // --- Form Submit Event Listener ---
     checkoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+
 
       const formData = new FormData(checkoutForm);
       const data = Object.fromEntries(formData.entries());
@@ -976,15 +919,6 @@ discountInput.addEventListener('blur', () => {
         finalAddress = window.selectedStoreInfo.CVSStoreName;
       }
 
-      // Get total from the updated total DOM (Grand Total)
-        const totalBlock = document.querySelector('.checkout-total');
-        
-        if (totalBlock) {
-          const grandMatch = totalBlock.textContent.match(/Grand Total:\s*\$([\d.]+)/);
-          if (grandMatch) {
-            totalAmount = parseFloat(grandMatch[1]);
-          }
-        }
       const orderData = {
         orderId,
         name: data.name,
@@ -993,7 +927,7 @@ discountInput.addEventListener('blur', () => {
         paymentMethod: data['payment-method'],
         address: finalAddress,
         discountCode: data['discount_code'],
-        totalAmount: `$${totalAmount.toFixed(0)}`,
+        totalAmount,
         rewardAmount,
         lineUserName,
         lineUserId,
@@ -1140,8 +1074,7 @@ discountInput.addEventListener('blur', () => {
                 alert("您的購物車是空的, 無法結帳。");
             }
         });
-
-        
+     
     }
     async function checkLINELogin() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -1312,7 +1245,7 @@ discountInput.addEventListener('blur', () => {
       
       // 🧠 Call the transfer function only to update UI
       ECpayStoreDataBackTransfer(); 
-
+      
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
