@@ -431,6 +431,63 @@ function ECpayStoreDataBackTransfer() {
     console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
 
     const pickupInfoDiv = document.getElementById('pickup-store-info');
+    const totalDiv = document.querySelector('.checkout-total');
+
+    // Extract current total from display
+    let totalAmount = 0;
+    if (totalDiv) {
+      const match = totalDiv.textContent.match(/\$([\d.]+)/);
+      if (match) {
+        totalAmount = parseFloat(match[1]);
+      }
+    }
+
+    let shippingMessage = '';
+    let finalTotal = totalAmount;
+
+    if (totalAmount < 1000) {
+      shippingMessage = `<p style="color: red;"><strong>未滿 $1000，需加運費 $60</strong></p>`;
+      finalTotal += 60;
+    }
+
+    if (pickupInfoDiv) {
+      pickupInfoDiv.innerHTML = `
+        <p><strong>7-11 門市資訊</strong></p>
+        <p>店號: ${CVSStoreID}</p>
+        <p>店名: ${CVSStoreName}</p>
+        <p>地址: ${CVSAddress}</p>
+        ${shippingMessage}
+      `;
+    }
+
+    if (totalDiv) {
+      totalDiv.innerHTML = `<strong>Total:</strong> $${finalTotal.toFixed(2)}`;
+    }
+
+    // Update address select
+    const addressSelect = document.getElementById('address');
+    if (addressSelect) addressSelect.value = '7-11 商店取貨';
+
+    // Store info globally if needed later
+    window.selectedStoreInfo = {
+      CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo
+    };
+  }
+}
+    /*
+function ECpayStoreDataBackTransfer() {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const MerchantID = urlParams.get('MerchantID');
+  const CVSStoreID = urlParams.get('CVSStoreID');
+  const CVSStoreName = urlParams.get('CVSStoreName');
+  const CVSAddress = urlParams.get('CVSAddress');
+  const MerchantTradeNo = urlParams.get('MerchantTradeNo');
+
+  if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
+    console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
+
+    const pickupInfoDiv = document.getElementById('pickup-store-info');
     if (pickupInfoDiv) {
       pickupInfoDiv.innerHTML = `
         <p><strong>7-11 門市資訊</strong></p>
@@ -445,7 +502,7 @@ function ECpayStoreDataBackTransfer() {
 
     window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
   }
-}
+} */
     /*
     function ECpayStoreDataBackTransfer() {
     const urlParams = new URLSearchParams(window.location.search);
