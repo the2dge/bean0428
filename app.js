@@ -560,6 +560,10 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
 
     checkoutForm.innerHTML = `
+    <div id="discount-code-wrapper">
+    <label for="discount_code">折扣碼:</label>
+    <input type="text" id="discount_code" name="discount_code">
+    </div>
     <label for="name">收件人姓名</label>
     <input type="text" id="name" name="name" value="${storedName}" required>
 
@@ -587,12 +591,6 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     <label for="credit_payment">信用卡付款:</label>
     <img src ="image/creditcard.png" width="80px">
     </div>
-    <div id="discount-code-wrapper" style="display: none;">
-        <label for="discount_code">折扣碼:</label>
-        <input type="text" id="discount_code" name="discount_code">
-    </div>
-
-
 
     <button  id="submit-order-btn" type="submit">下單</button>
 `;
