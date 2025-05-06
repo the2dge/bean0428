@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         total *= (1 - discountPercent / 100);
       }
 
-      return `$${total.toFixed(2)}`;
+      return `$${total.toFixed(0)}`;
     }
     function changeCartQuantity(productId, changeAmount) {
         const cartItemIndex = cart.findIndex(item => item.id === productId);
@@ -465,9 +465,9 @@ function ECpayStoreDataBackTransfer() {
     // Update checkout total block
     if (totalDiv) {
       totalDiv.innerHTML = `
-        <div><strong>Subtotal:</strong> $${totalAmount.toFixed(2)}</div>
+        <div><strong>Subtotal:</strong> $${totalAmount.toFixed(0)}</div>
         ${shippingFee > 0 ? `<div style="color:red;"><strong>Shipping Fee (7-11 未滿 $1000):</strong> $60</div>` : ''}
-        <div><strong>Grand Total:</strong> $${finalTotal.toFixed(2)}</div>
+        <div><strong>Grand Total:</strong> $${finalTotal.toFixed(0)}</div>
       `;
     }
 
@@ -723,7 +723,7 @@ if (lineUserName) {
         const totalRow = document.createElement('div');
         totalRow.classList.add('checkout-total');
         totalRow.id = 'checkout-total-row'; // <-- add ID for updating later(DiscountCode)
-        totalRow.innerHTML = `<strong>Total:</strong> $${totalPrice.toFixed(2)}`;
+        totalRow.innerHTML = `<strong>總價:</strong> $${totalPrice.toFixed(0)}`;
         mainBody.checkoutWrapper.appendChild(totalRow);
     }
 
@@ -947,8 +947,8 @@ if (lineUserName) {
       //const totalAmount = calculateTotal(appliedDiscountPercent); 
       const lineUserName = sessionStorage.getItem('lineUserName') || '';
       const totalAmount = window.finalCheckoutTotal
-  ? `$${window.finalCheckoutTotal.toFixed(2)}`
-  : `$${calculateCartTotal().toFixed(2)}`; // fallback
+  ? `$${window.finalCheckoutTotal.toFixed(0)}`
+  : `$${calculateCartTotal().toFixed(0)}`; // fallback
       const lineUserId = sessionStorage.getItem('lineUserId') || '';
       //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
       let rewardToCodeOwner = 0;
