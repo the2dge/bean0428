@@ -1294,7 +1294,7 @@ discountInput.addEventListener('blur', () => {
       
       // 🧠 Call the transfer function only to update UI
       ECpayStoreDataBackTransfer(); 
-
+      discountWrapper.style.display = 'block';
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
