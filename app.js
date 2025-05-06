@@ -705,7 +705,19 @@ if (lineUserName) {
 }
 
     mainBody.checkoutWrapper.appendChild(titleRow);
+// ✅ Add label click listener here
+    const discountLabel = document.querySelector('label[for="discount-code-wrapper"]');
+    if (discountLabel) {
+      discountLabel.addEventListener('click', () => {
+        const discountWrapper = document.getElementById('discount-code-wrapper');
+        if (discountWrapper) {
+          discountWrapper.style.display = 'block';
 
+          const discountInput = document.getElementById('discount_code');
+          if (discountInput) discountInput.focus();
+        }
+      });
+    }
     // --- Ordered Items Title ---
     const orderedItemsTitle = document.createElement('h2');
     orderedItemsTitle.textContent = '我訂購的商品';
