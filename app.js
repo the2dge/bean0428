@@ -960,7 +960,9 @@ if (lineUserName) {
       if (finalAddress === '7-11 商店取貨' && window.selectedStoreInfo?.CVSStoreName) {
         finalAddress = window.selectedStoreInfo.CVSStoreName;
       }
-
+      const totalAmount = window.finalCheckoutTotal
+  ? `$${window.finalCheckoutTotal.toFixed(0)}`
+  : `$${calculateCartTotal().toFixed(0)}`; // fallback
       const orderData = {
         orderId,
         name: data.name,
