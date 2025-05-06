@@ -465,20 +465,13 @@ function ECpayStoreDataBackTransfer() {
 
     const totalRow = document.getElementById('checkout-total-row');
     if (totalRow) {
-        if (discountRate > 0) {
+        
             totalRow.innerHTML = `
-                <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
+                <div><strong>Subtotal:</strong> $${totalAmount.toFixed(2)}</div>
                 ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
                 <strong>總計：</strong> $${grandTotal.toFixed(0)}
             `;
-            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
-        } else {
-            totalRow.innerHTML = `
-                <strong>Total:</strong> $${baseTotal.toFixed(2)}
-                ${is711Pickup && baseTotal < 1000 ? `<br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br><strong>總計：</strong> $${(baseTotal + 60).toFixed(2)}` : ''}
-            `;
-            alert('❌ 折扣碼無效或不存在');
-        }
+        
     }
       /*
     // Update address select
