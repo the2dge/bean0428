@@ -808,7 +808,7 @@ if (lineUserName) {
   const submitBtn = document.getElementById('submit-order-btn');
 
   if (selectedMethod === 'credit-point') {
-    discountCodeWrapper.style.display = 'block';
+   // discountCodeWrapper.style.display = 'block';
     creditProofWrapper.style.display = 'none';
 
     // Run credit point balance check
