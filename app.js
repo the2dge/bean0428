@@ -444,36 +444,7 @@ function ECpayStoreDataBackTransfer() {
       `;
     }
     // Check if 7-11 selected and under $1000
-    const addressSelect = document.getElementById('address');
-    const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
 
-    const totalDiv = document.querySelector('.checkout-total');
-    let totalAmount = 0;
-    if (totalDiv) {
-      const match = totalDiv.textContent.match(/\$([\d.]+)/);
-      if (match) {
-        totalAmount = parseFloat(match[1]);
-      }
-    }
-
-    let shippingFee = 0;
-    if (is711Pickup && totalAmount < 1000) {
-        shippingFee = 60;
-    }
-
-    const grandTotal = totalAmount + shippingFee;
-
-    const totalRow = document.getElementById('checkout-total-row');
-    if (totalRow) {
-        
-            totalRow.innerHTML = `
-                <div><strong>Subtotal:</strong> $${totalAmount.toFixed(2)}</div>
-                ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
-                <strong>總計：</strong> $${grandTotal.toFixed(0)}
-            `;
-        
-    }
-      /*
     // Update address select
     const addressSelect = document.getElementById('address');
     if (addressSelect) addressSelect.value = '7-11 商店取貨';
@@ -499,7 +470,7 @@ function ECpayStoreDataBackTransfer() {
         <div><strong>Grand Total:</strong> $${finalTotal.toFixed(2)}</div>
       `;
     }
-*/
+
     // Save store info globally
     window.selectedStoreInfo = {
       CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
