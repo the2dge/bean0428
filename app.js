@@ -447,15 +447,21 @@ function ECpayStoreDataBackTransfer() {
     const addressSelect = document.getElementById('address');
     const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
 
-    const baseTotal = originalTotal;
-    const discountedTotal = baseTotal * (1 - discountRate);
+    const totalDiv = document.querySelector('.checkout-total');
+    let totalAmount = 0;
+    if (totalDiv) {
+      const match = totalDiv.textContent.match(/\$([\d.]+)/);
+      if (match) {
+        totalAmount = parseFloat(match[1]);
+      }
+    }
 
     let shippingFee = 0;
-    if (is711Pickup && discountedTotal < 1000) {
+    if (is711Pickup && totalAmount < 1000) {
         shippingFee = 60;
     }
 
-    const grandTotal = discountedTotal + shippingFee;
+    const grandTotal = totalAmount + shippingFee;
 
     const totalRow = document.getElementById('checkout-total-row');
     if (totalRow) {
