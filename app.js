@@ -767,8 +767,13 @@ if (lineUserName) {
 
     // ✅ Show discount code input
     const discountWrapper = document.getElementById('discount-code-wrapper');
-    if (discountWrapper) {
+        if (discountWrapper) {
       discountWrapper.style.display = 'block';
+    
+      const discountInput = document.getElementById('discount_code');
+      if (discountInput) {
+        discountInput.focus(); // Optional: focus the input
+      }
     }
 
   } else {
