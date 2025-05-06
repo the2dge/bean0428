@@ -461,7 +461,7 @@ function ECpayStoreDataBackTransfer() {
     }
 
     if (totalDiv) {
-      totalDiv.innerHTML = `<strong>Total:</strong> $${finalTotal.toFixed(2)}`;
+      totalDiv.innerHTML = `<strong>Total:</strong> $${finalTotal.toFixed(0)}`;
     }
 
     // Update address select
