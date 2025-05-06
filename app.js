@@ -756,30 +756,47 @@ if (lineUserName) {
     // Disable on initial load
     submitBtn.disabled = true;
     addressSelect.addEventListener('change', (e) => {
-        const selected = addressSelect.value;
-        if (selected === '7-11 商店取貨' || selected === '來商店取貨') {
-            submitBtn.disabled = false;
-          } else {
-            submitBtn.disabled = true;
-          }
+  const selected = addressSelect.value;
 
-        if (e.target.value === '7-11 商店取貨') {
-            // Generate timestamp orderId
-            const now = new Date();
-            const orderId = now.getFullYear().toString() +
-                            String(now.getMonth() + 1).padStart(2, '0') +
-                            String(now.getDate()).padStart(2, '0') +
-                            String(now.getHours()).padStart(2, '0') +
-                            String(now.getMinutes()).padStart(2, '0') +
-                            String(now.getSeconds()).padStart(2, '0');
-            window.currentOrderId = orderId; // 🛡️ Save the current order ID
-            localStorage.setItem('cart', JSON.stringify(cart));
-            localStorage.setItem('currentOrderId', orderId);
-            console.log("Saving cart to sessionStorage before going to ECPay:", cart); // 👈 Important log
+  // Enable/disable Submit button
+  if (selected === '7-11 商店取貨' || selected === '來商店取貨') {
+    submitBtn.disabled = false;
 
-            openLogisticsMap(orderId);
-        }
-    });
+    // ✅ Show discount code input
+    const discountWrapper = document.getElementById('discount-code-wrapper');
+    if (discountWrapper) {
+      discountWrapper.style.display = 'block';
+    }
+
+  } else {
+    submitBtn.disabled = true;
+
+    // ❌ Hide discount input if invalid selection
+    const discountWrapper = document.getElementById('discount-code-wrapper');
+    if (discountWrapper) {
+      discountWrapper.style.display = 'none';
+    }
+  }
+
+  // ✅ 7-11 store pickup case
+  if (selected === '7-11 商店取貨') {
+    const now = new Date();
+    const orderId =
+      now.getFullYear().toString() +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      String(now.getDate()).padStart(2, '0') +
+      String(now.getHours()).padStart(2, '0') +
+      String(now.getMinutes()).padStart(2, '0') +
+      String(now.getSeconds()).padStart(2, '0');
+
+    window.currentOrderId = orderId;
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('currentOrderId', orderId);
+
+    console.log("Saving cart to sessionStorage before going to ECPay:", cart);
+    openLogisticsMap(orderId);
+  }
+});
     
     const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
     const discountCodeWrapper = checkoutForm.querySelector('#discount-code-wrapper');
