@@ -941,8 +941,8 @@ if (lineUserName) {
     appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
   }
 
-      const totalAmount = calculateTotal(appliedDiscountPercent); 
-      //const lineUserName = sessionStorage.getItem('lineUserName') || '';
+      //const totalAmount = calculateTotal(appliedDiscountPercent); 
+      const lineUserName = sessionStorage.getItem('lineUserName') || '';
       const totalAmount = window.finalCheckoutTotal
   ? `$${window.finalCheckoutTotal.toFixed(2)}`
   : `$${calculateCartTotal().toFixed(2)}`; // fallback
