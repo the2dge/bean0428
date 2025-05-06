@@ -844,43 +844,54 @@ if (lineUserName) {
     const discountInput = checkoutForm.querySelector('#discount_code');
 
 discountInput.addEventListener('blur', () => {
-    const discountRate = validateDiscountCode(discountInput.value);
-    const originalTotal = calculateCartTotal();
+  const discountRate = validateDiscountCode(discountInput.value);
+  const originalTotal = calculateCartTotal();
 
-    // Check if 7-11 selected and under $1000
-    const addressSelect = document.getElementById('address');
-    const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
+  const addressSelect = document.getElementById('address');
+  const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
 
-    const baseTotal = originalTotal;
-    const discountedTotal = baseTotal * (1 - discountRate);
-
-    let shippingFee = 0;
-    if (is711Pickup && discountedTotal < 1000) {
-        shippingFee = 60;
-    }
-
+  if (discountRate > 0) {
+    const discountedTotal = originalTotal * (1 - discountRate);
+    const shippingFee = (is711Pickup && discountedTotal < 1000) ? 60 : 0;
     const grandTotal = discountedTotal + shippingFee;
+
+    // Save for reuse in 7-11 ECpayStoreDataBackTransfer
+    window.validDiscountRate = discountRate;
+    window.discountedTotalBeforeShipping = discountedTotal;
+    window.finalCheckoutTotal = grandTotal;
 
     const totalRow = document.getElementById('checkout-total-row');
     if (totalRow) {
-        if (discountRate > 0) {
-            totalRow.innerHTML = `
-                <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
-                ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
-                <strong>總計：</strong> $${grandTotal.toFixed(0)}
-            `;
-            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
-        } else {
-            totalRow.innerHTML = `
-                <strong>Total:</strong> $${baseTotal.toFixed(2)}
-                ${is711Pickup && baseTotal < 1000 ? `<br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br><strong>總計：</strong> $${(baseTotal + 60).toFixed(2)}` : ''}
-            `;
-            alert('❌ 折扣碼無效或不存在');
-        }
+      totalRow.innerHTML = `
+        <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
+        ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
+        <strong>總計：</strong> $${grandTotal.toFixed(0)}
+      `;
     }
 
-    // Store updated total for form submission
-    window.finalCheckoutTotal = grandTotal; // Optional: for use during form submission
+    alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
+
+  } else {
+    // Reset totals
+    const totalRow = document.getElementById('checkout-total-row');
+    if (totalRow) {
+      const shippingFee = (is711Pickup && originalTotal < 1000) ? 60 : 0;
+      const grandTotal = originalTotal + shippingFee;
+
+      totalRow.innerHTML = `
+        <strong>Total:</strong> $${originalTotal.toFixed(2)}<br>
+        ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
+        <strong>總計：</strong> $${grandTotal.toFixed(2)}
+      `;
+
+      // Clear previous stored values
+      window.validDiscountRate = 0;
+      window.discountedTotalBeforeShipping = null;
+      window.finalCheckoutTotal = grandTotal;
+    }
+
+    alert('❌ 折扣碼無效或不存在');
+  }
 });
     // --- Inject Store Info if available ---
     if (storeInfo) {
