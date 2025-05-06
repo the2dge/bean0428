@@ -865,7 +865,7 @@ if (lineUserName) {
 });*/
     // -- Use Discount Code case --
     const discountInput = checkoutForm.querySelector('#discount_code');
-
+    console.log("discountCode is: ", discountInput);
     discountInput.addEventListener('blur', () => {
     const discountRate = validateDiscountCode(discountInput.value);
     const originalTotal = calculateCartTotal();
