@@ -847,7 +847,7 @@ if (lineUserName) {
     }
 
   } else if (selectedMethod === 'credit-card') {
-    discountCodeWrapper.style.display = 'block';
+   // discountCodeWrapper.style.display = 'block';
     creditProofWrapper.style.display = 'block';
     submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
 
