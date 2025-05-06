@@ -870,6 +870,7 @@ if (lineUserName) {
     const originalTotal = calculateCartTotal();
     console.log("discountCode and Total are: ", discountRate, originalTotal);
     // Check if 7-11 selected and under $1000
+    // Check if 7-11 selected and under $1000
     const addressSelect = document.getElementById('address');
     const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
 
@@ -900,7 +901,38 @@ if (lineUserName) {
             alert('❌ 折扣碼無效或不存在');
         }
     }
+        /*
+    const addressSelect = document.getElementById('address');
+    const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
 
+    const baseTotal = originalTotal;
+    const discountedTotal = baseTotal * (1 - discountRate);
+
+    let shippingFee = 0;
+    if (is711Pickup && discountedTotal < 1000) {
+        shippingFee = 60;
+    }
+
+    const grandTotal = discountedTotal + shippingFee;
+
+    const totalRow = document.getElementById('checkout-total-row');
+    if (totalRow) {
+        if (discountRate > 0) {
+            totalRow.innerHTML = `
+                <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
+                ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
+                <strong>總計：</strong> $${grandTotal.toFixed(0)}
+            `;
+            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
+        } else {
+            totalRow.innerHTML = `
+                <strong>Total:</strong> $${baseTotal.toFixed(2)}
+                ${is711Pickup && baseTotal < 1000 ? `<br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br><strong>總計：</strong> $${(baseTotal + 60).toFixed(2)}` : ''}
+            `;
+            alert('❌ 折扣碼無效或不存在');
+        }
+    }
+*/
     // Store updated total for form submission
     window.finalCheckoutTotal = grandTotal; // Optional: for use during form submission
 });
