@@ -465,9 +465,9 @@ function ECpayStoreDataBackTransfer() {
     // Update checkout total block
     if (totalDiv) {
       totalDiv.innerHTML = `
-        <div><strong>Subtotal:</strong> $${totalAmount.toFixed(0)}</div>
-        ${shippingFee > 0 ? `<div style="color:red;"><strong>Shipping Fee (7-11 未滿 $1000):</strong> $60</div>` : ''}
-        <div><strong>Grand Total:</strong> $${finalTotal.toFixed(0)}</div>
+        <div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div>
+        ${shippingFee > 0 ? `<div style="color:red;"><strong>運費 (7-11 未滿 $1000):</strong> $60</div>` : ''}
+        <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
       `;
     }
 
