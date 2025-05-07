@@ -150,7 +150,7 @@ body { margin: 0; font-family: sans-serif; }
     min-width: 20px;
     text-align: center;
 }
-#checkout-btn { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; text-align: center; }
+#checkout-btn { font-size: 1.4rem;width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; text-align: center; }
 .checkout-title-row {
     display: flex;
     align-items: center;
