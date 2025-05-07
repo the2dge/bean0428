@@ -568,7 +568,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     <div id="credit-proof-wrapper" style="display: none;">
     <label for="credit_payment">信用卡付款:</label>
     <img src ="image/creditcard.png" width="80px">
-    </div>
+    </div><br><br>
     
     <button  id="submit-order-btn" type="submit">下單</button>
 `;
