@@ -1,7 +1,7 @@
 [
     {
         "id": "p001",
-        "name": "杏仁 1 300g",
+        "name": "堅果 1 300g",
         "price": "$10",
         "thumbnailUrl": "image/almond1.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -11,7 +11,7 @@
     },
     {
         "id": "p002",
-        "name": "杏仁 2 300g",
+        "name": "堅果 2 300g",
         "price": "$20",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -21,7 +21,7 @@
     },
     {
         "id": "p003",
-        "name": "杏仁 3 300g",
+        "name": "乾果 3 300g",
         "price": "$30",
         "thumbnailUrl": "image/almond3.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -31,7 +31,7 @@
     },
     {
         "id": "p004",
-        "name": "杏仁 4 300g",
+        "name": "乾果 4 300g",
         "price": "$40",
         "thumbnailUrl": "image/almond4.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -41,7 +41,7 @@
     },
     {
         "id": "p005",
-        "name": "杏仁 5 300g",
+        "name": "乾果 5 300g",
         "price": "$50",
         "thumbnailUrl": "image/almond1.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -51,7 +51,7 @@
     },
     {
         "id": "p006",
-        "name": "杏仁 6 300g",
+        "name": "乾果 6 300g",
         "price": "$60",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -61,7 +61,7 @@
     },
     {
         "id": "p007",
-        "name": "杏仁 7 300g",
+        "name": "休閒養生 7 300g",
         "price": "$70",
         "thumbnailUrl": "image/almond3.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -71,7 +71,7 @@
     },
     {
         "id": "p008",
-        "name": "杏仁 8 300g",
+        "name": "休閒養生 8 300g",
         "price": "$80",
         "thumbnailUrl": "image/almond4.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -81,7 +81,7 @@
     },
     {
         "id": "p009",
-        "name": "杏仁 9 300g",
+        "name": "雜糧 9 300g",
         "price": "$90",
         "thumbnailUrl": "image/almond1.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -91,7 +91,7 @@
     },
     {
         "id": "p010",
-        "name": "杏仁 10 300g",
+        "name": "雜糧 10 300g",
         "price": "$100",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
@@ -101,7 +101,7 @@
     },
     {
         "id": "p011",
-        "name": "杏仁 11 300g",
+        "name": "雜糧 11 300g",
         "price": "$110",
         "thumbnailUrl": "image/almond2.jpg",
         "largeImageUrl": "image/almond.webp",
