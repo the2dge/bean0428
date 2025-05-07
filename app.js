@@ -554,7 +554,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     <input type="tel" id="telephone" name="telephone" required>
     
 
-    <label for="discount-code-wrapper" style="background:#eee">使用折扣碼:</label>
+    <label for="discount-code-wrapper" style="background:#eee">使用折扣碼?</label>
     <div id="discount-code-wrapper" style="display: none">
         <label for="discount_code">折扣碼:</label>
         <input type="text" id="discount_code" name="discount_code">
