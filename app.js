@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <button class="increase-qty-btn" data-product-id="${item.id}">➕</button>
                         </div>
                     </div>
-                    <button class="remove-item-btn">Remove</button>
+                    <button class="remove-item-btn">刪除</button>
                 `;
                 sideCart.itemsContainer.appendChild(cartItemDiv);
             });
