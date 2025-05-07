@@ -536,14 +536,14 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
 
     checkoutForm.innerHTML = `
-    <label for="address">取貨方式:</label>
+    <label for="address">請先選取貨方式:</label>
     <select id="address" name="address" required>
         <option value="取貨選擇">請選擇 7-11 或來店取</option>
         <option value="來商店取貨">來商店取貨</option>
         <option value="7-11 商店取貨">7-11 商店取貨</option>
     </select>
     
-    <div id="pickup-store-info"></div>
+    <div id="pickup-store-info"></div><br>
     <label for="name">收件人姓名</label>
     <input type="text" id="name" name="name" value="${storedName}" required>
 
