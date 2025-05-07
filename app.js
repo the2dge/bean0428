@@ -1001,6 +1001,7 @@ if (lineUserName) {
 
       // Reset state
       cart = [];
+      localStorage.removeItem('currentOrderId');
       renderSideCart();
       checkoutForm.reset();
       switchView('content');
