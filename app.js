@@ -1003,6 +1003,7 @@ if (lineUserName) {
       cart = [];
       localStorage.removeItem('cart'); 
       localStorage.removeItem('currentOrderId');
+      sessionStorage.removeItem('cart')
       renderSideCart();
       checkoutForm.reset();
       switchView('content');
