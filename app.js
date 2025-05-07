@@ -551,7 +551,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     <input type="email" id="email" name="email"  value="${storedEmail}" required>
 
     <label for="telephone">電話:</label>
-    <input type="tel" id="telephone" name="telephone" required>
+    <input type="tel" id="telephone" name="telephone" pattern="^\d{10}$" required>
     
 
     <label for="discount-code-wrapper" style="background:#eee">使用折扣碼?</label>
