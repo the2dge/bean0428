@@ -897,7 +897,7 @@ if (lineUserName) {
             alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
         } else {
             totalRow.innerHTML = `
-                <strong>Total:</strong> $${baseTotal.toFixed(0)}
+                <strong>總計 :</strong> $${baseTotal.toFixed(0)}
                 ${is711Pickup && baseTotal < 1000 ? `<br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br><strong>總計：</strong> $${(baseTotal + 60).toFixed(0)}` : ''}
             `;
             alert('❌ 折扣碼無效或不存在');
