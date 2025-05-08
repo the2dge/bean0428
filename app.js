@@ -927,6 +927,11 @@ if (lineUserName) {
     // --- Form Submit Event Listener ---
     checkoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+       const submitBtn = document.getElementById('submit-order-btn');
+      // Prevent double submission
+      if (submitBtn.disabled) return; 
+        submitBtn.disabled = true; // Disable immediately
+        submitBtn.textContent = '處理中...'; // Optional: show loading state
 
 
       const formData = new FormData(checkoutForm);
