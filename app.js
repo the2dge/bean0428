@@ -277,7 +277,11 @@ document.addEventListener('DOMContentLoaded', async () => {
          // Add listener specifically for the new back button
         const backBtn = mainBody.itemWrapper.querySelector('.back-to-products-btn');
         if (backBtn) {
-            backBtn.addEventListener('click', () => switchView('content'));
+          backBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
+          });
         }
     }
 
