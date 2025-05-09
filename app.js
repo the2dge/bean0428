@@ -618,7 +618,7 @@ if (lineUserName) {
 
     // Credit Balance
     const creditBalance = document.createElement('div');
-    creditBalance.textContent = 'Credit Balance';
+    creditBalance.textContent = '儲值餘額';
     creditBalance.classList.add('dropdown-item');
 
     creditBalance.addEventListener('click', async () => {
