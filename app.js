@@ -571,7 +571,7 @@ function renderCheckoutPage(cartItems, storeInfo = null) {
     </select>
     <div id="credit-proof-wrapper" style="display: none;">
     <label for="credit_payment">信用卡付款:</label>
-    <img src ="image/creditcard.png" width="80px">
+    <img src ="image/creditcard.png" width="80px" alt="Credit Card" id="creditCardImage" style="cursor: pointer;" />
     </div><br><br>
     
     <button  id="submit-order-btn" type="submit">下單</button>
@@ -923,7 +923,77 @@ if (lineUserName) {
             `;
         }
     }
+    // -- Credit Card Payment Listener --
+document.getElementById('creditCardImage').addEventListener('click', () => {
+  // Disable the button to prevent multiple clicks
+  document.getElementById('creditCardImage').style.pointerEvents = 'none';
+  
+  // Show loading indicator
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'payment-loading';
+  loadingDiv.innerHTML = '<p>Processing payment request...</p>';
+  loadingDiv.style.position = 'fixed';
+  loadingDiv.style.top = '50%';
+  loadingDiv.style.left = '50%';
+  loadingDiv.style.transform = 'translate(-50%, -50%)';
+  loadingDiv.style.background = 'rgba(255,255,255,0.9)';
+  loadingDiv.style.padding = '20px';
+  loadingDiv.style.borderRadius = '5px';
+  loadingDiv.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+  loadingDiv.style.zIndex = '9999';
+  document.body.appendChild(loadingDiv);
 
+  // Prepare the order data
+  const orderData = {
+    orderId: 'ORDER' + Date.now(), // Generate unique order ID based on timestamp
+    totalAmount: 1000, // Replace with the actual amount
+    tradeDesc: 'Order Description', // Replace with your order description
+    itemName: 'Product Name', // Replace with your product name
+    returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
+    clientBackUrl: 'https://the2dge.github.io/bean0428/' // Optional: Replace with your ClientBackURL
+  };
+
+  // Send a POST request to the Cloud Function
+  fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(orderData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      // If we get an error response, convert it to text and throw
+      return response.text().then(text => {
+        throw new Error(`Server responded with ${response.status}: ${text}`);
+      });
+    }
+    return response.text();
+  })
+  .then(html => {
+    // Remove loading indicator
+    document.getElementById('payment-loading').remove();
+    
+    // Replace the current document with the payment form
+    document.open();
+    document.write(html);
+    document.close();
+  })
+  .catch(error => {
+    console.error('Error initiating payment:', error);
+    
+    // Remove loading indicator
+    if (document.getElementById('payment-loading')) {
+      document.getElementById('payment-loading').remove();
+    }
+    
+    // Re-enable the button
+    document.getElementById('creditCardImage').style.pointerEvents = 'auto';
+    
+    // Show error message
+    alert('Failed to initiate payment. Please try again. Error: ' + error.message);
+  });
+});
     // --- Form Submit Event Listener ---
     checkoutForm.addEventListener('submit', async (e) => {
       e.preventDefault();
