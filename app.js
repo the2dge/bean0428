@@ -946,7 +946,7 @@ document.getElementById('creditCardImage').addEventListener('click', () => {
   // Prepare the order data
   const orderData = {
     orderId: 'ORDER' + Date.now(), // Generate unique order ID based on timestamp
-    totalAmount: 7, // Replace with the actual amount
+    totalAmount: 17, // Replace with the actual amount
     tradeDesc: 'Order Description', // Replace with your order description
     itemName: 'Product Name', // Replace with your product name
     returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
