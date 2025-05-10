@@ -476,6 +476,14 @@ function ECpayStoreDataBackTransfer() {
         <button id="add-more-items-btn" style="background-color: #d9534f; color: white; padding: 8px 12px; border: none; cursor: pointer;">🔙 加購商品免運費</button>
       </div>` : ''}
       `;
+        // Add event listener to the button after rendering
+  const addMoreBtn = document.getElementById('add-more-items-btn');
+  if (addMoreBtn) {
+    addMoreBtn.addEventListener('click', () => {
+      switchView('content'); // Return to product section
+      document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
     }
 
     // Save store info globally
