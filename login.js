@@ -84,7 +84,7 @@ function generateCustomOrderId() {
   const secondsSinceMidnight = Math.floor((now - midnight) / 1000);
   const yyy = String(secondsSinceMidnight).padStart(7, '0');
 
-  return `${aaCode}_${day}${yyy}`;
+  return `${aaCode}${day}${yyy}`;
 }
 function updateNavbarWithUserName(userName) {
   console.log('🔁 Updating login button with user:', userName);
