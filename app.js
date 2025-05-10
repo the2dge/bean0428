@@ -457,26 +457,15 @@ function ECpayStoreDataBackTransfer() {
     const totalDiv = document.querySelector('.checkout-total');
     let totalAmount = 0;
     if (totalDiv) {
-  totalDiv.innerHTML = `
-    ${shippingFee > 0 ? `
-      <div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div>
-      <div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1000):</strong> $60</div>
-      <div style="margin-top: 10px;">
+      totalDiv.innerHTML = `
+        
+        ${shippingFee > 0 ? `<div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div><div style="color:red;"><strong>🚚 運費 (未滿 $1000):</strong> $60</div>` : ''}
+        <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
+        ${shippingFee > 0 ? `<br><div style="margin-top: 10px;">
         <button id="add-more-items-btn" style="background-color: #d9534f; color: white; padding: 8px 12px; border: none; cursor: pointer;">🔙 加購商品免運費</button>
-      </div>
-    ` : ''}
-    <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
-  `;
-
-  // Add event listener to the button after rendering
-  const addMoreBtn = document.getElementById('add-more-items-btn');
-  if (addMoreBtn) {
-    addMoreBtn.addEventListener('click', () => {
-      switchView('content'); // Return to product section
-      document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
-}
+      </div> ` : ''}
+      `;
+    }
 
     const shippingFee = totalAmount < 1000 ? 60 : 0;
     const finalTotal = totalAmount + shippingFee;
