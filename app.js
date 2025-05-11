@@ -920,8 +920,6 @@ if (storeInfo) {
     if (addressSelect) {
         addressSelect.value = "7-11 商店取貨";
 
-        // Trigger change event in case submitBtn logic is tied to it
-        addressSelect.dispatchEvent(new Event('change'));
     }
 
     // Check base total again for shipping notice
