@@ -902,7 +902,8 @@ if (lineUserName) {
     // Store updated total for form submission
     window.finalCheckoutTotal = grandTotal; // Optional: for use during form submission
 });
-    // --- Inject Store Info if available ---
+
+// --- Inject Store Info if available ---
 if (storeInfo) {
     const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
     if (pickupInfoDiv) {
@@ -913,13 +914,25 @@ if (storeInfo) {
             <p>地址: ${storeInfo.CVSAddress}</p>
         `;
     }
+
     // Set the address select value to "7-11 商店取貨"
     const addressSelect = checkoutForm.querySelector('#address');
     if (addressSelect) {
         addressSelect.value = "7-11 商店取貨";
+
+        // Trigger change event in case submitBtn logic is tied to it
+        addressSelect.dispatchEvent(new Event('change'));
     }
-    // Enable the submit button
-    submitBtn.disabled = false;
+
+    // Check base total again for shipping notice
+    const baseTotal = calculateCartTotal();
+    const totalRow = document.getElementById('checkout-total-row');
+
+    if (totalRow && baseTotal < 1000) {
+        totalRow.innerHTML += `
+            <br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span>
+        `;
+    }
 }
     // -- Credit Card Payment Listener --
 document.getElementById('creditCardImage').addEventListener('click', () => {
