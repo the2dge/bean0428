@@ -513,6 +513,7 @@ function renderCheckoutPage(cartItems) {
     `;
 
     // Also preselect the address dropdown if needed
+    console.log("StoreInfo is", storeInfo);
     const addressSelect = document.getElementById('address');
     if (addressSelect) addressSelect.value = '7-11 商店取貨';
     }
