@@ -734,13 +734,14 @@ if (lineUserName) {
     
     const addressSelect = checkoutForm.querySelector('#address');
     const submitBtn = document.getElementById('submit-order-btn');
-    // Disable on initial load
-    submitBtn.disabled = true;
+    const hasStoreInfo = window.selectedStoreInfo && window.selectedStoreInfo.CVSStoreID;
+// Set submit button disabled state based on hasStoreInfo
+submitBtn.disabled = hasStoreInfo ? false : true;
     addressSelect.addEventListener('change', (e) => {
   const selected = addressSelect.value;
 
   // Enable/disable Submit button
-  if (selected === '7-11 商店取貨' || selected === '來商店取貨' || window.selectedStoreInfo){
+  if (selected === '7-11 商店取貨' || selected === '來商店取貨'){
     submitBtn.disabled = false;
 
     // ✅ Show discount code input
