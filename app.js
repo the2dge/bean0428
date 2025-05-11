@@ -920,11 +920,12 @@ if (storeInfo) {
         addressSelect.value = "7-11 商店取貨";
 
     }
-
+   
     // Check base total again for shipping notice
     const baseTotal = calculateCartTotal();
     const totalRow = document.getElementById('checkout-total-row');
-
+    // ✅ Restore to global reference so it can be used in orderData
+    window.selectedStoreInfo = storeInfo;
     if (totalRow && baseTotal < 1000) {
         totalRow.innerHTML += `
             <br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span>
