@@ -759,7 +759,10 @@ submitBtn.disabled = hasStoreInfo ? false : true;
       discountWrapper.style.display = 'none';
     }
   }
-
+   if (selected === '來商店取貨'){
+    const selectedStoreInfo = document.getElementById('pickup-store-info');
+    selectedStoreInfo.style.display = 'none';
+  }
   // ✅ 7-11 store pickup case
   if (selected === '7-11 商店取貨') {
     const now = new Date();
