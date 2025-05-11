@@ -475,9 +475,9 @@ function ECpayStoreDataBackTransfer() {
         
         ${shippingFee > 0 ? `<div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div><div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1000):</strong> $60</div>` : ''}
         <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
-        ${shippingFee > 0 ? `<div style="margin-top: 10px;">
-        <button id="add-more-items-btn" style="background-color: #d9534f; color: white; padding: 8px 12px; border: none; cursor: pointer;">🔙 加購商品免運費</button>
-      </div>` : ''}
+        <div style="margin-top: 10px;">
+        <button id="add-more-items-btn" style="background-color: #d9534f; color: white; padding: 8px 12px; border: none; cursor: pointer;">🔙 繼續購買</button>
+        </div>
       `;
         // Add event listener to the button after rendering
   const addMoreBtn = document.getElementById('add-more-items-btn');
