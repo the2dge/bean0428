@@ -435,7 +435,10 @@ function ECpayStoreDataBackTransfer() {
   const MerchantTradeNo = urlParams.get('MerchantTradeNo');
 
   if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
-    console.log("🛍️ Store info received from ECPay:", CVSStoreID, CVSStoreName, CVSAddress);
+    window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
+
+    // Save to sessionStorage so it persists across re-renders
+    sessionStorage.setItem('selectedStoreInfo', JSON.stringify(window.selectedStoreInfo));
 
     // Fill store info
     const pickupInfoDiv = document.getElementById('pickup-store-info');
@@ -494,55 +497,24 @@ function ECpayStoreDataBackTransfer() {
     };
   }
 }
-    /*
-    function ECpayStoreDataBackTransfer() {
-    const urlParams = new URLSearchParams(window.location.search);
-
-    const MerchantID = urlParams.get('MerchantID');
-    const CVSStoreID = urlParams.get('CVSStoreID');
-    const CVSStoreName = urlParams.get('CVSStoreName');
-    const CVSAddress = urlParams.get('CVSAddress');
-    const MerchantTradeNo = urlParams.get('MerchantTradeNo');
-
-    if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress && MerchantTradeNo) {
-        console.log("Received Store Info from ECPay:", {
-            MerchantID,
-            CVSStoreID,
-            CVSStoreName,
-            CVSAddress,
-            MerchantTradeNo
-        });
-
-        // 🛑 First, restore cart from sessionStorage
-        const savedCart = sessionStorage.getItem('cart');
-        if (savedCart) {
-            cart = JSON.parse(savedCart);
-            console.log("Restored cart inside ECpayStoreDataBackTransfer:", cart);
-        } else {
-            console.warn("No saved cart found in sessionStorage.");
-        }
-
-        const storeInfo = {
-            CVSStoreID,
-            CVSStoreName,
-            CVSAddress,
-            MerchantTradeNo
-        };
-
-        renderCheckoutPage(cart, storeInfo); // ✅ Now use correct cart
-        console.log("checkPt only");
-        switchView('checkout');
-
-        window.selectedStoreInfo = storeInfo;
-
-        window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-        console.log("No ECPay store data returned, normal page load.");
-    }
-}
-*/
 
 function renderCheckoutPage(cartItems, storeInfo = null) {
+    const storeInfoDiv = document.getElementById('pickup-store-info');
+    const storedStoreInfo = sessionStorage.getItem('selectedStoreInfo');
+    const storeInfo = storedStoreInfo ? JSON.parse(storedStoreInfo) : null;
+
+    if (storeInfo && storeInfoDiv) {
+    storeInfoDiv.innerHTML = `
+      <p><strong>7-11 門市資訊</strong></p>
+      <p>店號: ${storeInfo.CVSStoreID}</p>
+      <p>店名: ${storeInfo.CVSStoreName}</p>
+      <p>地址: ${storeInfo.CVSAddress}</p>
+    `;
+
+    // Also preselect the address dropdown if needed
+    const addressSelect = document.getElementById('address');
+    if (addressSelect) addressSelect.value = '7-11 商店取貨';
+    }
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
         // --- Checkout Form ---
     const checkoutForm = document.createElement('form');
