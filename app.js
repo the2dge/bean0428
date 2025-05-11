@@ -1055,6 +1055,7 @@ document.getElementById('creditCardImage').addEventListener('click', () => {
       const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
       const orderId = generateCustomOrderId();
       const CVSStoreID = window.selectedStoreInfo?.CVSStoreID || '';
+    console.log("StoreID before forming orderData: ", CVSStoreID);
       // Replace address with actual store if 7-11
       let finalAddress = data.address;
       if (finalAddress === '7-11 商店取貨' && window.selectedStoreInfo?.CVSStoreName) {
