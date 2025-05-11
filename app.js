@@ -511,9 +511,11 @@ function renderCheckoutPage(cartItems) {
       <p>地址: ${storeInfo.CVSAddress}</p>
     `;
 
+    document.getElementById('address').value = '7-11 商店取貨';
+
     // Also preselect the address dropdown if needed
-    const addressSelect = document.getElementById('address');
-    if (addressSelect) addressSelect.value = '7-11 商店取貨';
+   // const addressSelect = document.getElementById('address');
+  //  if (addressSelect) addressSelect.value = '7-11 商店取貨';
     }
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
         // --- Checkout Form ---
