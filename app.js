@@ -498,7 +498,7 @@ function ECpayStoreDataBackTransfer() {
   }
 }
 
-function renderCheckoutPage(cartItems, storeInfo = null) {
+function renderCheckoutPage(cartItems) {
     const storeInfoDiv = document.getElementById('pickup-store-info');
     const storedStoreInfo = sessionStorage.getItem('selectedStoreInfo');
     const storeInfo = storedStoreInfo ? JSON.parse(storedStoreInfo) : null;
