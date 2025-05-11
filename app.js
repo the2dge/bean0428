@@ -903,17 +903,22 @@ if (lineUserName) {
     window.finalCheckoutTotal = grandTotal; // Optional: for use during form submission
 });
     // --- Inject Store Info if available ---
-    if (storeInfo) {
-        const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
-        if (pickupInfoDiv) {
-            pickupInfoDiv.innerHTML = `
-                <p><strong>7-11 門市資訊</strong></p>
-                <p>店號: ${storeInfo.CVSStoreID}</p>
-                <p>店名: ${storeInfo.CVSStoreName}</p>
-                <p>地址: ${storeInfo.CVSAddress}</p>
-            `;
-        }
+if (storeInfo) {
+    const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
+    if (pickupInfoDiv) {
+        pickupInfoDiv.innerHTML = `
+            <p><strong>7-11 門市資訊</strong></p>
+            <p>店號: ${storeInfo.CVSStoreID}</p>
+            <p>店名: ${storeInfo.CVSStoreName}</p>
+            <p>地址: ${storeInfo.CVSAddress}</p>
+        `;
     }
+    // Set the address select value to "7-11 商店取貨"
+    const addressSelect = checkoutForm.querySelector('#address');
+    if (addressSelect) {
+        addressSelect.value = "7-11 商店取貨";
+    }
+}
     // -- Credit Card Payment Listener --
 document.getElementById('creditCardImage').addEventListener('click', () => {
   // Disable the button to prevent multiple clicks
