@@ -503,7 +503,8 @@ function renderCheckoutPage(cartItems) {
     const storedStoreInfo = sessionStorage.getItem('selectedStoreInfo');
     const storeInfo = storedStoreInfo ? JSON.parse(storedStoreInfo) : null;
 
-    if (storeInfo && storeInfoDiv) {
+    mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
+        if (storeInfo && storeInfoDiv) {
     storeInfoDiv.innerHTML = `
       <p><strong>7-11 門市資訊</strong></p>
       <p>店號: ${storeInfo.CVSStoreID}</p>
@@ -515,8 +516,7 @@ function renderCheckoutPage(cartItems) {
     const addressSelect = document.getElementById('address');
     if (addressSelect) addressSelect.value = '7-11 商店取貨';
     }
-    mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
-        // --- Checkout Form ---
+    // --- Checkout Form ---
     const checkoutForm = document.createElement('form');
     checkoutForm.id = 'checkout-form';
     const storedName = sessionStorage.getItem('lineUserName') || '';
