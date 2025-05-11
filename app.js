@@ -524,6 +524,11 @@ function renderCheckoutPage(cartItems) {
     const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
 
     checkoutForm.innerHTML = `
+    <label for="discount-code-wrapper" style="background:#eee; cursor:pointer">使用折扣碼?</label>
+    <div id="discount-code-wrapper" style="display: none">
+        <label for="discount_code">折扣碼:</label>
+        <input type="text" id="discount_code" name="discount_code">
+    </div>
     <label for="address">請先選取貨方式:</label>
     <select id="address" name="address" required>
         <option value="取貨選擇">請選擇 7-11 或來店取</option>
@@ -541,12 +546,6 @@ function renderCheckoutPage(cartItems) {
     <label for="telephone">電話:</label>
     <input type="tel" id="telephone" name="telephone" pattern="[0-9]{10}" required>
     
-
-    <label for="discount-code-wrapper" style="background:#eee">使用折扣碼?</label>
-    <div id="discount-code-wrapper" style="display: none">
-        <label for="discount_code">折扣碼:</label>
-        <input type="text" id="discount_code" name="discount_code">
-    </div>
     <label for="payment-method">付款方式:</label>
     <select id="payment-method" name="payment-method" required>
         <option value="store">到店付款 (Pay at Store)</option>
