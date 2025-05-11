@@ -918,6 +918,8 @@ if (storeInfo) {
     if (addressSelect) {
         addressSelect.value = "7-11 商店取貨";
     }
+    // Enable the submit button
+    submitBtn.disabled = false;
 }
     // -- Credit Card Payment Listener --
 document.getElementById('creditCardImage').addEventListener('click', () => {
