@@ -736,8 +736,11 @@ if (lineUserName) {
     const addressSelect = checkoutForm.querySelector('#address');
     const submitBtn = document.getElementById('submit-order-btn');
     const hasStoreInfo = window.selectedStoreInfo && window.selectedStoreInfo.CVSStoreID;
-// Set submit button disabled state based on hasStoreInfo
-submitBtn.disabled = hasStoreInfo ? false : true;
+    // Set submit button disabled state based on hasStoreInfo
+    submitBtn.disabled = hasStoreInfo ? false : true;
+    if (hasStoreInfo) {
+    document.getElementById('address').value = "7-11 商店取貨";
+    };
     addressSelect.addEventListener('change', (e) => {
   const selected = addressSelect.value;
 
