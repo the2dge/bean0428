@@ -740,7 +740,7 @@ if (lineUserName) {
   const selected = addressSelect.value;
 
   // Enable/disable Submit button
-  if (selected === '7-11 商店取貨' || selected === '來商店取貨') {
+  if (selected === '7-11 商店取貨' || selected === '來商店取貨' || window.selectedStoreInfo){
     submitBtn.disabled = false;
 
     // ✅ Show discount code input
