@@ -991,9 +991,10 @@ let calculatedRewardAmount = 0; // Default to 0
 // **You need to implement the logic for 'calculatedRewardAmount' based on your business rules.**
 // For this example, I'll keep it as 0, but highlight that it needs your specific logic.
 
+const orderId = generateCustomOrderId();
 const orderData = {
     // Fields explicitly destructured by your new GAS structure:
-    orderId: localStorage.getItem('currentOrderId') || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    orderId,
     name: nameInput.value,
     email: emailInput.value,
     telephone: phoneInput.value,
