@@ -998,7 +998,6 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
       localStorage.removeItem('currentOrderId');
       sessionStorage.removeItem('cart')
       renderSideCart();
-      checkoutForm.reset();
       switchView('content');
       alert('✅ Thank you for your order!');
         // Clear cart, session storage for checkout, and redirect or show success message
