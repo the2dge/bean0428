@@ -1007,39 +1007,31 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
 }
 // If you have other shipping methods that provide a typed address, handle them here.
 
-// --- CRITICAL: How is rewardAmount determined on the client? ---
-// Your GAS script now expects 'rewardAmount' directly from the client.
-// If this is, for example, the same as 'discountAmount', or if it's 0 unless a specific condition is met:
-
 const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
 const discountRate = parseFloat(currentDiscountRate) || 0;
-const calculatedRewardAmount = parseFloat((discountAmount ).toFixed(1));
-const orderId = generateCustomOrderId();
-const orderData = {
-    // Fields explicitly destructured by your new GAS structure:
-    orderId,
-    name: nameInput.value,
-    email: emailInput.value,
-    telephone: phoneInput.value,
-    paymentMethod: paymentSelect.value,
-    address: calculatedAddress,
-    CVSStoreID: cvsStoreIDValue, // Will be null if not 7-11
-    discountCode: sessionStorage.getItem('discountCode') || null,
-    totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')),
-    rewardAmount: calculatedRewardAmount, // << YOU MUST DEFINE HOW THIS IS CALCULATED ON CLIENT
-    lineUserName: sessionStorage.getItem('lineUserName') || null,
-    lineUserId: sessionStorage.getItem('lineUserId') || null,
-    cartItems: cart, // Your global cart array
 
-    // --- Optional: Additional fields for more comprehensive logging in your Sheet ---
-    // Your GAS can choose to log these or ignore them if not in the primary destructuring.
-    // It's often good practice to send them if they provide useful context.
-    _shippingMethodType: shippingMethodValue, // For clarity, e.g., 'seven_eleven', 'store_pickup'
-    _subtotal: parseFloat(sessionStorage.getItem('orderSubtotalForSubmission')),
-    _shippingCost: parseFloat(sessionStorage.getItem('orderShippingCostForSubmission')),
-    _discountTier: sessionStorage.getItem('discountTier') || null,
-    _discountAmountApplied: parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')), // Different from rewardAmount
-    _timestamp: new Date().toISOString()
+// Multiply directly (not divide by 1), then round
+const calculatedRewardAmount = parseFloat((discountAmount * (discountRate / 100)).toFixed(0)); 
+
+const orderId = generateCustomOrderId();
+
+const orderData = {
+  orderId,
+  name: nameInput.value,
+  email: emailInput.value,
+  telephone: phoneInput.value,
+  paymentMethod: paymentSelect.value,
+  address: calculatedAddress,
+  CVSStoreID: cvsStoreIDValue || null,
+  discountCode: sessionStorage.getItem('discountCode') || null,
+
+  // ✅ Send as strings (e.g., "$345")
+  totalAmount: `$${sessionStorage.getItem('finalOrderAmountForSubmission') || '0'}`,
+  rewardAmount: `$${calculatedRewardAmount}`,
+
+  lineUserName: sessionStorage.getItem('lineUserName') || null,
+  lineUserId: sessionStorage.getItem('lineUserId') || null,
+  cartItems: cart
 };
 
 console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(orderData, null, 2));
