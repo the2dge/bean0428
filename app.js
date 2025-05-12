@@ -860,19 +860,48 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
     const storeInfoDiv = form.querySelector('#pickup-store-info-display');
 
     // Initial state for submit buttons
-    function toggleSubmitButtonVisibility() {
-        const isValid = validateFormFields();
-        const paymentMethod = paymentSelect.value;
+    async function toggleSubmitButtonVisibility() {
+    const isValid = validateFormFields();
+    const paymentMethod = paymentSelect.value;
+    const submitAmount = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')) || 0;
 
-        if (paymentMethod === 'credit_card_ecpay') {
-            submitButton.style.display = 'none';
-            creditCardImageButton.style.display = isValid ? 'block' : 'none';
-        } else {
-            submitButton.style.display = 'block';
-            creditCardImageButton.style.display = 'none';
-            submitButton.disabled = !isValid;
+    // Default: disable both buttons
+    submitButton.disabled = true;
+    creditCardImageButton.style.display = 'none';
+
+    if (!isValid) return;
+
+    if (paymentMethod === 'credit_point') {
+        const lineUserId = sessionStorage.getItem('lineUserId');
+        if (!lineUserId) {
+            alert('⚠️ 未登入會員，無法使用點數付款');
+            return;
         }
+
+        try {
+            const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                const creditBalance = parseFloat(data.creditBalance) || 0;
+                if (creditBalance >= submitAmount) {
+                    submitButton.disabled = false;
+                } else {
+                    alert(`❌ 點數不足。目前餘額：${creditBalance}，需支付：${submitAmount}`);
+                }
+            } else {
+                alert('⚠️ 無法取得會員點數，請稍後再試');
+            }
+        } catch (err) {
+            console.error('點數查詢失敗:', err);
+            alert('🚫 發生錯誤，請稍後再試');
+        }
+    } else if (paymentMethod === 'credit_card_ecpay') {
+        creditCardImageButton.style.display = 'block';
+    } else {
+        submitButton.disabled = false;
     }
+}
 
     function validateFormFields() {
         const isShippingSelected = shippingSelect.value !== "";
