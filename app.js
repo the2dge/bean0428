@@ -1013,7 +1013,7 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
 
 const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
 const discountRate = parseFloat(currentDiscountRate) || 0;
-const calculatedRewardAmount = parseFloat((discountAmount * (discountRate / 100)).toFixed(2));
+const calculatedRewardAmount = parseFloat((discountAmount * (discountRate / 1)).toFixed(0));
 const orderId = generateCustomOrderId();
 const orderData = {
     // Fields explicitly destructured by your new GAS structure:
