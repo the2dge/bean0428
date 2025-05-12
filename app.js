@@ -965,32 +965,61 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
             alert('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
-        const orderData = {
-    orderId: localStorage.getItem('currentOrderId') || `MANUAL-${Date.now()}`,
-    customerName: nameInput.value, // Assuming nameInput is your customer name field
-    customerEmail: emailInput.value, // Assuming emailInput is your customer email field
-    customerPhone: phoneInput.value, // Assuming phoneInput is your customer phone field
-    shippingMethod: shippingSelect.value, // Assuming shippingSelect is your shipping method dropdown
-    paymentMethod: paymentSelect.value, // Assuming paymentSelect is your payment method dropdown
-    items: cart, // 'cart' should be your global cart array [{name, quantity, price, img,...}, ...]
+const shippingMethodValue = shippingSelect.value; // e.g., 'seven_eleven' or 'store_pickup'
+let calculatedAddress = 'N/A'; // Default
+let cvsStoreIDValue = null;    // Default
+const selectedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo')); // May be null
 
-    subtotal: parseFloat(sessionStorage.getItem('orderSubtotalForSubmission')),
-    shippingCost: parseFloat(sessionStorage.getItem('orderShippingCostForSubmission')),
-    discountCode: sessionStorage.getItem('discountCode') || null, // From discount code logic
-    discountTier: sessionStorage.getItem('discountTier') || null, // From discount code logic
-    discountAmount: parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')),
-    totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')), // ADDED: GAS uses this for amountNum
+if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
+    calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
+    cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
+} else if (shippingMethodValue === 'store_pickup') {
+    calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
+}
+// If you have other shipping methods that provide a typed address, handle them here.
 
-    storeInfo: shippingSelect.value === 'seven_eleven' ? JSON.parse(sessionStorage.getItem('selectedStoreInfo')) : null,
-    timestamp: new Date().toISOString(),
-    lineUserId: sessionStorage.getItem('lineUserId') || null // ADDED: GAS uses this for member updates
-    // rewardAmount is not typically sent from the client unless it's a specific user input.
-    // Your GAS script's `if (discountCode && rewardAmount)` condition implies rewardAmount
-    // might be expected. If it's calculated server-side or a fixed config, no client change needed for it.
-    // If it IS expected from client, you'd add it here.
+// --- CRITICAL: How is rewardAmount determined on the client? ---
+// Your GAS script now expects 'rewardAmount' directly from the client.
+// If this is, for example, the same as 'discountAmount', or if it's 0 unless a specific condition is met:
+let calculatedRewardAmount = 0; // Default to 0
+// Example: If rewardAmount is simply the discountAmount:
+// calculatedRewardAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
+// Example: Or if it's a fixed amount for using any discount code:
+// if (sessionStorage.getItem('discountCode')) {
+//   calculatedRewardAmount = 5; // Fixed $5 reward for using a code, for instance
+// }
+// **You need to implement the logic for 'calculatedRewardAmount' based on your business rules.**
+// For this example, I'll keep it as 0, but highlight that it needs your specific logic.
+
+const orderData = {
+    // Fields explicitly destructured by your new GAS structure:
+    orderId: localStorage.getItem('currentOrderId') || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    name: nameInput.value,
+    email: emailInput.value,
+    telephone: phoneInput.value,
+    paymentMethod: paymentSelect.value,
+    address: calculatedAddress,
+    CVSStoreID: cvsStoreIDValue, // Will be null if not 7-11
+    discountCode: sessionStorage.getItem('discountCode') || null,
+    totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')),
+    rewardAmount: calculatedRewardAmount, // << YOU MUST DEFINE HOW THIS IS CALCULATED ON CLIENT
+    lineUserName: sessionStorage.getItem('lineUserName') || null,
+    lineUserId: sessionStorage.getItem('lineUserId') || null,
+    cartItems: cart, // Your global cart array
+
+    // --- Optional: Additional fields for more comprehensive logging in your Sheet ---
+    // Your GAS can choose to log these or ignore them if not in the primary destructuring.
+    // It's often good practice to send them if they provide useful context.
+    _shippingMethodType: shippingMethodValue, // For clarity, e.g., 'seven_eleven', 'store_pickup'
+    _subtotal: parseFloat(sessionStorage.getItem('orderSubtotalForSubmission')),
+    _shippingCost: parseFloat(sessionStorage.getItem('orderShippingCostForSubmission')),
+    _discountTier: sessionStorage.getItem('discountTier') || null,
+    _discountAmountApplied: parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')), // Different from rewardAmount
+    _timestamp: new Date().toISOString()
 };
 
-        console.log("Order Data for Submission:", orderData);
+console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(orderData, null, 2));
+
         // Send to your Cloud Function or Web App here
       await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
         method: 'POST',
