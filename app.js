@@ -984,9 +984,23 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
         };
 
         console.log("Order Data for Submission:", orderData);
-        // Here, you would typically send 'orderData' to your backend (e.g., Google Apps Script)
-        // For example: await google.script.run.withSuccessHandler(...).processOrder(orderData);
-        alert(`訂單提交成功 (模擬)！訂單ID: ${orderData.orderId}\n總金額: $${orderData.totalAmount}`);
+        // Send to your Cloud Function or Web App here
+      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+        method: 'POST',
+        mode: "no-cors",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      // Reset state
+      cart = [];
+      localStorage.removeItem('cart'); 
+      localStorage.removeItem('currentOrderId');
+      sessionStorage.removeItem('cart')
+      renderSideCart();
+      checkoutForm.reset();
+      switchView('content');
+      alert('✅ Thank you for your order!');
         // Clear cart, session storage for checkout, and redirect or show success message
         // cart.length = 0; // Clear the global cart array
         // renderSideCart(); // Update side cart display
