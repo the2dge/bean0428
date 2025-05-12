@@ -1001,8 +1001,8 @@ const orderData = {
     address: calculatedAddress,
     CVSStoreID: cvsStoreIDValue, // Will be null if not 7-11
     discountCode: sessionStorage.getItem('discountCode') || null,
-    totalAmount: "$1000",
-    rewardAmount: "$200", // << YOU MUST DEFINE HOW THIS IS CALCULATED ON CLIENT
+    totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')),
+    rewardAmount: calculatedRewardAmount, // << YOU MUST DEFINE HOW THIS IS CALCULATED ON CLIENT
     lineUserName: sessionStorage.getItem('lineUserName') || null,
     lineUserId: sessionStorage.getItem('lineUserId') || null,
     cartItems: ["杏仁 3 300g x1", "腰果 2 200g x1"], // Your global cart array
