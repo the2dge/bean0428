@@ -1072,7 +1072,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
 
         if (!orderIdForECPay) { // Should ideally always exist if 7-11 was chosen
             const now = new Date();
-            orderIdForECPay = `ECP-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random()*1000)}`;
+            orderIdForECPay = `ECP${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random()*1000)}`;
             localStorage.setItem('currentOrderId', orderIdForECPay);
         }
 
