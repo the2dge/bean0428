@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         total *= (1 - discountPercent / 100);
       }
 
-      return `$${total.toFixed(0)}`;
+      return `$${total.toFixed(2)}`;
     }
     function changeCartQuantity(productId, changeAmount) {
         const cartItemIndex = cart.findIndex(item => item.id === productId);
@@ -435,11 +435,10 @@ function ECpayStoreDataBackTransfer() {
   const MerchantTradeNo = urlParams.get('MerchantTradeNo');
 
   if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
-    window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
+      window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
 
     // Save to sessionStorage so it persists across re-renders
     sessionStorage.setItem('selectedStoreInfo', JSON.stringify(window.selectedStoreInfo));
-
     // Fill store info
     const pickupInfoDiv = document.getElementById('pickup-store-info');
     if (pickupInfoDiv) {
@@ -450,7 +449,6 @@ function ECpayStoreDataBackTransfer() {
         <p>地址: ${CVSAddress}</p>
       `;
     }
-    // Check if 7-11 selected and under $1000
 
     // Update address select
     const addressSelect = document.getElementById('address');
@@ -472,25 +470,13 @@ function ECpayStoreDataBackTransfer() {
     // Update checkout total block
     if (totalDiv) {
       totalDiv.innerHTML = `
-        
-        ${shippingFee > 0 ? `<div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div><div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1000):</strong> $60</div>` : ''}
+        <div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div>
+        ${shippingFee > 0 ? `<div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1000):</strong> $60</div>` : ''}
         <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
-        <div style="margin-top: 10px;">
-        <button id="add-more-items-btn" style="background-color: #d9534f; color: white; padding: 8px 12px; border: none; cursor: pointer;">🔙 繼續購買</button>
-        </div>
       `;
-        // Add event listener to the button after rendering
-  const addMoreBtn = document.getElementById('add-more-items-btn');
-  if (addMoreBtn) {
-    addMoreBtn.addEventListener('click', () => {
-      switchView('content'); // Return to product section
-      document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
     }
 
     // Save store info globally
-    window.finalCheckoutTotal = finalTotal;
     window.selectedStoreInfo = {
       CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
       shippingFee, finalTotal // optional for reuse
@@ -498,649 +484,723 @@ function ECpayStoreDataBackTransfer() {
   }
 }
 
+// Global or module-scoped variables for checkout state
+let currentShippingCost = 0;
+let currentDiscountRate = 0; // Store as percentage, e.g., 5 for 5%
+
+// --- Main Function to Render Checkout Page ---
 function renderCheckoutPage(cartItems) {
-    const storeInfoDiv = document.getElementById('pickup-store-info');
-    const storedStoreInfo = sessionStorage.getItem('selectedStoreInfo');
-    const storeInfo = storedStoreInfo ? JSON.parse(storedStoreInfo) : null;
+    mainBody.checkoutWrapper.innerHTML = ''; // Clear previous content
+    window.scrollTo(0, 0);
 
-    mainBody.checkoutWrapper.innerHTML = ''; // Clear previous checkout content
-        if (storeInfo && storeInfoDiv) {
-    storeInfoDiv.innerHTML = `
-      <p><strong>7-11 門市資訊</strong></p>
-      <p>店號: ${storeInfo.CVSStoreID}</p>
-      <p>店名: ${storeInfo.CVSStoreName}</p>
-      <p>地址: ${storeInfo.CVSAddress}</p>
-    `;
-
-    // Also preselect the address dropdown if needed
-    console.log("StoreInfo is", storeInfo);
-    const addressSelect = document.getElementById('address');
-    if (addressSelect) addressSelect.value = '7-11 商店取貨';
-    }
-    // --- Checkout Form ---
-    const checkoutForm = document.createElement('form');
-    checkoutForm.id = 'checkout-form';
-    const storedName = sessionStorage.getItem('lineUserName') || '';
-    const storedEmail = sessionStorage.getItem('lineUserEmail') || '';
-
-    checkoutForm.innerHTML = `
-    <label for="discount-code-wrapper" style="background:#eee; cursor:pointer">使用折扣碼?</label>
-    <div id="discount-code-wrapper" style="display: none">
-        <label for="discount_code">折扣碼:</label>
-        <input type="text" id="discount_code" name="discount_code">
-    </div>
-    <label for="address">請先選取貨方式:</label>
-    <select id="address" name="address" required>
-        <option value="取貨選擇">請選擇 7-11 或來店取</option>
-        <option value="來商店取貨">來商店取貨</option>
-        <option value="7-11 商店取貨">7-11 商店取貨</option>
-    </select>
-    
-    <div id="pickup-store-info"></div><br>
-    <label for="name">收件人姓名</label>
-    <input type="text" id="name" name="name" value="${storedName}" required>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email"  value="${storedEmail}" required>
-
-    <label for="telephone">電話:</label>
-    <input type="tel" id="telephone" name="telephone" pattern="[0-9]{10}" required>
-    
-    <label for="payment-method">付款方式:</label>
-    <select id="payment-method" name="payment-method" required>
-        <option value="store">到店付款 (Pay at Store)</option>
-        <option value="credit-card">信用卡付款 (Pay by Credit Card)</option>
-        
-    </select>
-    <div id="credit-proof-wrapper" style="display: none;">
-    <label for="credit_payment">信用卡付款:</label>
-    <img src ="image/creditcard.png" width="80px" alt="Credit Card" id="creditCardImage" style="cursor: pointer;" />
-    </div><br><br>
-    
-    <button  id="submit-order-btn" type="submit">下單</button>
-`;
-
-    // --- Checkout Main Title + Member Login Button ---
-    const titleRow = document.createElement('div');
-    titleRow.classList.add('checkout-title-row');
-
-    const checkoutTitle = document.createElement('h2');
-    checkoutTitle.textContent = '- 結帳 -';
-    titleRow.appendChild(checkoutTitle);
-
+    // --- Data Retrieval ---
+    const storedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo'));
     const lineUserName = sessionStorage.getItem('lineUserName');
+    const lineUserEmail = sessionStorage.getItem('lineUserEmail') || '';
 
-if (lineUserName) {
-    const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
-    const creditOption = document.createElement('option');
-    creditOption.value = 'credit-point';
-    creditOption.textContent = '點數付款 (Pay by Credit Point)';
-    paymentMethodSelect.appendChild(creditOption);
+    // 1. Render Checkout Header (Title "結帳", Login/Member Button)
+    renderCheckoutHeaderDOM(lineUserName);
 
-    const memberWrapper = document.createElement('div');
-    memberWrapper.classList.add('member-dropdown-wrapper');
+    // 2. Render Ordered Items Summary ("我訂購的商品", list, totals container)
+    renderOrderedItemsSummaryDOM(cartItems);
 
-    // Display name button
-    const nameBtn = document.createElement('button');
-    nameBtn.textContent = `👤 ${lineUserName} ▾`;
-    nameBtn.classList.add('member-name-btn');
+    // 3. Render "Back for More Items" Button
+    renderBackToShoppingButtonDOM();
 
-    // Dropdown menu
-    const dropdown = document.createElement('div');
-    dropdown.classList.add('member-dropdown');
-    dropdown.style.display = 'none';
+    // 4. Create and Append Checkout Form
+    const checkoutFormElement = createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo);
+    mainBody.checkoutWrapper.appendChild(checkoutFormElement);
 
-    // View Orders
-    const viewOrders = document.createElement('div');
-    viewOrders.textContent = '查看訂單';
-    viewOrders.classList.add('dropdown-item');
-    viewOrders.addEventListener('click', () => {
-        alert('📦 顯示訂單列表 (模擬)');
-        dropdown.style.display = 'none';
-    });
+    // Get a local reference to the shipping select element FROM THE NEWLY CREATED FORM
+    // This is used for the initial calculation of shipping cost.
+    const localShippingSelectElement = checkoutFormElement.querySelector('#shipping-method');
 
-    // Credit Balance
-    const creditBalance = document.createElement('div');
-    creditBalance.textContent = '儲值餘額';
-    creditBalance.classList.add('dropdown-item');
-
-    creditBalance.addEventListener('click', async () => {
-      const lineUserId = sessionStorage.getItem('lineUserId');
-
-      if (!lineUserId) {
-        alert('⚠️ 尚未登入 LINE 帳號，請先登入會員');
-        dropdown.style.display = 'none';
-        return;
-      }
-
-      try {
-        const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
-        const data = await res.json();
-
-        if (data.status === 'success') {
-          alert(`💰 目前點數餘額：${data.creditBalance}`);
-        } else if (data.status === 'not_found') {
-          alert('⚠️ 查無此會員資料，請聯絡客服');
-        } else {
-          alert('❌ 無法取得點數資料，請稍後再試');
+    // 6. Initial Calculation of Shipping Cost (Moved before step 5 in execution order for clarity)
+    // This calculation is based on the initial state of the form,
+    // especially the #shipping-method value which createCheckoutFormDOM might have pre-set.
+    if (localShippingSelectElement) { // Ensure the element was found
+        if (localShippingSelectElement.value === 'seven_eleven') {
+            // This implies createCheckoutFormDOM set its value because storedStoreInfo was present
+            currentShippingCost = calculateCartTotal() < 1000 ? 60 : 0;
+        } else if (localShippingSelectElement.value === 'store_pickup') {
+            currentShippingCost = 0;
+        } else { // Default for "" (empty value) or other unexpected values
+            currentShippingCost = 0;
         }
-      } catch (err) {
-        console.error('Error fetching credit balance:', err);
-        alert('🚫 發生錯誤，請檢查網路或稍後再試');
-      }
+    } else {
+        console.warn('#shipping-method element not found for initial cost calculation in renderCheckoutPage.');
+        currentShippingCost = 0; // Fallback if element isn't found
+    }
+    updateOrderSummaryDisplay(cartItems, currentShippingCost, currentDiscountRate);
 
-      dropdown.style.display = 'none';
-    });
+    // 5. Initial UI State & Event Listeners
+    // This function will set up all event listeners and may call updateOrderSummaryDisplay again
+    // if, for example, it restores a discount code from session storage.
+    initializeCheckoutFormStateAndListeners(checkoutFormElement, cartItems, storedStoreInfo);
 
-    // Logout
-    const logout = document.createElement('div');
-    logout.textContent = 'Logout';
-    logout.classList.add('dropdown-item');
-    logout.addEventListener('click', () => {
-        sessionStorage.removeItem('lineUserName');
-        sessionStorage.removeItem('lineUserEmail');
-        sessionStorage.removeItem('lineUserId');
-        localStorage.removeItem('cart');
-        localStorage.removeItem('currentOrderId');
-        alert('已登出，請重新登入');
-        window.location.reload(); // refresh the site
-    });
-
-    dropdown.appendChild(viewOrders);
-    dropdown.appendChild(creditBalance);
-    dropdown.appendChild(logout);
-
-    nameBtn.addEventListener('click', () => {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    });
-
-    memberWrapper.appendChild(nameBtn);
-    memberWrapper.appendChild(dropdown);
-    titleRow.appendChild(memberWrapper);
-} else {
-    // ❌ Not logged in → show login button
-    const memberLoginBtn = document.createElement('button');
-    memberLoginBtn.textContent = '會員登入';
-    memberLoginBtn.classList.add('member-login-btn');
-    memberLoginBtn.addEventListener('click', () => {
-        loginWithLINE();
-    });
-    titleRow.appendChild(memberLoginBtn);
+    // Note: The call to updateOrderSummaryDisplay at the end of initializeCheckoutFormStateAndListeners
+    // will ensure the display is accurate after all its internal setup, including potential restoration
+    // of discount codes which would affect currentDiscountRate.
 }
 
-    mainBody.checkoutWrapper.appendChild(titleRow);
+// --- Helper for Top Header: "結帳" Title & Member/Login Button ---
+function renderCheckoutHeaderDOM(lineUserName) {
+    const titleRow = document.createElement('div');
+    titleRow.className = 'checkout-title-row'; // Add a class for styling
+    titleRow.style.display = 'flex';
+    titleRow.style.justifyContent = 'space-between';
+    titleRow.style.alignItems = 'center';
+    titleRow.style.marginBottom = '20px';
 
-    // --- Ordered Items Title ---
-    const orderedItemsTitle = document.createElement('h2');
-    orderedItemsTitle.textContent = '我訂購的商品';
-    mainBody.checkoutWrapper.appendChild(orderedItemsTitle);
+    const checkoutTitle = document.createElement('h2');
+    checkoutTitle.textContent = '結帳';
+    checkoutTitle.style.margin = '0'; // Remove default margin
+    titleRow.appendChild(checkoutTitle);
 
-    // --- Ordered Items List ---
-    let totalPrice = 0;
-    if (cartItems.length === 0) {
-        const emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'No items to checkout.';
-        mainBody.checkoutWrapper.appendChild(emptyMessage);
-    } else {
-        const checkoutList = document.createElement('div');
-        checkoutList.classList.add('checkout-list');
+    if (lineUserName) {
+        const memberWrapper = document.createElement('div');
+        memberWrapper.classList.add('member-dropdown-wrapper');
+        memberWrapper.style.position = 'relative'; // For dropdown positioning
 
-        cartItems.forEach(item => {
-            const itemRow = document.createElement('div');
-            itemRow.classList.add('checkout-item-row');
+        const nameBtn = document.createElement('button');
+        nameBtn.textContent = `👤 ${lineUserName} ▾`;
+        nameBtn.classList.add('member-name-btn'); // Add class for styling
 
-            itemRow.innerHTML = `
-                <img src="${item.img}" alt="${item.name}">
-                <span class="checkout-name">${item.name}</span>
-                <span class="checkout-quantity">x ${item.quantity}</span>
-                <span class="checkout-price">${item.price}</span>
-            `;
+        const dropdown = document.createElement('div');
+        dropdown.classList.add('member-dropdown');
+        dropdown.style.display = 'none';
+        dropdown.style.position = 'absolute';
+        dropdown.style.right = '0';
+        dropdown.style.top = '100%';
+        dropdown.style.backgroundColor = 'white';
+        dropdown.style.border = '1px solid #ccc';
+        dropdown.style.zIndex = '100';
+        dropdown.style.minWidth = '150px';
 
-            checkoutList.appendChild(itemRow);
 
-            const priceNumber = parseFloat(item.price.replace(/[^0-9.]/g, ''));
-            if (!isNaN(priceNumber)) {
-                totalPrice += priceNumber * item.quantity;
+        const viewOrders = document.createElement('div');
+        viewOrders.textContent = '查看訂單';
+        viewOrders.className = 'dropdown-item'; // Add class for styling
+        viewOrders.addEventListener('click', () => {
+            alert('📦 很抱歉, 此功能正在開發中');
+            dropdown.style.display = 'none';
+        });
+
+        const creditBalance = document.createElement('div');
+        creditBalance.textContent = '儲值餘額';
+        creditBalance.className = 'dropdown-item';
+        creditBalance.addEventListener('click', async () => {
+            const lineUserId = sessionStorage.getItem('lineUserId');
+            if (!lineUserId) {
+                alert('⚠️ 尚未登入 LINE 帳號，請先登入會員');
+                dropdown.style.display = 'none';
+                return;
+            }
+            try {
+                // Ensure your GAS URL is correct and supports GET with these params
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(`💰 目前點數餘額：${data.creditBalance}`);
+                } else if (data.status === 'not_found') {
+                    alert('⚠️ 查無此會員資料，請聯絡客服');
+                } else {
+                    alert(`❌ 無法取得點數資料：${data.message || '請稍後再試'}`);
+                }
+            } catch (err) {
+                console.error('Error fetching credit balance:', err);
+                alert('🚫 發生錯誤，請檢查網路或稍後再試');
+            }
+            dropdown.style.display = 'none';
+        });
+
+        const logout = document.createElement('div');
+        logout.textContent = 'Logout';
+        logout.className = 'dropdown-item';
+        logout.addEventListener('click', () => {
+            sessionStorage.removeItem('lineUserName');
+            sessionStorage.removeItem('lineUserEmail');
+            sessionStorage.removeItem('lineUserId');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('currentOrderId');
+            sessionStorage.removeItem('selectedStoreInfo');
+            sessionStorage.removeItem('discountCode');
+            sessionStorage.removeItem('discountTier');
+            alert('已登出，購物車及部分結帳資訊已清除。');
+            window.location.reload();
+        });
+
+        dropdown.appendChild(viewOrders);
+        dropdown.appendChild(creditBalance);
+        dropdown.appendChild(logout);
+
+        nameBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent window click from immediately closing
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        });
+
+        memberWrapper.appendChild(nameBtn);
+        memberWrapper.appendChild(dropdown);
+        titleRow.appendChild(memberWrapper);
+
+        // Close dropdown if clicked outside
+        window.addEventListener('click', (e) => {
+            if (!memberWrapper.contains(e.target)) {
+                dropdown.style.display = 'none';
             }
         });
 
-        mainBody.checkoutWrapper.appendChild(checkoutList);
-
-        // --- Total Price ---
-        const totalRow = document.createElement('div');
-        totalRow.classList.add('checkout-total');
-        totalRow.id = 'checkout-total-row'; // <-- add ID for updating later(DiscountCode)
-        totalRow.innerHTML = `<strong>總價:</strong> $${totalPrice.toFixed(0)}`;
-        mainBody.checkoutWrapper.appendChild(totalRow);
-    }
-
-
-
-    mainBody.checkoutWrapper.appendChild(checkoutForm);
-    // ✅ Add label click listener here
-    const discountLabel = document.querySelector('label[for="discount-code-wrapper"]');
-    if (discountLabel) {
-      discountLabel.addEventListener('click', () => {
-        const discountWrapper = document.getElementById('discount-code-wrapper');
-        if (discountWrapper) {
-          discountWrapper.style.display = 'block';
-
-          const discountInput = document.getElementById('discount_code');
-          if (discountInput) discountInput.focus();
-        }
-      });
-    }
-    // --- Event Listener: Monitor Address Dropdown ---
-    
-    const addressSelect = checkoutForm.querySelector('#address');
-    const submitBtn = document.getElementById('submit-order-btn');
-    const hasStoreInfo = window.selectedStoreInfo && window.selectedStoreInfo.CVSStoreID;
-    // Set submit button disabled state based on hasStoreInfo
-    submitBtn.disabled = hasStoreInfo ? false : true;
-    if (hasStoreInfo) {
-    document.getElementById('address').value = "7-11 商店取貨";
-    };
-    addressSelect.addEventListener('change', (e) => {
-  const selected = addressSelect.value;
-
-  // Enable/disable Submit button
-  if (selected === '7-11 商店取貨' || selected === '來商店取貨'){
-    submitBtn.disabled = false;
-
-    // ✅ Show discount code input
-    const discountWrapper = document.getElementById('discount-code-wrapper');
-    if (discountWrapper) {
-      discountWrapper.style.display = 'block';
-    }
-
-  } else {
-    submitBtn.disabled = true;
-
-    // ❌ Hide discount input if invalid selection
-    const discountWrapper = document.getElementById('discount-code-wrapper');
-    if (discountWrapper) {
-      discountWrapper.style.display = 'none';
-    }
-  }
-   if (selected === '來商店取貨') {
-  // 1. Clear the store info block
-  const selectedStoreInfo = document.getElementById('pickup-store-info');
-  if (selectedStoreInfo) {
-    selectedStoreInfo.innerHTML = ''; // clear contents
-    selectedStoreInfo.style.display = 'none';
-  }
-
-  // 2. Reset global store info
-  window.selectedStoreInfo = null;
-
-  // 3. Update total area
-  const baseTotal = calculateCartTotal();
-  const totalRow = document.getElementById('checkout-total-row');
-  if (totalRow) {
-    totalRow.innerHTML = `
-      <strong>總金額:</strong> $${baseTotal.toFixed(0)}
-    `;
-  }
-
-  // 4. Update final total for submission
-  window.finalCheckoutTotal = baseTotal;
-}
-  // ✅ 7-11 store pickup case
-  if (selected === '7-11 商店取貨') {
-    const now = new Date();
-    const orderId =
-      now.getFullYear().toString() +
-      String(now.getMonth() + 1).padStart(2, '0') +
-      String(now.getDate()).padStart(2, '0') +
-      String(now.getHours()).padStart(2, '0') +
-      String(now.getMinutes()).padStart(2, '0') +
-      String(now.getSeconds()).padStart(2, '0');
-
-    window.currentOrderId = orderId;
-    localStorage.setItem('cart', JSON.stringify(cart));
-    localStorage.setItem('currentOrderId', orderId);
-
-    console.log("Saving cart to sessionStorage before going to ECPay:", cart);
-    openLogisticsMap(orderId);
-  }
-});
-    
-    const paymentMethodSelect = checkoutForm.querySelector('#payment-method');
-    const discountCodeWrapper = checkoutForm.querySelector('#discount-code-wrapper');
-    const creditProofWrapper = checkoutForm.querySelector('#credit-proof-wrapper');
-
-    paymentMethodSelect.addEventListener('change', async (e) => {
-  const selectedMethod = e.target.value;
-  const addressValue = document.getElementById('address').value;
-  const submitBtn = document.getElementById('submit-order-btn');
-
-  if (selectedMethod === 'credit-point') {
-   // discountCodeWrapper.style.display = 'block';
-    creditProofWrapper.style.display = 'none';
-
-    // Run credit point balance check
-    const lineUserId = sessionStorage.getItem('lineUserId');
-    const totalText = document.querySelector('.checkout-total')?.textContent || '';
-    //const totalAmount = parseFloat(totalText.replace(/[^0-9.]/g, ''));
-    const totalAmount = window.finalCheckoutTotal;
-      console.log("total is: ", totalAmount);
-    if (!lineUserId) {
-      alert('⚠️ 尚未登入會員，無法使用點數付款');
-      submitBtn.disabled = true;
-      return;
-    }
-
-    try {
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
-      const data = await res.json();
-
-      if (data.status === 'success') {
-        const creditBalance = parseFloat(data.creditBalance || '0');
-        sessionStorage.setItem('creditBalance', creditBalance); // Cache
-
-        if (creditBalance >= totalAmount) {
-          submitBtn.disabled = false;
-        } else {
-          submitBtn.disabled = true;
-          alert(`❌ 點數不足：目前餘額 $${creditBalance.toFixed(0)}，訂單金額 $${totalAmount.toFixed(0)}`);
-        }
-      } else {
-        submitBtn.disabled = true;
-        alert('⚠️ 會員資料取得失敗');
-      }
-    } catch (err) {
-      console.error('信用點數驗證錯誤:', err);
-      submitBtn.disabled = true;
-      alert('⚠️ 無法驗證點數餘額');
-    }
-
-  } else if (selectedMethod === 'credit-card') {
-    discountCodeWrapper.style.display = 'block';
-    creditProofWrapper.style.display = 'block';
-    submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
-
-  } else {
-    discountCodeWrapper.style.display = 'none';
-    creditProofWrapper.style.display = 'none';
-    submitBtn.disabled = !(addressValue === '7-11 商店取貨' || addressValue === '來商店取貨');
-  }
-});
-/*
-    paymentMethodSelect.addEventListener('change', (e) => {
-    if (e.target.value === 'credit-point') {
-        discountCodeWrapper.style.display = 'block';
-        creditProofWrapper.style.display = 'none';
-    } else if (e.target.value === 'credit-card') {
-        discountCodeWrapper.style.display = 'block';
-        creditProofWrapper.style.display = 'block';
     } else {
-        discountCodeWrapper.style.display = 'none';
-        creditProofWrapper.style.display = 'none';
+        const memberLoginBtn = document.createElement('button');
+        memberLoginBtn.textContent = '會員登入';
+        memberLoginBtn.classList.add('member-login-btn'); // Add class for styling
+        memberLoginBtn.addEventListener('click', () => {
+            if (typeof loginWithLINE === 'function') {
+                loginWithLINE();
+            } else {
+                console.error('loginWithLINE function is not defined.');
+                alert('登入功能暫時無法使用。');
+            }
+        });
+        titleRow.appendChild(memberLoginBtn);
     }
-});*/
-    // -- Use Discount Code case --
-    const discountInput = checkoutForm.querySelector('#discount_code');
-    discountInput.addEventListener('blur', () => {
-    const discountRate = validateDiscountCode(discountInput.value);
-    const originalTotal = calculateCartTotal();
-    console.log("discountCode and Total are: ", discountRate, originalTotal);
-    // Check if 7-11 selected and under $1000
-
-    const addressSelect = document.getElementById('address');
-    const is711Pickup = addressSelect && addressSelect.value === '7-11 商店取貨';
-
-    const baseTotal = originalTotal;
-    const discountedTotal = baseTotal * (1 - discountRate);
-
-    let shippingFee = 0;
-    if (is711Pickup && discountedTotal < 1000) {
-        shippingFee = 60;
-    }
-
-    const grandTotal = discountedTotal + shippingFee;
-
-    const totalRow = document.getElementById('checkout-total-row');
-    if (totalRow) {
-        if (discountRate > 0) {
-            totalRow.innerHTML = `
-                <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
-                ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
-                <strong>總計：</strong> $${grandTotal.toFixed(0)}
-            `;
-            alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
-        } else {
-            totalRow.innerHTML = `
-                <strong>總計 :</strong> $${baseTotal.toFixed(0)}
-                ${is711Pickup && baseTotal < 1000 ? `<br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br><strong>總計：</strong> $${(baseTotal + 60).toFixed(0)}` : ''}
-            `;
-            alert('❌ 折扣碼無效或不存在');
-        }
-    }
-
-    // Store updated total for form submission
-    window.finalCheckoutTotal = grandTotal; // Optional: for use during form submission
-});
-// --- Inject Store Info if available ---
-if (storeInfo) {
-  const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
-  if (pickupInfoDiv) {
-    pickupInfoDiv.innerHTML = `
-      <p><strong>7-11 門市資訊</strong></p>
-      <p>店號: ${storeInfo.CVSStoreID}</p>
-      <p>店名: ${storeInfo.CVSStoreName}</p>
-      <p>地址: ${storeInfo.CVSAddress}</p>
-    `;
-  }
-
-  // ✅ Set dropdown to correct selection
-  const addressSelect = checkoutForm.querySelector('#address');
-  if (addressSelect) {
-    addressSelect.value = "7-11 商店取貨";
-  }
-
-  // ✅ Save for later order submission
-  window.selectedStoreInfo = storeInfo;
-
-  // ✅ Recalculate and display total (with shipping fee if needed)
-  const baseTotal = calculateCartTotal();
-  const shippingFee = baseTotal < 1000 ? 60 : 0;
-  const grandTotal = baseTotal + shippingFee;
-
-  const totalRow = document.getElementById('checkout-total-row');
-  if (totalRow) {
-  const shippingMsg = is711Pickup
-    ? `<span style="color:${shippingFee > 0 ? 'red' : 'green'};">🚚 運費 (${discountedTotal < 1000 ? '未滿$1000' : '滿$1000'}): $${shippingFee}</span><br>`
-    : '';
-
-  if (discountRate > 0) {
-    totalRow.innerHTML = `
-      <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
-      ${shippingMsg}
-      <strong>總計：</strong> $${grandTotal.toFixed(0)}
-    `;
-    alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
-  } else {
-    totalRow.innerHTML = `
-      <strong>商品總額：</strong> $${baseTotal.toFixed(0)}<br>
-      ${shippingMsg}
-      <strong>總計：</strong> $${(baseTotal + shippingFee).toFixed(0)}
-    `;
-    alert('❌ 折扣碼無效或不存在');
-  }
+    mainBody.checkoutWrapper.appendChild(titleRow);
 }
 
-  // ✅ Save final total globally
-  window.finalCheckoutTotal = grandTotal;
+// --- Helper for "我訂購的商品" Title, List, and Totals Placeholders ---
+function renderOrderedItemsSummaryDOM(cartItems) {
+    const itemsTitle = document.createElement('h3');
+    itemsTitle.textContent = '我訂購的商品';
+    itemsTitle.style.marginTop = '20px';
+    mainBody.checkoutWrapper.appendChild(itemsTitle);
+
+    const listElement = document.createElement('div');
+    listElement.className = 'checkout-items-list'; // Add class for styling
+    if (!cartItems || cartItems.length === 0) {
+        listElement.innerHTML = '<p>您的購物車是空的。</p>';
+    } else {
+        cartItems.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'checkout-item-display'; // Add class for styling
+            itemDiv.style.display = 'flex';
+            itemDiv.style.justifyContent = 'space-between';
+            itemDiv.style.padding = '5px 0';
+            itemDiv.innerHTML = `
+                <span style="flex-basis: 50%;"><img src="${item.img}" alt="${item.name}" style="width:30px; height:30px; margin-right:10px; vertical-align:middle;"> ${item.name}</span>
+                <span style="flex-basis: 20%; text-align:center;">x ${item.quantity}</span>
+                <span style="flex-basis: 30%; text-align:right;">${item.price}</span>
+            `;
+            listElement.appendChild(itemDiv);
+        });
+    }
+    mainBody.checkoutWrapper.appendChild(listElement);
+
+    const totalsContainer = document.createElement('div');
+    totalsContainer.id = 'order-summary-totals';
+    totalsContainer.style.marginTop = '15px';
+    totalsContainer.style.paddingTop = '15px';
+    totalsContainer.style.borderTop = '1px solid #eee';
+    totalsContainer.innerHTML = `
+        <div id="order-subtotal" style="display:flex; justify-content:space-between;"><strong>商品總額:</strong> <span>$0.00</span></div>
+        <div id="order-discount" style="display:none; justify-content:space-between; color:green;"><strong>折扣:</strong> <span>-$0.00</span></div>
+        <div id="order-shipping" style="display:none; justify-content:space-between; color:red;"><strong>運費:</strong> <span>$0.00</span></div>
+        <div id="order-final-total" style="font-weight:bold; margin-top:10px; display:flex; justify-content:space-between; font-size:1.2em;"><strong>總金額:</strong> <span>$0.00</span></div>
+    `;
+    mainBody.checkoutWrapper.appendChild(totalsContainer);
 }
-    // -- Credit Card Payment Listener --
-document.getElementById('creditCardImage').addEventListener('click', () => {
-  // Disable the button to prevent multiple clicks
-  document.getElementById('creditCardImage').style.pointerEvents = 'none';
-  
-  // Show loading indicator
-  const loadingDiv = document.createElement('div');
-  loadingDiv.id = 'payment-loading';
-  loadingDiv.innerHTML = '<p>Processing payment request...</p>';
-  loadingDiv.style.position = 'fixed';
-  loadingDiv.style.top = '50%';
-  loadingDiv.style.left = '50%';
-  loadingDiv.style.transform = 'translate(-50%, -50%)';
-  loadingDiv.style.background = 'rgba(255,255,255,0.9)';
-  loadingDiv.style.padding = '20px';
-  loadingDiv.style.borderRadius = '5px';
-  loadingDiv.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
-  loadingDiv.style.zIndex = '9999';
-  document.body.appendChild(loadingDiv);
 
-  // Prepare the order data
-  const orderData = {
-    //orderId: 'ORDER' + Date.now(),   
-    orderId : generateCustomOrderId(), // Generate unique order ID based on timestamp
-    totalAmount: 17, // Replace with the actual amount
-    tradeDesc: 'Order Description', // Replace with your order description
-    itemName: 'Product Name', // Replace with your product name
-    returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
-    clientBackUrl: 'https://the2dge.github.io/bean0428/' // Optional: Replace with your ClientBackURL
-  };
-
-  // Send a POST request to the Cloud Function
-  fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(orderData)
-  })
-  .then(response => {
-    if (!response.ok) {
-      // If we get an error response, convert it to text and throw
-      return response.text().then(text => {
-        throw new Error(`Server responded with ${response.status}: ${text}`);
-      });
-    }
-    return response.text();
-  })
-  .then(html => {
-    // Remove loading indicator
-    document.getElementById('payment-loading').remove();
-    
-    // Replace the current document with the payment form
-    document.open();
-    document.write(html);
-    document.close();
-  })
-  .catch(error => {
-    console.error('Error initiating payment:', error);
-    
-    // Remove loading indicator
-    if (document.getElementById('payment-loading')) {
-      document.getElementById('payment-loading').remove();
-    }
-    
-    // Re-enable the button
-    document.getElementById('creditCardImage').style.pointerEvents = 'auto';
-    
-    // Show error message
-    alert('Failed to initiate payment. Please try again. Error: ' + error.message);
-  });
-});
-    // --- Form Submit Event Listener ---
-    checkoutForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-       const submitBtn = document.getElementById('submit-order-btn');
-      // Prevent double submission
-      if (submitBtn.disabled) return; 
-        submitBtn.disabled = true; // Disable immediately
-        submitBtn.textContent = '處理中...'; // Optional: show loading state
-
-
-      const formData = new FormData(checkoutForm);
-      const data = Object.fromEntries(formData.entries());
-
-      const discountCode = data['discount_code']?.trim();
-      const discountTierMap = {
-        'GOLD': 5,
-        'SILVER': 3,
-        'BRONZE': 1
-      };
-      // Use pre-fetched membership discount (from sessionStorage)
-      const memberDiscountCode = sessionStorage.getItem('discountCode');
-      const memberTier = sessionStorage.getItem('discountTier');
-
-      let appliedDiscountPercent = 0;
-      console.log("dCode, mdCode, Tier are: ", discountCode, memberDiscountCode, memberTier );
-      if (discountCode && memberDiscountCode && discountCode === memberDiscountCode && memberTier) {
-    appliedDiscountPercent = discountTierMap[memberTier.toUpperCase()] || 0;
-  }
-
-      //const totalAmount = calculateTotal(appliedDiscountPercent); 
-      const lineUserName = sessionStorage.getItem('lineUserName') || '';
-      const totalAmount = window.finalCheckoutTotal
-  ? `$${window.finalCheckoutTotal.toFixed(0)}`
-  : `$${calculateCartTotal().toFixed(0)}`; // fallback
-      const lineUserId = sessionStorage.getItem('lineUserId') || '';
-      //const totalAmount = calculateTotal(); // your existing function, returns string like "$123.00"
-      let rewardToCodeOwner = 0;
-      const discountRate = validateDiscountCode(discountCode);
-      console.log("totalAmount and rewardRate are: ", totalAmount, discountRate);
-      let numericTotal = parseFloat(totalAmount.replace(/[^0-9.-]+/g, ''));
-        // Deduct shipping fee if applied
-    const address = document.getElementById('address')?.value;
-    const is711Pickup = address === '7-11 商店取貨';
-    if (is711Pickup && numericTotal >= 60 && numericTotal < 1060) {
-      numericTotal -= 60;
-    }
-      if (discountRate > 0) {
-          rewardToCodeOwner = numericTotal * (discountRate / 1);
-        }
-      const rewardAmount = `$${rewardToCodeOwner.toFixed(0)}`;
-      const orderId = generateCustomOrderId();
-      const CVSStoreID = window.selectedStoreInfo?.CVSStoreID || '';
-    console.log("StoreID before forming orderData: ", CVSStoreID);
-      // Replace address with actual store if 7-11
-      let finalAddress = data.address;
-      if (finalAddress === '7-11 商店取貨' && window.selectedStoreInfo?.CVSStoreName) {
-        finalAddress = window.selectedStoreInfo.CVSStoreName;
-      }
-      
-      const orderData = {
-        orderId,
-        name: data.name,
-        email: data.email,
-        telephone: data.telephone,
-        paymentMethod: data['payment-method'],
-        address: finalAddress,
-        CVSStoreID,
-        discountCode: data['discount_code'],
-        totalAmount,
-        rewardAmount,
-        lineUserName,
-        lineUserId,
-        cartItems: cart.map(item => `${item.name} x${item.quantity}`) // optional
-      };
-
-      console.log("📦 Final orderData:", orderData);
-
-      // Send to your Cloud Function or Web App here
-      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
-        method: 'POST',
-        mode: "no-cors",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      });
-
-      // Reset state
-      cart = [];
-      localStorage.removeItem('cart'); 
-      localStorage.removeItem('currentOrderId');
-      sessionStorage.removeItem('cart')
-      renderSideCart();
-      checkoutForm.reset();
-      switchView('content');
-      alert('✅ Thank you for your order!');
+// --- Helper for "繼續購買" (Back for More Items) Button ---
+function renderBackToShoppingButtonDOM() {
+    const backButton = document.createElement('button');
+    backButton.id = 'backForMoreItemsBtn';
+    backButton.textContent = '🔙 繼續購買';
+    backButton.type = 'button'; // Important for forms
+    // Basic styling, can be moved to CSS
+    Object.assign(backButton.style, {
+        backgroundColor: '#5cb85c', color: 'white', padding: '10px 15px',
+        border: 'none', borderRadius: '4px', cursor: 'pointer',
+        marginTop: '20px', marginBottom: '20px'
     });
 
+    backButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof switchView === 'function') {
+            switchView('content');
+            document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            console.error('switchView function is not defined.');
+        }
+    });
+    mainBody.checkoutWrapper.appendChild(backButton);
 }
+
+// --- Helper to Create Checkout Form DOM Structure ---
+function createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo) {
+    const form = document.createElement('form');
+    form.id = 'checkout-form-refactored';
+
+    const storedName = sessionStorage.getItem('lineUserName') || '';
+    const storedPhone = ''; // Or retrieve if you store phone number elsewhere
+
+    form.innerHTML = `
+        <h4>顧客資訊及運送選項</h4>
+
+        <div class="form-group">
+            <label for="discount_code">折扣碼 (選填):</label>
+            <div style="display:flex;">
+                <input type="text" id="discount_code" name="discount_code" class="form-control" style="flex-grow:1; margin-right:5px;">
+                <button type="button" id="apply-discount-btn" class="btn btn-secondary btn-sm">套用</button>
+            </div>
+            <small id="discount-message" class="form-text"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="shipping-method">取貨方式:</label>
+            <select id="shipping-method" name="shipping_method" class="form-control" required>
+                <option value="">請選擇取貨方式</option>
+                <option value="store_pickup">來商店取貨</option>
+                <option value="seven_eleven">7-11 商店取貨</option>
+            </select>
+        </div>
+
+        <div id="pickup-store-info-display" class="alert alert-info" style="display:none; margin-top:10px; padding:10px; border:1px solid #bce8f1; border-radius:4px; background-color:#d9edf7;">
+            </div>
+
+        <div class="form-group">
+            <label for="customer_name">收件人姓名:</label>
+            <input type="text" id="customer_name" name="customer_name" class="form-control" value="${storedName}" required>
+        </div>
+        <div class="form-group">
+            <label for="customer_email">Email:</label>
+            <input type="email" id="customer_email" name="customer_email" class="form-control" value="${lineUserEmail}" required>
+        </div>
+        <div class="form-group">
+            <label for="customer_phone">電話:</label>
+            <input type="tel" id="customer_phone" name="customer_phone" class="form-control" pattern="09[0-9]{8}" value="${storedPhone}" placeholder="例如: 0912345678" required>
+        </div>
+
+        <div class="form-group">
+            <label for="payment-option">付款方式:</label>
+            <select id="payment-option" name="payment_option" class="form-control" required>
+                <option value="pay_at_store">到店付款</option>
+                <option value="credit_card_ecpay">信用卡付款 (ECPay)</option>
+                ${lineUserName ? '<option value="credit_point">點數付款 (會員)</option>' : ''}
+            </select>
+        </div>
+
+        <div id="submit-area" style="margin-top: 20px;">
+            <button type="submit" id="final-submit-btn" class="btn btn-primary btn-lg btn-block" style="display:block; width:100%; padding:10px; font-size:1.2em;">確認訂單</button>
+            <img src="image/creditcard.png" alt="Pay with Credit Card" id="ecpay-credit-card-btn" style="display:none; cursor:pointer; margin: 10px auto; max-width:150px; display:block;" />
+        </div>
+    `;
+
+    // Apply stored 7-11 info if available (for initial render)
+    const storeInfoDiv = form.querySelector('#pickup-store-info-display');
+    if (storedStoreInfo && storedStoreInfo.CVSStoreID) {
+        storeInfoDiv.innerHTML = `
+            <p style="margin:0;"><strong>已選擇 7-11 門市</strong></p>
+            <p style="margin:0;">店號: ${storedStoreInfo.CVSStoreID}</p>
+            <p style="margin:0;">店名: ${storedStoreInfo.CVSStoreName}</p>
+            <p style="margin:0;">地址: ${storedStoreInfo.CVSAddress}</p>
+        `;
+        storeInfoDiv.style.display = 'block';
+        form.querySelector('#shipping-method').value = 'seven_eleven';
+    }
+
+    return form;
+}
+
+// --- Helper to Update Displayed Order Summary (Subtotal, Discount, Shipping, Total) ---
+function updateOrderSummaryDisplay(cartItems, shippingCost, discountPercentage) {
+    const subtotal = calculateCartTotal(); // This must return a number
+    const discountAmount = subtotal * (discountPercentage / 100);
+    const totalAfterDiscount = subtotal - discountAmount;
+    const finalTotal = totalAfterDiscount + shippingCost;
+
+    document.querySelector('#order-subtotal span').textContent = `$${subtotal.toFixed(0)}`;
+
+    const discountDiv = document.getElementById('order-discount');
+    if (discountAmount > 0) {
+        discountDiv.querySelector('span').textContent = `-$${discountAmount.toFixed(0)}`;
+        discountDiv.style.display = 'flex';
+    } else {
+        discountDiv.style.display = 'none';
+    }
+
+    const shippingDiv = document.getElementById('order-shipping');
+    if (shippingCost > 0) {
+        shippingDiv.querySelector('span').textContent = `$${shippingCost.toFixed(0)}`;
+        shippingDiv.style.display = 'flex';
+    } else {
+        shippingDiv.style.display = 'none';
+    }
+
+    document.querySelector('#order-final-total span').textContent = `$${finalTotal.toFixed(0)}`;
+
+    // Store numeric values for submission if needed
+    sessionStorage.setItem('finalOrderAmountForSubmission', finalTotal.toFixed(0));
+    sessionStorage.setItem('orderShippingCostForSubmission', shippingCost.toFixed(0));
+    sessionStorage.setItem('orderDiscountAmountForSubmission', discountAmount.toFixed(0));
+    sessionStorage.setItem('orderSubtotalForSubmission', subtotal.toFixed(0));
+}
+
+
+// --- Helper for Checkout Form Event Listeners & Initial State Management ---
+function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredStoreInfo) {
+    const shippingSelect = form.querySelector('#shipping-method');
+    const paymentSelect = form.querySelector('#payment-option');
+    const submitButton = form.querySelector('#final-submit-btn');
+    const creditCardImageButton = form.querySelector('#ecpay-credit-card-btn');
+    const nameInput = form.querySelector('#customer_name');
+    const emailInput = form.querySelector('#customer_email');
+    const phoneInput = form.querySelector('#customer_phone');
+    const discountInput = form.querySelector('#discount_code');
+    const applyDiscountBtn = form.querySelector('#apply-discount-btn');
+    const discountMessage = form.querySelector('#discount-message');
+    const storeInfoDiv = form.querySelector('#pickup-store-info-display');
+
+    // Initial state for submit buttons
+    function toggleSubmitButtonVisibility() {
+        const isValid = validateFormFields();
+        const paymentMethod = paymentSelect.value;
+
+        if (paymentMethod === 'credit_card_ecpay') {
+            submitButton.style.display = 'none';
+            creditCardImageButton.style.display = isValid ? 'block' : 'none';
+        } else {
+            submitButton.style.display = 'block';
+            creditCardImageButton.style.display = 'none';
+            submitButton.disabled = !isValid;
+        }
+    }
+
+    function validateFormFields() {
+        const isShippingSelected = shippingSelect.value !== "";
+        const is711StoreSelectedIfApplicable = shippingSelect.value !== 'seven_eleven' || (shippingSelect.value === 'seven_eleven' && sessionStorage.getItem('selectedStoreInfo'));
+
+        return isShippingSelected &&
+               is711StoreSelectedIfApplicable &&
+               nameInput.value.trim() !== '' &&
+               emailInput.checkValidity() && // Built-in email validation
+               phoneInput.checkValidity(); // For pattern matching e.g. "09[0-9]{8}"
+    }
+
+    // Add event listeners to form fields for validation
+    [nameInput, emailInput, phoneInput, shippingSelect, paymentSelect].forEach(el => {
+        el.addEventListener('input', toggleSubmitButtonVisibility);
+        el.addEventListener('change', toggleSubmitButtonVisibility); // For select elements
+    });
+
+    shippingSelect.addEventListener('change', () => {
+        const selection = shippingSelect.value;
+        const currentCartTotal = calculateCartTotal(); // Get current cart total
+
+        if (selection === 'seven_eleven') {
+            const existingStoreData = JSON.parse(sessionStorage.getItem('selectedStoreInfo'));
+            if (existingStoreData && existingStoreData.CVSStoreID) {
+                // Store already selected (e.g. user toggled shipping methods after returning from ECPay)
+                currentShippingCost = currentCartTotal < 1000 ? 60 : 0;
+                storeInfoDiv.innerHTML = `<p style="margin:0;"><strong>已選擇 7-11 門市</strong></p><p style="margin:0;">店號: ${existingStoreData.CVSStoreID}</p><p style="margin:0;">店名: ${existingStoreData.CVSStoreName}</p><p style="margin:0;">地址: ${existingStoreData.CVSAddress}</p>`;
+                storeInfoDiv.style.display = 'block';
+            } else {
+                // No store selected yet, proceed to ECPay map
+                const now = new Date(); // Generate a unique order ID
+                const orderId = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random() * 1000)}`;
+                window.currentOrderId = orderId; // Make it available if needed elsewhere
+                localStorage.setItem('cart', JSON.stringify(cart)); // 'cart' must be accessible
+                localStorage.setItem('currentOrderId', orderId);
+                sessionStorage.setItem('checkoutFormDataBeforeECPay', JSON.stringify({ // Save form state
+                    name: nameInput.value, email: emailInput.value, phone: phoneInput.value,
+                    payment: paymentSelect.value, discountCode: discountInput.value,
+                    currentDiscountRate: currentDiscountRate // Save applied discount rate
+                }));
+                if (typeof openLogisticsMap === 'function') {
+                    openLogisticsMap(orderId); // This function will navigate away
+                } else {
+                    console.error('openLogisticsMap is not defined');
+                    alert('7-11地圖選擇功能異常。');
+                }
+                return; // Stop further processing as page will redirect
+            }
+        } else if (selection === 'store_pickup') {
+            currentShippingCost = 0;
+            storeInfoDiv.style.display = 'none';
+            storeInfoDiv.innerHTML = ''; // Clear content
+            // No need to remove 'selectedStoreInfo' here, as it might be needed if user switches back
+        } else { // No valid shipping selection
+            currentShippingCost = 0;
+            storeInfoDiv.style.display = 'none';
+            storeInfoDiv.innerHTML = '';
+        }
+        updateOrderSummaryDisplay(cartItems, currentShippingCost, currentDiscountRate);
+        toggleSubmitButtonVisibility(); // Re-check button state
+    });
+
+
+    applyDiscountBtn.addEventListener('click', () => {
+        const code = discountInput.value.trim();
+        if (!code) {
+            discountMessage.textContent = '請輸入折扣碼。';
+            discountMessage.className = 'form-text text-warning';
+            currentDiscountRate = 0; // Reset discount
+        } else {
+            // membershipData must be loaded and accessible
+            const discountPercentage = validateDiscountCode(code); // Expects percentage (e.g., 5 for 5%)
+            if (discountPercentage > 0) {
+                currentDiscountRate = discountPercentage;
+                discountMessage.textContent = `已套用 ${sessionStorage.getItem('discountTier') || ''} 折扣 (${discountPercentage}% off)!`;
+                discountMessage.className = 'form-text text-success';
+            } else {
+                currentDiscountRate = 0; // Reset discount
+                discountMessage.textContent = '無效的折扣碼。';
+                discountMessage.className = 'form-text text-danger';
+            }
+        }
+        updateOrderSummaryDisplay(cartItems, currentShippingCost, currentDiscountRate);
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateFormFields()) {
+            alert('請完整填寫表單並選擇有效的取貨方式。');
+            return;
+        }
+        const orderData = {
+            orderId: localStorage.getItem('currentOrderId') || `MANUAL-${Date.now()}`,
+            customerName: nameInput.value,
+            customerEmail: emailInput.value,
+            customerPhone: phoneInput.value,
+            shippingMethod: shippingSelect.value,
+            paymentMethod: paymentSelect.value,
+            items: cart, // 'cart' is global
+            subtotal: parseFloat(sessionStorage.getItem('orderSubtotalForSubmission')),
+            shippingCost: parseFloat(sessionStorage.getItem('orderShippingCostForSubmission')),
+            discountCode: sessionStorage.getItem('discountCode') || null,
+            discountTier: sessionStorage.getItem('discountTier') || null,
+            discountAmount: parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')),
+            totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')),
+            storeInfo: shippingSelect.value === 'seven_eleven' ? JSON.parse(sessionStorage.getItem('selectedStoreInfo')) : null,
+            timestamp: new Date().toISOString()
+        };
+
+        console.log("Order Data for Submission:", orderData);
+        // Here, you would typically send 'orderData' to your backend (e.g., Google Apps Script)
+        // For example: await google.script.run.withSuccessHandler(...).processOrder(orderData);
+        alert(`訂單提交成功 (模擬)！訂單ID: ${orderData.orderId}\n總金額: $${orderData.totalAmount}`);
+        // Clear cart, session storage for checkout, and redirect or show success message
+        // cart.length = 0; // Clear the global cart array
+        // renderSideCart(); // Update side cart display
+        // sessionStorage.removeItem('selectedStoreInfo');
+        // sessionStorage.removeItem('discountCode');
+        // sessionStorage.removeItem('discountTier');
+        // localStorage.removeItem('currentOrderId');
+        // switchView('thankyou'); // Or navigate to a thank you page
+    });
+
+    creditCardImageButton.addEventListener('click', async () => {
+        if (!validateFormFields()) {
+            alert('請完整填寫表單並選擇有效的取貨方式。');
+            return;
+        }
+        const totalForECPay = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission'));
+        let orderIdForECPay = localStorage.getItem('currentOrderId');
+
+        if (!orderIdForECPay) { // Should ideally always exist if 7-11 was chosen
+            const now = new Date();
+            orderIdForECPay = `ECP-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random()*1000)}`;
+            localStorage.setItem('currentOrderId', orderIdForECPay);
+        }
+
+        const itemNames = cartItems.map(item => `${item.name.substring(0,40)} x${item.quantity}`).join('#').substring(0,190); // ECPay length limits
+
+        const ecpayData = {
+            MerchantTradeNo: orderIdForECPay,
+            // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
+            TotalAmount: Math.round(totalForECPay), // ECPay requires integer
+            TradeDesc: "網路商店商品一批", // Max 200 bytes
+            ItemName: itemNames, // Max 400 bytes, items separated by #
+            ReturnURL: 'YOUR_SERVER_SIDE_ECPAY_RETURN_URL', // Server endpoint for async notification
+            ChoosePayment: 'Credit', // For credit card
+            ClientBackURL: window.location.origin + window.location.pathname + '?ecpay_client_return=1', // User redirect after payment
+            OrderResultURL: window.location.origin + window.location.pathname + '?ecpay_client_result=1', // User redirect after payment (newer param)
+            // You'll need more parameters like MerchantID, EncryptType, etc.
+            // These are usually handled by a server-side script that generates the full ECPay form.
+        };
+        console.log("Data for ECPay Credit Card (to be sent to server):", ecpayData);
+        alert(`準備導向ECPay信用卡支付 (模擬)。訂單ID: ${ecpayData.MerchantTradeNo}, 金額: $${ecpayData.TotalAmount}`);
+        // In a real scenario:
+        // 1. Send 'ecpayData' essentials to your backend.
+        // 2. Backend generates the full ECPay form with CheckMacValue.
+        // 3. Backend returns this form HTML, or redirects user to ECPay with parameters.
+        // Example: window.location.href = `/your-server/initiate-ecpay?orderId=${orderIdForECPay}`;
+    });
+
+    // Restore form data if returning from ECPay map selection (if it was saved)
+    const savedCheckoutData = JSON.parse(sessionStorage.getItem('checkoutFormDataBeforeECPay'));
+    if (savedCheckoutData) {
+        nameInput.value = savedCheckoutData.name || '';
+        emailInput.value = savedCheckoutData.email || '';
+        phoneInput.value = savedCheckoutData.phone || '';
+        paymentSelect.value = savedCheckoutData.payment || 'pay_at_store';
+        if (savedCheckoutData.discountCode) {
+            discountInput.value = savedCheckoutData.discountCode;
+            // Restore applied discount rate
+            currentDiscountRate = savedCheckoutData.currentDiscountRate || 0;
+            if (currentDiscountRate > 0) {
+                 discountMessage.textContent = `已套用 ${sessionStorage.getItem('discountTier') || ''} 折扣 (${currentDiscountRate}% off)!`;
+                 discountMessage.className = 'form-text text-success';
+            }
+        }
+        sessionStorage.removeItem('checkoutFormDataBeforeECPay'); // Clean up
+    }
+
+    // Initial call to set button states and summary
+    updateOrderSummaryDisplay(cartItems, currentShippingCost, currentDiscountRate);
+    toggleSubmitButtonVisibility();
+}
+
+// --- Modified ECpayStoreDataBackTransfer ---
+// This function is assumed to be called on DOMContentLoaded or when ECPay redirects back.
+function ECpayStoreDataBackTransfer() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const CVSStoreID = urlParams.get('CVSStoreID');
+    const CVSStoreName = urlParams.get('CVSStoreName');
+    const CVSAddress = urlParams.get('CVSAddress');
+    const MerchantTradeNo = urlParams.get('MerchantTradeNo'); // This is the orderId
+
+    // Check if we are on the checkout page by looking for a specific element
+    const checkoutFormRefactored = document.getElementById('checkout-form-refactored');
+
+    if (CVSStoreID && CVSStoreName && CVSAddress && MerchantTradeNo && checkoutFormRefactored) {
+        const selectedStoreData = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
+        sessionStorage.setItem('selectedStoreInfo', JSON.stringify(selectedStoreData));
+        // Ensure currentOrderId in localStorage is also updated if it changed (it shouldn't from ECPay map)
+        localStorage.setItem('currentOrderId', MerchantTradeNo);
+
+        const storeInfoDiv = document.getElementById('pickup-store-info-display');
+        const shippingSelect = document.getElementById('shipping-method');
+
+        if (storeInfoDiv) {
+            storeInfoDiv.innerHTML = `
+                <p style="margin:0;"><strong>已選擇 7-11 門市</strong></p>
+                <p style="margin:0;">店號: ${CVSStoreID}</p>
+                <p style="margin:0;">店名: ${CVSStoreName}</p>
+                <p style="margin:0;">地址: ${CVSAddress}</p>
+            `;
+            storeInfoDiv.style.display = 'block';
+        }
+        if (shippingSelect) {
+            shippingSelect.value = 'seven_eleven'; // Pre-select the dropdown
+        }
+
+        currentShippingCost = calculateCartTotal() < 1000 ? 60 : 0;
+
+        // Restore other form fields that might have been cleared by navigation
+        const savedCheckoutData = JSON.parse(sessionStorage.getItem('checkoutFormDataBeforeECPay'));
+        if (savedCheckoutData) {
+            document.getElementById('customer_name').value = savedCheckoutData.name || '';
+            document.getElementById('customer_email').value = savedCheckoutData.email || '';
+            document.getElementById('customer_phone').value = savedCheckoutData.phone || '';
+            document.getElementById('payment-option').value = savedCheckoutData.payment || 'pay_at_store';
+            if (savedCheckoutData.discountCode) {
+                document.getElementById('discount_code').value = savedCheckoutData.discountCode;
+                currentDiscountRate = savedCheckoutData.currentDiscountRate || 0; // Restore discount rate
+                // Visually update discount message if needed
+                if (currentDiscountRate > 0) {
+                    const discountMessageEl = document.getElementById('discount-message');
+                    discountMessageEl.textContent = `已套用 ${sessionStorage.getItem('discountTier') || ''} 折扣 (${currentDiscountRate}% off)!`;
+                    discountMessageEl.className = 'form-text text-success';
+                }
+            }
+            sessionStorage.removeItem('checkoutFormDataBeforeECPay'); // Clean up
+        }
+        
+        // 'cart' must be globally available or passed to updateOrderSummaryDisplay
+        updateOrderSummaryDisplay(cart, currentShippingCost, currentDiscountRate);
+
+        // Manually trigger change on shippingSelect to re-validate form and button states
+        if (shippingSelect) {
+            const event = new Event('change');
+            shippingSelect.dispatchEvent(event);
+        }
+        
+        // Clean URL: Remove ECPay parameters to prevent re-processing on refresh.
+        // Do this carefully, only if you're sure the state is fully restored.
+        // window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (checkoutFormRefactored && !CVSStoreID && shippingSelect.value === 'seven_eleven' && !sessionStorage.getItem('selectedStoreInfo')) {
+        // If 7-11 is selected but no store info exists (e.g. user refreshed after ECPay redirect without params, or navigated back)
+        // and we are on checkout page, prompt to select store or clear selection
+        shippingSelect.value = ""; // Reset dropdown
+        document.getElementById('pickup-store-info-display').style.display = 'none';
+        currentShippingCost = 0;
+        updateOrderSummaryDisplay(cart, currentShippingCost, currentDiscountRate);
+        alert("請重新選擇7-11門市，或選擇其他取貨方式。");
+         const event = new Event('change');
+         shippingSelect.dispatchEvent(event); // Trigger validation
+    }
+}
+
+
+// --- Utility: Validate Discount Code ---
+// Make sure membershipData is loaded before this is called.
+function validateDiscountCode(inputCode) {
+    if (!membershipData || membershipData.length === 0) {
+        console.warn("Membership data not loaded. Cannot validate discount code.");
+        return 0;
+    }
+    const codeToValidate = inputCode.trim().toLowerCase();
+    const member = membershipData.find(m => m.discountCode.toLowerCase() === codeToValidate);
+
+    if (member) {
+        sessionStorage.setItem('discountCode', member.discountCode); // Store the actual code used
+        sessionStorage.setItem('discountTier', member.tier);
+        const tier = member.tier.toLowerCase();
+        switch (tier) {
+            case 'gold': return 5;   // 5%
+            case 'silver': return 3; // 3%
+            case 'bronze': return 1; // 1%
+            default: return 0;
+        }
+    } else {
+        sessionStorage.removeItem('discountCode');
+        sessionStorage.removeItem('discountTier');
+        return 0;
+    }
+}
+
+// --- Utility: Calculate Cart Subtotal (Numeric) ---
+// Ensure 'cart' is accessible.
+function calculateCartTotal() {
+    let total = 0;
+    if (!cart || cart.length === 0) return 0;
+    cart.forEach(item => {
+        const priceString = String(item.price); // Ensure it's a string before replacing
+        const price = parseFloat(priceString.replace(/[^0-9.-]+/g, ""));
+        if (!isNaN(price)) {
+            total += price * item.quantity;
+        }
+    });
+    return total;
+}
+
+// --- Assumed globally available functions (you need to ensure these exist) ---
+// function loginWithLINE() { /* ... */ }
+// function openLogisticsMap(orderId) { /* ... */ }
+// function switchView(viewName) { /* ... */ }
+// let cart = []; // Global cart variable
+// let membershipData = []; // Global membership data
+
+// Call ECpayStoreDataBackTransfer on page load to handle returns from ECPay
+document.addEventListener('DOMContentLoaded', () => {
+    // Load membership data if not already loaded
+    if (typeof loadMembershipData === 'function' && (!membershipData || membershipData.length === 0) ) {
+        loadMembershipData().then(() => {
+            // Potentially re-render or update parts of checkout if it's already visible
+            // and dependent on membershipData (e.g. auto-applying a default discount)
+        });
+    }
+    ECpayStoreDataBackTransfer();
+});
     // --- Event Listeners Setup ---
     function setupEventListeners() {
         // Navbar Links (Scroll within content view)
