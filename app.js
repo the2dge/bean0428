@@ -904,33 +904,41 @@ if (lineUserName) {
 
 // --- Inject Store Info if available ---
 if (storeInfo) {
-    const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
-    if (pickupInfoDiv) {
-        pickupInfoDiv.innerHTML = `
-            <p><strong>7-11 門市資訊</strong></p>
-            <p>店號: ${storeInfo.CVSStoreID}</p>
-            <p>店名: ${storeInfo.CVSStoreName}</p>
-            <p>地址: ${storeInfo.CVSAddress}</p>
-        `;
-    }
+  const pickupInfoDiv = checkoutForm.querySelector('#pickup-store-info');
+  if (pickupInfoDiv) {
+    pickupInfoDiv.innerHTML = `
+      <p><strong>7-11 門市資訊</strong></p>
+      <p>店號: ${storeInfo.CVSStoreID}</p>
+      <p>店名: ${storeInfo.CVSStoreName}</p>
+      <p>地址: ${storeInfo.CVSAddress}</p>
+    `;
+  }
 
-    // Set the address select value to "7-11 商店取貨"
-    const addressSelect = checkoutForm.querySelector('#address');
-    if (addressSelect) {
-        addressSelect.value = "7-11 商店取貨";
+  // ✅ Set dropdown to correct selection
+  const addressSelect = checkoutForm.querySelector('#address');
+  if (addressSelect) {
+    addressSelect.value = "7-11 商店取貨";
+  }
 
-    }
-   
-    // Check base total again for shipping notice
-    const baseTotal = calculateCartTotal();
-    const totalRow = document.getElementById('checkout-total-row');
-    // ✅ Restore to global reference so it can be used in orderData
-    window.selectedStoreInfo = storeInfo;
-    if (totalRow && baseTotal < 1000) {
-        totalRow.innerHTML += `
-            <br><span style="color:red;">🚚 運費 (未滿$1000)：$60</span>
-        `;
-    }
+  // ✅ Save for later order submission
+  window.selectedStoreInfo = storeInfo;
+
+  // ✅ Recalculate and display total (with shipping fee if needed)
+  const baseTotal = calculateCartTotal();
+  const shippingFee = baseTotal < 1000 ? 60 : 0;
+  const grandTotal = baseTotal + shippingFee;
+
+  const totalRow = document.getElementById('checkout-total-row');
+  if (totalRow) {
+    totalRow.innerHTML = `
+      <strong>商品總額:</strong> $${baseTotal.toFixed(0)}<br>
+      ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
+      <strong>總金額:</strong> $${grandTotal.toFixed(0)}
+    `;
+  }
+
+  // ✅ Save final total globally
+  window.finalCheckoutTotal = grandTotal;
 }
     // -- Credit Card Payment Listener --
 document.getElementById('creditCardImage').addEventListener('click', () => {
