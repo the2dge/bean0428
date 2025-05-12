@@ -950,12 +950,26 @@ if (storeInfo) {
 
   const totalRow = document.getElementById('checkout-total-row');
   if (totalRow) {
+  const shippingMsg = is711Pickup
+    ? `<span style="color:${shippingFee > 0 ? 'red' : 'green'};">🚚 運費 (${discountedTotal < 1000 ? '未滿$1000' : '滿$1000'}): $${shippingFee}</span><br>`
+    : '';
+
+  if (discountRate > 0) {
     totalRow.innerHTML = `
-      <strong>商品總額:</strong> $${baseTotal.toFixed(0)}<br>
-      ${shippingFee > 0 ? `<span style="color:red;">🚚 運費 (未滿$1000)：$60</span><br>` : ''}
-      <strong>總金額:</strong> $${grandTotal.toFixed(0)}
+      <strong>折扣後總額：</strong> $${discountedTotal.toFixed(0)} 🎉 (${(discountRate * 100).toFixed(0)}% 優惠)<br>
+      ${shippingMsg}
+      <strong>總計：</strong> $${grandTotal.toFixed(0)}
     `;
+    alert(`🎉 折扣碼成功套用！享有 ${(discountRate * 100).toFixed(0)}% 優惠！`);
+  } else {
+    totalRow.innerHTML = `
+      <strong>商品總額：</strong> $${baseTotal.toFixed(0)}<br>
+      ${shippingMsg}
+      <strong>總計：</strong> $${(baseTotal + shippingFee).toFixed(0)}
+    `;
+    alert('❌ 折扣碼無效或不存在');
   }
+}
 
   // ✅ Save final total globally
   window.finalCheckoutTotal = grandTotal;
