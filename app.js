@@ -1010,7 +1010,7 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
 // --- CRITICAL: How is rewardAmount determined on the client? ---
 // Your GAS script now expects 'rewardAmount' directly from the client.
 // If this is, for example, the same as 'discountAmount', or if it's 0 unless a specific condition is met:
-let calculatedRewardAmount = 0; // Default to 0
+
 const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
 const discountRate = parseFloat(currentDiscountRate) || 0;
 const calculatedRewardAmount = parseFloat((discountAmount * (discountRate / 100)).toFixed(2));
