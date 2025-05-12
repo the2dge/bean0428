@@ -1011,15 +1011,9 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
 // Your GAS script now expects 'rewardAmount' directly from the client.
 // If this is, for example, the same as 'discountAmount', or if it's 0 unless a specific condition is met:
 let calculatedRewardAmount = 0; // Default to 0
-// Example: If rewardAmount is simply the discountAmount:
-// calculatedRewardAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
-// Example: Or if it's a fixed amount for using any discount code:
-// if (sessionStorage.getItem('discountCode')) {
-//   calculatedRewardAmount = 5; // Fixed $5 reward for using a code, for instance
-// }
-// **You need to implement the logic for 'calculatedRewardAmount' based on your business rules.**
-// For this example, I'll keep it as 0, but highlight that it needs your specific logic.
-
+const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
+const discountRate = parseFloat(currentDiscountRate) || 0;
+const calculatedRewardAmount = parseFloat((discountAmount * (discountRate / 100)).toFixed(2));
 const orderId = generateCustomOrderId();
 const orderData = {
     // Fields explicitly destructured by your new GAS structure:
