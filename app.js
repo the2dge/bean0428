@@ -966,22 +966,29 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
             return;
         }
         const orderData = {
-            orderId: localStorage.getItem('currentOrderId') || `MANUAL-${Date.now()}`,
-            customerName: nameInput.value,
-            customerEmail: emailInput.value,
-            customerPhone: phoneInput.value,
-            shippingMethod: shippingSelect.value,
-            paymentMethod: paymentSelect.value,
-            items: cart, // 'cart' is global
-            subtotal: parseFloat(sessionStorage.getItem('orderSubtotalForSubmission')),
-            shippingCost: parseFloat(sessionStorage.getItem('orderShippingCostForSubmission')),
-            discountCode: sessionStorage.getItem('discountCode') || null,
-            discountTier: sessionStorage.getItem('discountTier') || null,
-            discountAmount: parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')),
-            totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')),
-            storeInfo: shippingSelect.value === 'seven_eleven' ? JSON.parse(sessionStorage.getItem('selectedStoreInfo')) : null,
-            timestamp: new Date().toISOString()
-        };
+    orderId: localStorage.getItem('currentOrderId') || `MANUAL-${Date.now()}`,
+    customerName: nameInput.value, // Assuming nameInput is your customer name field
+    customerEmail: emailInput.value, // Assuming emailInput is your customer email field
+    customerPhone: phoneInput.value, // Assuming phoneInput is your customer phone field
+    shippingMethod: shippingSelect.value, // Assuming shippingSelect is your shipping method dropdown
+    paymentMethod: paymentSelect.value, // Assuming paymentSelect is your payment method dropdown
+    items: cart, // 'cart' should be your global cart array [{name, quantity, price, img,...}, ...]
+
+    subtotal: parseFloat(sessionStorage.getItem('orderSubtotalForSubmission')),
+    shippingCost: parseFloat(sessionStorage.getItem('orderShippingCostForSubmission')),
+    discountCode: sessionStorage.getItem('discountCode') || null, // From discount code logic
+    discountTier: sessionStorage.getItem('discountTier') || null, // From discount code logic
+    discountAmount: parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')),
+    totalAmount: parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission')), // ADDED: GAS uses this for amountNum
+
+    storeInfo: shippingSelect.value === 'seven_eleven' ? JSON.parse(sessionStorage.getItem('selectedStoreInfo')) : null,
+    timestamp: new Date().toISOString(),
+    lineUserId: sessionStorage.getItem('lineUserId') || null // ADDED: GAS uses this for member updates
+    // rewardAmount is not typically sent from the client unless it's a specific user input.
+    // Your GAS script's `if (discountCode && rewardAmount)` condition implies rewardAmount
+    // might be expected. If it's calculated server-side or a fixed config, no client change needed for it.
+    // If it IS expected from client, you'd add it here.
+};
 
         console.log("Order Data for Submission:", orderData);
         // Send to your Cloud Function or Web App here
