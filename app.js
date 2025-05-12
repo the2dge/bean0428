@@ -821,7 +821,7 @@ function updateOrderSummaryDisplay(cartItems, shippingCost, discountPercentage) 
 
     const discountDiv = document.getElementById('order-discount');
     if (discountAmount > 0) {
-        discountDiv.querySelector('span').textContent = `-$${discountAmount.toFixed(0)}`;
+        discountDiv.querySelector('span').textContent = `-$${discountAmount.toFixed(1)}`;
         discountDiv.style.display = 'flex';
     } else {
         discountDiv.style.display = 'none';
