@@ -762,10 +762,29 @@ if (lineUserName) {
       discountWrapper.style.display = 'none';
     }
   }
-   if (selected === '來商店取貨'){
-    const selectedStoreInfo = document.getElementById('pickup-store-info');
+   if (selected === '來商店取貨') {
+  // 1. Clear the store info block
+  const selectedStoreInfo = document.getElementById('pickup-store-info');
+  if (selectedStoreInfo) {
+    selectedStoreInfo.innerHTML = ''; // clear contents
     selectedStoreInfo.style.display = 'none';
   }
+
+  // 2. Reset global store info
+  window.selectedStoreInfo = null;
+
+  // 3. Update total area
+  const baseTotal = calculateCartTotal();
+  const totalRow = document.getElementById('checkout-total-row');
+  if (totalRow) {
+    totalRow.innerHTML = `
+      <strong>總金額:</strong> $${baseTotal.toFixed(0)}
+    `;
+  }
+
+  // 4. Update final total for submission
+  window.finalCheckoutTotal = baseTotal;
+}
   // ✅ 7-11 store pickup case
   if (selected === '7-11 商店取貨') {
     const now = new Date();
