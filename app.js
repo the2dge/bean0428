@@ -1005,7 +1005,7 @@ const orderData = {
     rewardAmount: calculatedRewardAmount, // << YOU MUST DEFINE HOW THIS IS CALCULATED ON CLIENT
     lineUserName: sessionStorage.getItem('lineUserName') || null,
     lineUserId: sessionStorage.getItem('lineUserId') || null,
-    cartItems: cart, // Your global cart array
+    cartItems: ["杏仁 3 300g x1", "腰果 2 200g x1"], // Your global cart array
 
     // --- Optional: Additional fields for more comprehensive logging in your Sheet ---
     // Your GAS can choose to log these or ignore them if not in the primary destructuring.
