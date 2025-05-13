@@ -1067,6 +1067,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             alert('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
+        creditCardImageButton.style.pointerEvents = 'none';
         const totalForECPay = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission'));
         let orderIdForECPay = localStorage.getItem('currentOrderId');
 
@@ -1078,26 +1079,56 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
 
         const itemNames = cartItems.map(item => `${item.name.substring(0,40)} x${item.quantity}`).join('#').substring(0,190); // ECPay length limits
 
-        const ecpayData = {
-            MerchantTradeNo: orderIdForECPay,
+        const orderData = {
+            orderId : generateCustomOrderId(),
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
-            TotalAmount: Math.round(totalForECPay), // ECPay requires integer
-            TradeDesc: "網路商店商品一批", // Max 200 bytes
-            ItemName: itemNames, // Max 400 bytes, items separated by #
-            ReturnURL: 'YOUR_SERVER_SIDE_ECPAY_RETURN_URL', // Server endpoint for async notification
-            ChoosePayment: 'Credit', // For credit card
-            ClientBackURL: window.location.origin + window.location.pathname + '?ecpay_client_return=1', // User redirect after payment
-            OrderResultURL: window.location.origin + window.location.pathname + '?ecpay_client_result=1', // User redirect after payment (newer param)
-            // You'll need more parameters like MerchantID, EncryptType, etc.
-            // These are usually handled by a server-side script that generates the full ECPay form.
+            totalAmount: 17, // Replace with the actual amount
+            tradeDesc: 'Order Description', // Replace with your order description
+            itemName: 'Product Name', // Replace with your product name
+            returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
+            clientBackUrl: 'https://the2dge.github.io/bean0428/' 
         };
-        console.log("Data for ECPay Credit Card (to be sent to server):", ecpayData);
-        alert(`準備導向ECPay信用卡支付 (模擬)。訂單ID: ${ecpayData.MerchantTradeNo}, 金額: $${ecpayData.TotalAmount}`);
-        // In a real scenario:
-        // 1. Send 'ecpayData' essentials to your backend.
-        // 2. Backend generates the full ECPay form with CheckMacValue.
-        // 3. Backend returns this form HTML, or redirects user to ECPay with parameters.
-        // Example: window.location.href = `/your-server/initiate-ecpay?orderId=${orderIdForECPay}`;
+        console.log("Data for ECPay Credit Card (to be sent to server):", orderData);
+          // Send a POST request to the Cloud Function
+  fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(orderData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      // If we get an error response, convert it to text and throw
+      return response.text().then(text => {
+        throw new Error(`Server responded with ${response.status}: ${text}`);
+      });
+    }
+    return response.text();
+  })
+  .then(html => {
+    // Remove loading indicator
+    document.getElementById('payment-loading').remove();
+    
+    // Replace the current document with the payment form
+    document.open();
+    document.write(html);
+    document.close();
+  })
+  .catch(error => {
+    console.error('Error initiating payment:', error);
+    
+    // Remove loading indicator
+    if (document.getElementById('payment-loading')) {
+      document.getElementById('payment-loading').remove();
+    }
+    
+    // Re-enable the button
+    document.getElementById('creditCardImage').style.pointerEvents = 'auto';
+    
+    // Show error message
+    alert('Failed to initiate payment. Please try again. Error: ' + error.message);
+  });
     });
 
     // Restore form data if returning from ECPay map selection (if it was saved)
