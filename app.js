@@ -783,7 +783,7 @@ function createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo) {
             <label for="payment-option">付款方式:</label>
             <select id="payment-option" name="payment_option" class="form-control" required>
                 <option value="pay_at_store">到店付款</option>
-                <option value="credit_card_ecpay">信用卡付款 (ECPay)</option>
+                <option value="credit_card_ecpay">信用卡付款 (透過第三方支付:綠界 ECPay)</option>
                 ${lineUserName ? '<option value="credit_point">點數付款 (會員)</option>' : ''}
             </select>
         </div>
@@ -1071,7 +1071,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
               // Show loading indicator
               const loadingDiv = document.createElement('div');
               loadingDiv.id = 'payment-loading';
-              loadingDiv.innerHTML = '<p>Processing payment request...</p>';
+              loadingDiv.innerHTML = '<p>正在連結綠界(ECPay)處理付款請求......</p>';
               loadingDiv.style.position = 'fixed';
               loadingDiv.style.top = '50%';
               loadingDiv.style.left = '50%';
