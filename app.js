@@ -544,6 +544,10 @@ function renderCheckoutPage(cartItems) {
 }
 
 // --- Helper for Top Header: "結帳" Title & Member/Login Button ---
+function handleTopUp(amount) {
+  // TODO: replace with real top-up call
+  alert(`您選擇了儲值 ${amount}`);
+}
 function renderCheckoutHeaderDOM(lineUserName) {
     const titleRow = document.createElement('div');
     titleRow.className = 'checkout-title-row'; // Add a class for styling
