@@ -1129,7 +1129,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
             totalAmount: sessionStorage.getItem('finalOrderAmountForSubmission') || 0,
-            pickupOption: "便利商店",
+            customField1: "便利商店",
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: cart, // Replace with your product name
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
