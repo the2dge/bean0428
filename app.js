@@ -1072,6 +1072,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         let calculatedAddress = 'N/A'; // Default
         let cvsStoreIDValue = null;    // Default
         const selectedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo')); // May be null
+        const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
         const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
         if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
             calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
