@@ -925,33 +925,32 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
         const currentCartTotal = calculateCartTotal(); // Get current cart total
 
         if (selection === 'seven_eleven') {
-            const existingStoreData = JSON.parse(sessionStorage.getItem('selectedStoreInfo'));
-            if (existingStoreData && existingStoreData.CVSStoreID) {
-                // Store already selected (e.g. user toggled shipping methods after returning from ECPay)
-                currentShippingCost = currentCartTotal < 1000 ? 60 : 0;
-                storeInfoDiv.innerHTML = `<p style="margin:0;"><strong>已選擇 7-11 門市</strong></p><p style="margin:0;">店號: ${existingStoreData.CVSStoreID}</p><p style="margin:0;">店名: ${existingStoreData.CVSStoreName}</p><p style="margin:0;">地址: ${existingStoreData.CVSAddress}</p>`;
-                storeInfoDiv.style.display = 'block';
-            } else {
-                // No store selected yet, proceed to ECPay map
-                const now = new Date(); // Generate a unique order ID
-                const orderId = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random() * 1000)}`;
-                window.currentOrderId = orderId; // Make it available if needed elsewhere
-                localStorage.setItem('cart', JSON.stringify(cart)); // 'cart' must be accessible
-                localStorage.setItem('currentOrderId', orderId);
-                sessionStorage.setItem('checkoutFormDataBeforeECPay', JSON.stringify({ // Save form state
-                    name: nameInput.value, email: emailInput.value, phone: phoneInput.value,
-                    payment: paymentSelect.value, discountCode: discountInput.value,
-                    currentDiscountRate: currentDiscountRate // Save applied discount rate
-                }));
-                if (typeof openLogisticsMap === 'function') {
-                    openLogisticsMap(orderId); // This function will navigate away
-                } else {
-                    console.error('openLogisticsMap is not defined');
-                    alert('7-11地圖選擇功能異常。');
-                }
-                return; // Stop further processing as page will redirect
-            }
-        } else if (selection === 'store_pickup') {
+      // 🧠 Always regenerate a new order ID and open the 7-11 map
+      const now = new Date();
+      const orderId = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random() * 1000)}`;
+      
+      window.currentOrderId = orderId;
+      localStorage.setItem('currentOrderId', orderId);
+      localStorage.setItem('cart', JSON.stringify(cart));
+    
+      // 🧠 Save current form state
+      sessionStorage.setItem('checkoutFormDataBeforeECPay', JSON.stringify({
+        name: nameInput.value,
+        email: emailInput.value,
+        phone: phoneInput.value,
+        payment: paymentSelect.value,
+        discountCode: discountInput.value,
+        currentDiscountRate: currentDiscountRate
+      }));
+    
+      // Clear previous store info before navigating
+      sessionStorage.removeItem('selectedStoreInfo');
+    
+      // ✅ Always open map
+      openLogisticsMap(orderId);
+    
+      return; // Stop further processing (since user will be redirected)
+    } else if (selection === 'store_pickup') {
             currentShippingCost = 0;
             storeInfoDiv.style.display = 'none';
             storeInfoDiv.innerHTML = ''; // Clear content
