@@ -1068,6 +1068,22 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             return;
         }
         creditCardImageButton.style.pointerEvents = 'none';
+          document.getElementById('creditCardImage').style.pointerEvents = 'none';
+              
+              // Show loading indicator
+              const loadingDiv = document.createElement('div');
+              loadingDiv.id = 'payment-loading';
+              loadingDiv.innerHTML = '<p>Processing payment request...</p>';
+              loadingDiv.style.position = 'fixed';
+              loadingDiv.style.top = '50%';
+              loadingDiv.style.left = '50%';
+              loadingDiv.style.transform = 'translate(-50%, -50%)';
+              loadingDiv.style.background = 'rgba(255,255,255,0.9)';
+              loadingDiv.style.padding = '20px';
+              loadingDiv.style.borderRadius = '5px';
+              loadingDiv.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
+              loadingDiv.style.zIndex = '9999';
+              document.body.appendChild(loadingDiv);
         const shippingMethodValue = shippingSelect.value; // e.g., 'seven_eleven' or 'store_pickup'
         let calculatedAddress = 'N/A'; // Default
         let cvsStoreIDValue = null;    // Default
