@@ -1119,7 +1119,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
             clientBackUrl: 'https://the2dge.github.io/bean0428/' 
         };
-        console.log("Data for ECPay Credit Card (to be sent to server):", orderData);
+        console.log("Data for ECPay Credit Card (to be sent to server):", ecpayData);
 
         // Send to your Cloud Function or Web App here
       await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
