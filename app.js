@@ -703,7 +703,7 @@ function renderOrderedItemsSummaryDOM(cartItems) {
     totalsContainer.innerHTML = `
         <div id="order-subtotal" style="display:flex; justify-content:space-between;"><strong>商品總額:</strong> <span>$0.00</span></div>
         <div id="order-discount" style="display:none; justify-content:space-between; color:green;"><strong>折扣:</strong> <span>-$0.00</span></div>
-        <div id="order-shipping" style="display:none; justify-content:space-between; color:red;"><strong>運費:</strong> <span>$0.00</span></div>
+        <div id="order-shipping" style="display:none; justify-content:space-between; color:red;"><strong>運費:(滿$1000可免)</strong> <span>$0.00</span></div>
         <div id="order-final-total" style="font-weight:bold; margin-top:10px; display:flex; justify-content:space-between; font-size:1.2em;"><strong>總金額:</strong> <span>$0.00</span></div>
     `;
     mainBody.checkoutWrapper.appendChild(totalsContainer);
