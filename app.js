@@ -920,49 +920,64 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
         el.addEventListener('change', toggleSubmitButtonVisibility); // For select elements
     });
 
-    shippingSelect.addEventListener('change', () => {
-        const selection = shippingSelect.value;
-        const currentCartTotal = calculateCartTotal(); // Get current cart total
+shippingSelect.addEventListener('change', () => {
+  const selection = shippingSelect.value;
+  const currentCartTotal = calculateCartTotal();
 
-        if (selection === 'seven_eleven') {
-      // 🧠 Always regenerate a new order ID and open the 7-11 map
+  // If user picks 7-11…
+  if (selection === 'seven_eleven') {
+    const existingStore = JSON.parse(sessionStorage.getItem('selectedStoreInfo'));
+
+    // --- CASE A: No store chosen yet → open map immediately ---
+    if (!existingStore || !existingStore.CVSStoreID) {
+      // generate new orderId
       const now = new Date();
-      const orderId = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}${Math.floor(Math.random() * 1000)}`;
-      
+      const orderId = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}${Math.floor(Math.random()*1000)}`;
       window.currentOrderId = orderId;
       localStorage.setItem('currentOrderId', orderId);
       localStorage.setItem('cart', JSON.stringify(cart));
-    
-      // 🧠 Save current form state
+
       sessionStorage.setItem('checkoutFormDataBeforeECPay', JSON.stringify({
-        name: nameInput.value,
-        email: emailInput.value,
-        phone: phoneInput.value,
-        payment: paymentSelect.value,
-        discountCode: discountInput.value,
+        name: nameInput.value, email: emailInput.value, phone: phoneInput.value,
+        payment: paymentSelect.value, discountCode: discountInput.value,
         currentDiscountRate: currentDiscountRate
       }));
-    
-      // Clear previous store info before navigating
-      sessionStorage.removeItem('selectedStoreInfo');
-    
-      // ✅ Always open map
+
       openLogisticsMap(orderId);
-    
-      return; // Stop further processing (since user will be redirected)
-    } else if (selection === 'store_pickup') {
-            currentShippingCost = 0;
-            storeInfoDiv.style.display = 'none';
-            storeInfoDiv.innerHTML = ''; // Clear content
-            // No need to remove 'selectedStoreInfo' here, as it might be needed if user switches back
-        } else { // No valid shipping selection
-            currentShippingCost = 0;
-            storeInfoDiv.style.display = 'none';
-            storeInfoDiv.innerHTML = '';
-        }
-        updateOrderSummaryDisplay(cartItems, currentShippingCost, currentDiscountRate);
-        toggleSubmitButtonVisibility(); // Re-check button state
-    });
+      return; // stop further processing
+    }
+
+    // --- CASE B: Store already chosen → show info + “reselect” button ---
+    currentShippingCost = currentCartTotal < 1000 ? 60 : 0;
+    storeInfoDiv.innerHTML = `
+      <p style="margin:0;"><strong>已選擇 7-11 門市</strong></p>
+      <p style="margin:0;">店號: ${existingStore.CVSStoreID}</p>
+      <p style="margin:0;">店名: ${existingStore.CVSStoreName}</p>
+      <p style="margin:0;">地址: ${existingStore.CVSAddress}</p>
+      <button type="button" id="reselect-store-btn" style="margin-top:8px;">🔄 重新選擇門市</button>
+    `;
+    storeInfoDiv.style.display = 'block';
+
+    // wire up the “reselect” button
+    document.getElementById('reselect-store-btn')
+      .addEventListener('click', () => {
+        // clear previous info, then open map
+        sessionStorage.removeItem('selectedStoreInfo');
+        shippingSelect.value = 'seven_eleven'; // keep dropdown
+        openLogisticsMap(window.currentOrderId);
+      });
+
+  } else {
+    // other shipping methods
+    currentShippingCost = (selection === 'seven_eleven') ? (currentCartTotal < 1000 ? 60 : 0) : 0;
+    storeInfoDiv.style.display = 'none';
+    storeInfoDiv.innerHTML = '';
+  }
+
+  // update totals and button state
+  updateOrderSummaryDisplay(cartItems, currentShippingCost, currentDiscountRate);
+  toggleSubmitButtonVisibility();
+});
 
 
     applyDiscountBtn.addEventListener('click', () => {
