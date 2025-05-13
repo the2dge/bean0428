@@ -1068,20 +1068,6 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             return;
         }
         creditCardImageButton.style.pointerEvents = 'none';
-          // Show loading indicator
-  const loadingDiv = document.createElement('div');
-  loadingDiv.id = 'payment-loading';
-  loadingDiv.innerHTML = '<p>Processing payment request...</p>';
-  loadingDiv.style.position = 'fixed';
-  loadingDiv.style.top = '50%';
-  loadingDiv.style.left = '50%';
-  loadingDiv.style.transform = 'translate(-50%, -50%)';
-  loadingDiv.style.background = 'rgba(255,255,255,0.9)';
-  loadingDiv.style.padding = '20px';
-  loadingDiv.style.borderRadius = '5px';
-  loadingDiv.style.boxShadow = '0 0 10px rgba(0,0,0,0.2)';
-  loadingDiv.style.zIndex = '9999';
-  document.body.appendChild(loadingDiv);
         const totalForECPay = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission'));
         let orderIdForECPay = localStorage.getItem('currentOrderId');
 
@@ -1092,24 +1078,51 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         }
 
         const itemNames = cartItems.map(item => `${item.name.substring(0,40)} x${item.quantity}`).join('#').substring(0,190); // ECPay length limits
-
+        const orderId = generateCustomOrderId();
         const orderData = {
-            orderId : generateCustomOrderId(),
+          orderId,
+          name: nameInput.value,
+          email: emailInput.value,
+          telephone: phoneInput.value,
+          paymentMethod: paymentSelect.value,
+          address: calculatedAddress,
+          CVSStoreID: cvsStoreIDValue || null,
+          discountCode: sessionStorage.getItem('discountCode') || null,
+
+          // ✅ Send as strings (e.g., "$345")
+          totalAmount: `$${sessionStorage.getItem('finalOrderAmountForSubmission') || '0'}`,
+          rewardAmount: `$${calculatedRewardAmount}`,
+
+          lineUserName: sessionStorage.getItem('lineUserName') || null,
+          lineUserId: sessionStorage.getItem('lineUserId') || null,
+          cartItems: cart
+        };
+        const ecpayData = {
+            orderId,
+            name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
-            totalAmount: 17, // Replace with the actual amount
+            totalAmount: ${sessionStorage.getItem('finalOrderAmountForSubmission') || '0'},
             tradeDesc: 'Order Description', // Replace with your order description
-            itemName: 'Product Name', // Replace with your product name
+            itemName: cart, // Replace with your product name
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
             clientBackUrl: 'https://the2dge.github.io/bean0428/' 
         };
         console.log("Data for ECPay Credit Card (to be sent to server):", orderData);
+
+        // Send to your Cloud Function or Web App here
+      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+        method: 'POST',
+        mode: "no-cors",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });     
           // Send a POST request to the Cloud Function
   fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(orderData)
+    body: JSON.stringify(ecpayData)
   })
   .then(response => {
     if (!response.ok) {
@@ -1138,12 +1151,12 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
     }
     
     // Re-enable the button
-    creditCardImageButton.style.pointerEvents = 'auto';
+    document.getElementById('creditCardImage').style.pointerEvents = 'auto';
     
     // Show error message
     alert('Failed to initiate payment. Please try again. Error: ' + error.message);
   });
-    });
+});
 
     // Restore form data if returning from ECPay map selection (if it was saved)
     const savedCheckoutData = JSON.parse(sessionStorage.getItem('checkoutFormDataBeforeECPay'));
