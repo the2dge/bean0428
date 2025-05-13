@@ -1068,6 +1068,17 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             return;
         }
         creditCardImageButton.style.pointerEvents = 'none';
+        const shippingMethodValue = shippingSelect.value; // e.g., 'seven_eleven' or 'store_pickup'
+        let calculatedAddress = 'N/A'; // Default
+        let cvsStoreIDValue = null;    // Default
+        const selectedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo')); // May be null
+        
+        if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
+            calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
+            cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
+        } else if (shippingMethodValue === 'store_pickup') {
+            calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
+        }
         const totalForECPay = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission'));
         let orderIdForECPay = localStorage.getItem('currentOrderId');
 
