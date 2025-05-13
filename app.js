@@ -1128,7 +1128,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             orderId,
             name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
-            totalAmount: ${sessionStorage.getItem('finalOrderAmountForSubmission') || 0},
+            totalAmount: sessionStorage.getItem('finalOrderAmountForSubmission') || 0,
             pickupOption: "便利商店",
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: cart, // Replace with your product name
