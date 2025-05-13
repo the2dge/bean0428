@@ -617,6 +617,7 @@ function renderCheckoutHeaderDOM(lineUserName) {
             }
             dropdown.style.display = 'none';
         });
+dropdown.appendChild(creditBalance);
   // ─── NEW “儲值” DROPDOWN WITH SCROLLABLE OPTIONS ───
   const topUpWrapper = document.createElement('div');
   topUpWrapper.className = 'dropdown-item topup-wrapper';
