@@ -1091,6 +1091,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
             calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
             cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
+            const pickupOption = "便利商店";
         } else if (shippingMethodValue === 'store_pickup') {
             calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
         }
@@ -1127,7 +1128,8 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             orderId,
             name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
-            totalAmount: 17,
+            totalAmount,
+            pickupOption,
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: cart, // Replace with your product name
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
@@ -1141,7 +1143,15 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
-      });     
+      });   
+
+    // Reset state
+      cart = [];
+      localStorage.removeItem('cart'); 
+      localStorage.removeItem('currentOrderId');
+      sessionStorage.removeItem('cart')
+      renderSideCart();
+        
           // Send a POST request to the Cloud Function
   fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
     method: 'POST',
