@@ -1067,9 +1067,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             alert('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
-        creditCardImageButton.style.pointerEvents = 'none';
-          document.getElementById('creditCardImage').style.pointerEvents = 'none';
-              
+        creditCardImageButton.style.pointerEvents = 'none';              
               // Show loading indicator
               const loadingDiv = document.createElement('div');
               loadingDiv.id = 'payment-loading';
