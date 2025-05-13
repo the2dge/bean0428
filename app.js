@@ -1091,7 +1091,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
             calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
             cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
-            const pickupOption = "便利商店";
+       
         } else if (shippingMethodValue === 'store_pickup') {
             calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
         }
@@ -1129,7 +1129,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
             totalAmount: `$${sessionStorage.getItem('finalOrderAmountForSubmission') || '0'}`,
-            pickupOption,
+            pickupOption: "便利商店",
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: cart, // Replace with your product name
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
