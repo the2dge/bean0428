@@ -613,7 +613,58 @@ function renderCheckoutHeaderDOM(lineUserName) {
             }
             dropdown.style.display = 'none';
         });
+  // ─── NEW “儲值” DROPDOWN WITH SCROLLABLE OPTIONS ───
+  const topUpWrapper = document.createElement('div');
+  topUpWrapper.className = 'dropdown-item topup-wrapper';
+  topUpWrapper.style.position = 'relative'; 
 
+  const topUpLabel = document.createElement('div');
+  topUpLabel.textContent = '儲值';
+  topUpLabel.style.cursor = 'pointer';
+  topUpWrapper.appendChild(topUpLabel);
+
+  const optionsContainer = document.createElement('div');
+  optionsContainer.className = 'topup-options';
+  Object.assign(optionsContainer.style, {
+    display: 'none',
+    position: 'absolute',
+    top: '100%',
+    left: '0',
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    maxHeight: '80px',
+    overflowY: 'auto',
+    width: '100%',
+    boxSizing: 'border-box',
+    zIndex: '100'
+  });
+
+  ['$1000', '$3000', '$5000'].forEach(amount => {
+    const opt = document.createElement('div');
+    opt.textContent = amount;
+    opt.className = 'dropdown-item';
+    opt.style.padding = '5px 10px';
+    opt.style.cursor = 'pointer';
+    opt.addEventListener('click', () => {
+      optionsContainer.style.display = 'none';
+      dropdown.style.display = 'none';
+      handleTopUp(amount);
+    });
+    optionsContainer.appendChild(opt);
+  });
+
+  topUpWrapper.appendChild(optionsContainer);
+  dropdown.appendChild(topUpWrapper);
+
+  // show/hide on hover
+  topUpLabel.addEventListener('mouseenter', () => {
+    optionsContainer.style.display = 'block';
+  });
+  topUpWrapper.addEventListener('mouseleave', () => {
+    optionsContainer.style.display = 'none';
+  });
+
+  // ─── end 新增 “儲值” ───
         const logout = document.createElement('div');
         logout.textContent = 'Logout';
         logout.className = 'dropdown-item';
