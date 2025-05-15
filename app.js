@@ -1087,8 +1087,10 @@ const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountFor
 const discountRate = parseFloat(currentDiscountRate) || 0;
 
 // Multiply directly (not divide by 1), then round
-const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
-
+//const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
+const calculatedRewardAmount = paymentMethod === "pay_at_store"
+  ? 0
+  : parseFloat(discountAmount.toFixed(1));
 const orderId = generateCustomOrderId();
 
 const orderData = {
