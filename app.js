@@ -1073,7 +1073,7 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
     calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
     cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
 } else if (shippingMethodValue === 'store_pickup') {
-    calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
+    calculatedAddress = '來商店取貨 ([康寧路三段99巷10弄1號])'; // Replace with your actual store address or a generic note
 }
 // If you have other shipping methods that provide a typed address, handle them here.
 
