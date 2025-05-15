@@ -1082,7 +1082,7 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
     calculatedAddress = '來商店取貨 ([康寧路三段99巷10弄1號])'; // Replace with your actual store address or a generic note
 }
 // If you have other shipping methods that provide a typed address, handle them here.
-const paymentMethod = order['PaymentMethod'];
+const paymentMethod = document.getElementById("payment-option").value;
 const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
 const discountRate = parseFloat(currentDiscountRate) || 0;
 
