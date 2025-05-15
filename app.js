@@ -1200,6 +1200,9 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
           lineUserId: sessionStorage.getItem('lineUserId') || null,
           cartItems: cart
         };
+        const itemsString = Array.isArray(cart)
+  ? cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
+  : '';
         const ecpayData = {
             orderId,
             name: nameInput.value,
@@ -1207,7 +1210,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             totalAmount: sessionStorage.getItem('finalOrderAmountForSubmission') || 0,
             customField1: "便利商店",
             tradeDesc: 'Order Description', // Replace with your order description
-            itemName: cart, // Replace with your product name
+            itemName: itemsString, // Replace with your product name
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
             clientBackUrl: 'https://the2dge.github.io/bean0428/' 
         };
