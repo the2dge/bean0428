@@ -1169,7 +1169,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
        
         } else if (shippingMethodValue === 'store_pickup') {
-            calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
+            calculatedAddress = '來商店取貨 (信用卡支付 [Your Store Address])'; // Replace with your actual store address or a generic note
         }
         const totalForECPay = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission'));
         let orderIdForECPay = localStorage.getItem('currentOrderId');
