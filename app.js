@@ -1203,6 +1203,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         const itemsString = Array.isArray(cart)
   ? cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
   : '';
+        console.log("itemsString is: ", itemsString);
         const ecpayData = {
             orderId,
             name: nameInput.value,
