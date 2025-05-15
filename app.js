@@ -1161,12 +1161,14 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         const shippingMethodValue = shippingSelect.value; // e.g., 'seven_eleven' or 'store_pickup'
         let calculatedAddress = 'N/A'; // Default
         let cvsStoreIDValue = null;    // Default
+        let pickupOption = "N/A";
         const selectedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo')); // May be null
         const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
         const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
         if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
             calculatedAddress = selectedStoreInfo.CVSAddress || '7-11 CVS Address Not Provided';
             cvsStoreIDValue = selectedStoreInfo.CVSStoreID || null;
+            pickupOption = "便利商店";
        
         } else if (shippingMethodValue === 'store_pickup') {
             calculatedAddress = '來商店取貨 (信用卡支付 [Your Store Address])'; // Replace with your actual store address or a generic note
@@ -1209,7 +1211,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
             totalAmount: sessionStorage.getItem('finalOrderAmountForSubmission') || 0,
-            customField1: "便利商店",
+            customField1: pickupOption,
             customField2: itemsString,
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: itemsString, // Replace with your product name
