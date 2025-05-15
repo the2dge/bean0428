@@ -1059,6 +1059,12 @@ shippingSelect.addEventListener('change', () => {
     });
 
     form.addEventListener('submit', async (e) => {
+        const submitBtn = document.getElementById('final-submit-btn');
+      // Prevent double submission
+      if (submitBtn.disabled) return; 
+        submitBtn.disabled = true; // Disable immediately
+        submitBtn.textContent = '處理中...';
+        
         e.preventDefault();
         if (!validateFormFields()) {
             alert('請完整填寫表單並選擇有效的取貨方式。');
