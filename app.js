@@ -1083,6 +1083,7 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
 }
 // If you have other shipping methods that provide a typed address, handle them here.
 
+const paymentMethod = document.getElementById('#payment-option').paymentSelect.value
 const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
 const discountRate = parseFloat(currentDiscountRate) || 0;
 
