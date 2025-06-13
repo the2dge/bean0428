@@ -1375,7 +1375,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
       renderSideCart();
         
           // Send a POST request to the Cloud Function
-  fetch('https://mrbean-creditpayment-production-545199463340.asia-east1.run.app', {
+  fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
