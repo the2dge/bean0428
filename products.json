@@ -4,7 +4,7 @@
         "name": "原味花生 300g",
         "price": "$150",
         "thumbnailUrl": "image/peanut.jpg",
-        "largeImageUrl": "image/peanut.jpg",
+        "imgUrl": "image/peanut.jpg",
         "title": "最好的原味花生",
         "flipper": "../image/almond2.jpg",
         "category": "堅果"
