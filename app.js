@@ -1,4 +1,3 @@
-//document.addEventListener('DOMContentLoaded', () => {
 let cart =[];
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -6,8 +5,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navbar = {
         logo: document.querySelector('.logo'),
         aboutLink: document.getElementById('nav-about'),
+        aboutLink_m: document.getElementById('nav-about-mobile'),
         productLink: document.getElementById('nav-product'),
-        contactLink: document.getElementById('nav-contact'), // Assuming contact might scroll to footer
+        productLink_m: document.getElementById('nav-product-mobile'),
+        mediaLink: document.getElementById('nav-media'),
+        mediaLink_m: document.getElementById('nav-media-mobile'),
+        memberLink: document.getElementById('nav-member'),
+        memberLink_m: document.getElementById('nav-member-mobile'),
+        contactLink: document.getElementById('nav-contact'), 
+        contactLink_m: document.getElementById('nav-contact-mobile'),
         cartIconBtn: document.getElementById('cart-icon'),
         cartItemCountSpan: document.getElementById('cart-item-count')
     };
@@ -171,6 +177,35 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div>${aboutData.content}</div>
         `;
     }
+
+    function renderMedia(mediaData) {
+  const mediaGrid = document.getElementById('media-grid');
+  if (!mediaGrid || !mediaData || !mediaData.length) return;
+
+  mediaGrid.innerHTML = ''; // Clear previous
+
+  mediaData.forEach(item => {
+    const videoId = extractYouTubeId(item.videoUrl);
+    const iframeSrc = `https://www.youtube.com/embed/${videoId}`;
+
+    const card = document.createElement('div');
+    card.className = 'media-card';
+
+    card.innerHTML = `
+      <iframe src="${iframeSrc}" allowfullscreen></iframe>
+      <p>${item.altText}</p>
+    `;
+
+    mediaGrid.appendChild(card);
+  });
+}
+
+// Helper to extract ID from Shorts/normal URLs
+function extractYouTubeId(url) {
+  const shortsMatch = url.match(/shorts\/([\w-]+)/);
+  const normalMatch = url.match(/v=([\w-]+)/);
+  return shortsMatch?.[1] || normalMatch?.[1] || '';
+}
     function renderCategoryFilters(products) {
         if (!contentContainers.categoryFiltersContainer) return; // Exit if container not found
 
@@ -202,38 +237,50 @@ document.addEventListener('DOMContentLoaded', async () => {
             container.appendChild(button);
         });
     }
-    function renderProductGrid(products) {
-        const grid = contentContainers.productGrid; // Target the single grid
-        if (!grid) {
-            console.error("Product grid container not found!");
-            return;
-        }
-        grid.innerHTML = ''; // Clear previous products
 
-        // Filter products based on the current state
-        const filteredProducts = (currentFilterCategory === 'All')
-            ? products // Show all if 'All' is selected
-            : products.filter(p => (p.category || 'Other') === currentFilterCategory);
-
-        if (!filteredProducts || filteredProducts.length === 0) {
-            grid.innerHTML = '<p>No products found in this category.</p>';
-            return;
-        }
-
-        // Render only the filtered products
-        filteredProducts.forEach(product => {
-            const productDiv = document.createElement('div');
-            productDiv.classList.add('product-item');
-            productDiv.setAttribute('data-product-id', product.id);
-            productDiv.innerHTML = `
-                <img src="${product.thumbnailUrl}" alt="${product.name}">
-                <h3>${product.name}</h3>
-                <p>${product.price}</p>
-                ${product.title ? `<p class="product-title">${product.title}</p>` : ''}
-            `;
-            grid.appendChild(productDiv);
-        });
+function renderProductGrid(products) {
+    const grid = contentContainers.productGrid;
+    if (!grid) {
+        console.error("Product grid container not found!");
+        return;
     }
+    grid.innerHTML = ''; // Clear previous products
+
+    const filteredProducts = (currentFilterCategory === 'All')
+        ? products
+        : products.filter(p => (p.category || 'Other') === currentFilterCategory);
+
+    if (!filteredProducts || filteredProducts.length === 0) {
+        grid.innerHTML = '<p>此分類目前沒有商品。</p>'; // "No products found in this category."
+        return;
+    }
+
+    filteredProducts.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.classList.add('product-item');
+        productDiv.setAttribute('data-product-id', product.id);
+
+        let outOfStockOverlay = ''; // NEW: Variable for the overlay
+        
+        // NEW: Check for stock status
+        if (product.stock === 'N') {
+            productDiv.classList.add('out-of-stock'); // Add class for styling and click handling
+            // Create a visual overlay indicating the item is out of stock
+            outOfStockOverlay = '<div class="stock-overlay"><p>補貨中</p></div>'; // "Restocking"
+        }
+
+        // Populate the inner HTML, including the overlay if needed
+        productDiv.innerHTML = `
+            ${outOfStockOverlay}
+            <img src="${product.imgUrl}" alt="${product.name}">
+            <h3>${product.name}</h3>
+            <p>${product.price}</p>
+            ${product.title ? `<p class="product-title">${product.title}</p>` : ''}
+        `;
+        grid.appendChild(productDiv);
+    });
+}
+
 /* IT was used before the product Category is used
     function renderProductGrid(products) {
         if (!products) {
@@ -264,14 +311,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         mainBody.itemWrapper.innerHTML = `
             <article class="item-detail">
-                <img src="${itemData.largeImageUrl}" alt="${itemData.name}">
+                <img src="${itemData.ImgUrl}" alt="${itemData.name}">
                 <div class="item-info">
                     <h2>${itemData.name}</h2>
                     <p>${itemData.description}</p>
                     ${itemData.specs ? `<ul>${Object.entries(itemData.specs).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}</ul>` : ''}
                     <p class="price">${itemData.price}</p>
+                    <button class="button-row">
                     <button class="add-to-cart-btn" data-product-id="${itemData.id}">加入購物車</button>
-                     <button class="back-to-products-btn">返回產品頁</button> </div>
+                     <button class="back-to-products-btn" styple="cursor: 'pointer">返回產品頁</button>
+                    </div>
+                 </div>
             </article>
         `;
          // Add listener specifically for the new back button
@@ -289,6 +339,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         sideCart.itemsContainer.innerHTML = ''; // Clear current items
         if (cart.length === 0) {
             sideCart.itemsContainer.innerHTML = '<p>您的購物車是空的。</p>';
+                setTimeout(() => {
+          switchView('content');
+        }, 1500);
+
         } else {
             cart.forEach(item => {
                 const cartItemDiv = document.createElement('div');
@@ -365,7 +419,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 id: productId,
                 name: productToAdd.name,
                 price: productToAdd.price, // Use price from product grid data
-                img: productToAdd.thumbnailUrl, // Use thumbnail for cart
+                img: productToAdd.ImgUrl, // Use thumbnail for cart
                 quantity: 1
             });
         }
@@ -424,7 +478,7 @@ function openLogisticsMap(orderId) {
     const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
     window.open(url, "_self");
 }
-
+/*
 function ECpayStoreDataBackTransfer() {
   const urlParams = new URLSearchParams(window.location.search);
 
@@ -464,14 +518,14 @@ function ECpayStoreDataBackTransfer() {
       }
     }
 
-    const shippingFee = totalAmount < 1000 ? 60 : 0;
+    const shippingFee = totalAmount < 1200 ? 70 : 0;
     const finalTotal = totalAmount + shippingFee;
 
     // Update checkout total block
     if (totalDiv) {
       totalDiv.innerHTML = `
         <div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div>
-        ${shippingFee > 0 ? `<div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1000):</strong> $60</div>` : ''}
+        ${shippingFee > 0 ? `<div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1200):</strong> $70</div>` : ''}
         <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
       `;
     }
@@ -482,25 +536,37 @@ function ECpayStoreDataBackTransfer() {
       shippingFee, finalTotal // optional for reuse
     };
   }
-}
+} */
 
 // Global or module-scoped variables for checkout state
 let currentShippingCost = 0;
 let currentDiscountRate = 0; // Store as percentage, e.g., 5 for 5%
 
 // --- Main Function to Render Checkout Page ---
-function renderCheckoutPage(cartItems) {
+async function renderCheckoutPage(cartItems) {
     mainBody.checkoutWrapper.innerHTML = ''; // Clear previous content
     window.scrollTo(0, 0);
 
     // --- Data Retrieval ---
     const storedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo'));
+    const lineUserId = sessionStorage.getItem('lineUserId');
     const lineUserName = sessionStorage.getItem('lineUserName');
     const lineUserEmail = sessionStorage.getItem('lineUserEmail') || '';
+   
+    let isMember = false;
 
+      if (lineUserId) {
+        const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          isMember = true;
+        }
+      }
+
+     console.log("LINE ID and isMember?:  ", lineUserId, isMember);
     // 1. Render Checkout Header (Title "結帳", Login/Member Button)
-    renderCheckoutHeaderDOM(lineUserName);
-
+    //renderCheckoutHeaderDOM(lineUserName);
+    
     // 2. Render Ordered Items Summary ("我訂購的商品", list, totals container)
     renderOrderedItemsSummaryDOM(cartItems);
 
@@ -521,7 +587,7 @@ function renderCheckoutPage(cartItems) {
     if (localShippingSelectElement) { // Ensure the element was found
         if (localShippingSelectElement.value === 'seven_eleven') {
             // This implies createCheckoutFormDOM set its value because storedStoreInfo was present
-            currentShippingCost = calculateCartTotal() < 1000 ? 60 : 0;
+            currentShippingCost = calculateCartTotal() < 1200 ? 70 : 0;
         } else if (localShippingSelectElement.value === 'store_pickup') {
             currentShippingCost = 0;
         } else { // Default for "" (empty value) or other unexpected values
@@ -607,7 +673,10 @@ function renderCheckoutHeaderDOM(lineUserName) {
                 if (data.status === 'success') {
                     alert(`💰 目前點數餘額：${data.creditBalance}`);
                 } else if (data.status === 'not_found') {
-                    alert('⚠️ 查無此會員資料，請聯絡客服');
+                  const goToSignup = confirm('⚠️ 查無此會員資料，是否前往註冊頁面？');
+                  if (goToSignup) {
+                    window.location.href = 'https://www.mrbean.tw/signup';
+                  }
                 } else {
                     alert(`❌ 無法取得點數資料：${data.message || '請稍後再試'}`);
                 }
@@ -679,9 +748,9 @@ dropdown.appendChild(creditBalance);
             sessionStorage.removeItem('lineUserId');
             localStorage.removeItem('cart');
             localStorage.removeItem('currentOrderId');
-            sessionStorage.removeItem('selectedStoreInfo');
-            sessionStorage.removeItem('discountCode');
-            sessionStorage.removeItem('discountTier');
+          //  sessionStorage.removeItem('selectedStoreInfo');
+          //  sessionStorage.removeItem('discountCode');
+          //  sessionStorage.removeItem('discountTier');
             alert('已登出，購物車及部分結帳資訊已清除。');
             window.location.reload();
         });
@@ -725,6 +794,9 @@ dropdown.appendChild(creditBalance);
 
 // --- Helper for "我訂購的商品" Title, List, and Totals Placeholders ---
 function renderOrderedItemsSummaryDOM(cartItems) {
+    const itemsHeader = document.createElement('h2');
+    itemsHeader.textContent = '結帳 -- 感謝您選擇荳荳先生';
+    mainBody.checkoutWrapper.appendChild(itemsHeader);
     const itemsTitle = document.createElement('h3');
     itemsTitle.textContent = '我訂購的商品';
     itemsTitle.style.marginTop = '20px';
@@ -759,7 +831,7 @@ function renderOrderedItemsSummaryDOM(cartItems) {
     totalsContainer.innerHTML = `
         <div id="order-subtotal" style="display:flex; justify-content:space-between;"><strong>商品總額:</strong> <span>$0.00</span></div>
         <div id="order-discount" style="display:none; justify-content:space-between; color:green;"><strong>折扣:</strong> <span>-$0.00</span></div>
-        <div id="order-shipping" style="display:none; justify-content:space-between; color:red;"><strong>運費:(滿$1000可免)</strong> <span>$0.00</span></div>
+        <div id="order-shipping" style="display:none; justify-content:space-between; color:red;"><strong>運費:(滿$1200可免)</strong> <span>$0.00</span></div>
         <div id="order-final-total" style="font-weight:bold; margin-top:10px; display:flex; justify-content:space-between; font-size:1.2em;"><strong>總金額:</strong> <span>$0.00</span></div>
     `;
     mainBody.checkoutWrapper.appendChild(totalsContainer);
@@ -799,7 +871,7 @@ function createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo) {
     const storedPhone = ''; // Or retrieve if you store phone number elsewhere
 
     form.innerHTML = `
-        <h4>顧客資訊及運送選項</h4>
+        <h4>顧客資訊 及 取貨選項</h4>
 
         <div class="form-group">
             <label for="discount_code">折扣碼 (選填):</label>
@@ -840,13 +912,17 @@ function createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo) {
             <select id="payment-option" name="payment_option" class="form-control" required>
                 <option value="pay_at_store">到店付款</option>
                 <option value="credit_card_ecpay">信用卡付款 (透過第三方支付:綠界 ECPay)</option>
-                ${lineUserName ? '<option value="credit_point">點數付款 (會員)</option>' : ''}
+                ${lineUserName ? '<option value="credit_point">💰 會員儲值金付款 </option>' : ''}
             </select>
         </div>
 
         <div id="submit-area" style="margin-top: 20px;">
             <button type="submit" id="final-submit-btn" class="btn btn-primary btn-lg btn-block" style="display:block; width:100%; padding:10px; font-size:1.2em;">確認訂單</button>
-            <img src="image/creditcard.png" alt="Pay with Credit Card" id="ecpay-credit-card-btn" style="display:none; cursor:pointer; margin: 10px auto; max-width:150px; display:block;" />
+              <div id="credit-card-wrapper" style="display:none; text-align: center;">
+                <h4>Please click the credit card</h4>
+                <img src="image/creditcard.png" alt="Pay with Credit Card" id="ecpay-credit-card-btn"
+                  style="cursor:pointer; max-width:150px;" />
+              </div>
         </div>
     `;
 
@@ -906,7 +982,8 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
     const shippingSelect = form.querySelector('#shipping-method');
     const paymentSelect = form.querySelector('#payment-option');
     const submitButton = form.querySelector('#final-submit-btn');
-    const creditCardImageButton = form.querySelector('#ecpay-credit-card-btn');
+    //const creditCardImageButton = form.querySelector('#ecpay-credit-card-btn');
+    const creditCardImageButton = form.querySelector('#credit-card-wrapper');
     const nameInput = form.querySelector('#customer_name');
     const emailInput = form.querySelector('#customer_email');
     const phoneInput = form.querySelector('#customer_phone');
@@ -930,7 +1007,7 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
     if (paymentMethod === 'credit_point') {
         const lineUserId = sessionStorage.getItem('lineUserId');
         if (!lineUserId) {
-            alert('⚠️ 未登入會員，無法使用點數付款');
+            Swal.fire('⚠️ 未登入會員，無法使用點數付款');
             return;
         }
 
@@ -943,14 +1020,14 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
                 if (creditBalance >= submitAmount) {
                     submitButton.disabled = false;
                 } else {
-                    alert(`❌ 點數不足。目前餘額：${creditBalance}，需支付：${submitAmount}`);
+                    Swal.fire(`❌ 點數不足。目前餘額：${creditBalance}，需支付：${submitAmount}`);
                 }
             } else {
-                alert('⚠️ 無法取得會員點數，請稍後再試');
+                Swal.fire('⚠️ 無法取得會員點數，請稍後再試');
             }
         } catch (err) {
             console.error('點數查詢失敗:', err);
-            alert('🚫 發生錯誤，請稍後再試');
+            Swal.fire('🚫 發生錯誤，請稍後再試');
         }
     } else if (paymentMethod === 'credit_card_ecpay') {
         creditCardImageButton.style.display = 'block';
@@ -959,6 +1036,49 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
     }
 }
 
+function validateCustomerName() {
+  const nameField = document.getElementById('customer_name');
+  const name = nameField.value.trim();
+
+  // 1) No digits or symbols allowed
+  if (/[0-9!@#$%^&*(),.?":{}|<>_\-+=\\/\[\]]/.test(name)) {
+    Swal.fire('⚠️ 姓名不能包含數字或符號。請重新輸入。');
+    return false;
+  }
+
+  // 2) Pure Chinese? (Han script only)
+  if (/^[\p{Script=Han}]+$/u.test(name)) {
+    if (name.length < 2) {
+      Swal.fire('⚠️ 中文姓名應至少兩個字元。請重新輸入。');
+      return false;
+    }
+    return true;
+  }
+
+  // 3) Pure English? (letters and spaces only)
+  if (/^[A-Za-z\s]+$/.test(name)) {
+    const parts = name.split(/\s+/);
+    if (parts.length > 2) {
+      Swal.fire('⚠️ 英文姓名僅能包含一個空格，例如：John Doe');
+      return false;
+    }
+    // Count letters (no spaces)
+    const lettersOnly = name.replace(/\s+/g, '');
+    if (lettersOnly.length < 2) {
+      Swal.fire('⚠️ 請輸入至少兩個字母的英文姓名。');
+      return false;
+    }
+    return true;
+  }
+
+  // 4) Mixed or other scripts: just require >=2 chars
+  if ([...name].length < 2) {
+    Swal.fire('⚠️ 姓名應至少兩個字元。請重新輸入。');
+    return false;
+  }
+  
+  return true;
+}
     function validateFormFields() {
         const isShippingSelected = shippingSelect.value !== "";
         const is711StoreSelectedIfApplicable = shippingSelect.value !== 'seven_eleven' || (shippingSelect.value === 'seven_eleven' && sessionStorage.getItem('selectedStoreInfo'));
@@ -1004,7 +1124,7 @@ shippingSelect.addEventListener('change', () => {
     }
 
     // --- CASE B: Store already chosen → show info + “reselect” button ---
-    currentShippingCost = currentCartTotal < 1000 ? 60 : 0;
+    currentShippingCost = currentCartTotal < 1200 ? 70 : 0;
     storeInfoDiv.innerHTML = `
       <p style="margin:0;"><strong>已選擇 7-11 門市</strong></p>
       <p style="margin:0;">店號: ${existingStore.CVSStoreID}</p>
@@ -1017,6 +1137,20 @@ shippingSelect.addEventListener('change', () => {
     // wire up the “reselect” button
     document.getElementById('reselect-store-btn')
       .addEventListener('click', () => {
+        sessionStorage.setItem('checkoutFormDataBeforeECPay', JSON.stringify({
+          name: nameInput.value,
+          email: emailInput.value,
+          phone: phoneInput.value,
+          payment: paymentSelect.value,
+          discountCode: discountInput.value,
+          currentDiscountRate: currentDiscountRate
+        }));
+          // 🔁 Also re-save cart and orderId (in case cart updated)
+        const now = new Date();
+        const orderId = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}${Math.floor(Math.random()*1000)}`;
+          window.currentOrderId = orderId;
+          localStorage.setItem('currentOrderId', orderId);
+        localStorage.setItem('cart', JSON.stringify(cart));
         // clear previous info, then open map
         sessionStorage.removeItem('selectedStoreInfo');
         shippingSelect.value = 'seven_eleven'; // keep dropdown
@@ -1025,7 +1159,7 @@ shippingSelect.addEventListener('change', () => {
 
   } else {
     // other shipping methods
-    currentShippingCost = (selection === 'seven_eleven') ? (currentCartTotal < 1000 ? 60 : 0) : 0;
+    currentShippingCost = (selection === 'seven_eleven') ? (currentCartTotal < 1200 ? 70 : 0) : 0;
     storeInfoDiv.style.display = 'none';
     storeInfoDiv.innerHTML = '';
   }
@@ -1059,15 +1193,17 @@ shippingSelect.addEventListener('change', () => {
     });
 
     form.addEventListener('submit', async (e) => {
-        const submitBtn = document.getElementById('final-submit-btn');
+      e.preventDefault(); 
+      const submitBtn = document.getElementById('final-submit-btn');
       // Prevent double submission
       if (submitBtn.disabled) return; 
+      if (!validateCustomerName()) return;
         submitBtn.disabled = true; // Disable immediately
         submitBtn.textContent = '處理中...';
         
         e.preventDefault();
         if (!validateFormFields()) {
-            alert('請完整填寫表單並選擇有效的取貨方式。');
+            Swal.fire('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
 const shippingMethodValue = shippingSelect.value; // e.g., 'seven_eleven' or 'store_pickup'
@@ -1082,15 +1218,13 @@ if (shippingMethodValue === 'seven_eleven' && selectedStoreInfo) {
     calculatedAddress = '來商店取貨 ([康寧路三段99巷10弄1號])'; // Replace with your actual store address or a generic note
 }
 // If you have other shipping methods that provide a typed address, handle them here.
-const paymentMethod = document.getElementById("payment-option").value;
+
 const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
 const discountRate = parseFloat(currentDiscountRate) || 0;
 
 // Multiply directly (not divide by 1), then round
-//const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
-const calculatedRewardAmount = paymentMethod === "pay_at_store"
-  ? 0
-  : parseFloat(discountAmount.toFixed(1));
+const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
+
 const orderId = generateCustomOrderId();
 
 const orderData = {
@@ -1129,7 +1263,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
       sessionStorage.removeItem('cart')
       renderSideCart();
       switchView('content');
-      alert('✅ Thank you for your order!');
+      Swal.fire('✅ 感謝您的訂購!');
         // Clear cart, session storage for checkout, and redirect or show success message
         // cart.length = 0; // Clear the global cart array
         // renderSideCart(); // Update side cart display
@@ -1142,7 +1276,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
 
     creditCardImageButton.addEventListener('click', async () => {
         if (!validateFormFields()) {
-            alert('請完整填寫表單並選擇有效的取貨方式。');
+            Swal.fire('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
         creditCardImageButton.style.pointerEvents = 'none';              
@@ -1164,6 +1298,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         let calculatedAddress = 'N/A'; // Default
         let cvsStoreIDValue = null;    // Default
         let pickupOption = "N/A";
+  
         const selectedStoreInfo = JSON.parse(sessionStorage.getItem('selectedStoreInfo')); // May be null
         const discountAmount = parseFloat(sessionStorage.getItem('orderDiscountAmountForSubmission')) || 0;
         const calculatedRewardAmount = parseFloat((discountAmount).toFixed(1)); 
@@ -1173,7 +1308,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             pickupOption = "便利商店";
        
         } else if (shippingMethodValue === 'store_pickup') {
-            calculatedAddress = '來商店取貨 (信用卡支付 [Your Store Address])'; // Replace with your actual store address or a generic note
+            calculatedAddress = '來商店取貨 (In-store pickup at [Your Store Address])'; // Replace with your actual store address or a generic note
         }
         const totalForECPay = parseFloat(sessionStorage.getItem('finalOrderAmountForSubmission'));
         let orderIdForECPay = localStorage.getItem('currentOrderId');
@@ -1206,19 +1341,21 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         };
         const itemsString = Array.isArray(cart)
   ? cartItems.map(item => `${item.name} x${item.quantity}`).join(', ')
-  : '';
-        console.log("itemsString is: ", itemsString);
+  : ''; 
+
         const ecpayData = {
             orderId,
             name: nameInput.value,
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
             totalAmount: sessionStorage.getItem('finalOrderAmountForSubmission') || 0,
             customField1: pickupOption,
-            customField2: itemsString,
+            customField2: cvsStoreIDValue || null,
+            customField3: nameInput.value,
+            customField4: phoneInput.value,
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: itemsString, // Replace with your product name
             returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
-            clientBackUrl: 'https://the2dge.github.io/bean0428/' 
+            clientBackUrl: 'https://www.mrbean.tw/' 
         };
         console.log("Data for ECPay Credit Card (to be sent to server):", ecpayData);
 
@@ -1238,13 +1375,13 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
       renderSideCart();
         
           // Send a POST request to the Cloud Function
-  fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
+  fetch('https://mrbean-creditpayment-production-545199463340.asia-east1.run.app', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(ecpayData)
-  })
+  }) 
   .then(response => {
     if (!response.ok) {
       // If we get an error response, convert it to text and throw
@@ -1275,7 +1412,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
     document.getElementById('creditCardImage').style.pointerEvents = 'auto';
     
     // Show error message
-    alert('Failed to initiate payment. Please try again. Error: ' + error.message);
+    Swal.fire('Failed 未能付款。請重試。 Error: ' + error.message);
   });
 });
 
@@ -1314,8 +1451,8 @@ function ECpayStoreDataBackTransfer() {
 
     // Check if we are on the checkout page by looking for a specific element
     const checkoutFormRefactored = document.getElementById('checkout-form-refactored');
-
-    if (CVSStoreID && CVSStoreName && CVSAddress && MerchantTradeNo && checkoutFormRefactored) {
+    console.log("CVSStoreID, CVSAddress, OrderID and checkout-form-refactored: ", CVSStoreID, CVSAddress, MerchantTradeNo, checkoutFormRefactored);
+    if (CVSStoreID && CVSStoreName && CVSAddress && MerchantTradeNo) {
         const selectedStoreData = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
         sessionStorage.setItem('selectedStoreInfo', JSON.stringify(selectedStoreData));
         // Ensure currentOrderId in localStorage is also updated if it changed (it shouldn't from ECPay map)
@@ -1337,12 +1474,12 @@ function ECpayStoreDataBackTransfer() {
             shippingSelect.value = 'seven_eleven'; // Pre-select the dropdown
         }
 
-        currentShippingCost = calculateCartTotal() < 1000 ? 60 : 0;
+        currentShippingCost = calculateCartTotal() < 1200 ? 70 : 0;
 
         // Restore other form fields that might have been cleared by navigation
         const savedCheckoutData = JSON.parse(sessionStorage.getItem('checkoutFormDataBeforeECPay'));
         if (savedCheckoutData) {
-            document.getElementById('customer_name').value = savedCheckoutData.name || '';
+            document.getElementById('customer_name').value = savedCheckoutData.name || '未填寫完整';
             document.getElementById('customer_email').value = savedCheckoutData.email || '';
             document.getElementById('customer_phone').value = savedCheckoutData.phone || '';
             document.getElementById('payment-option').value = savedCheckoutData.payment || 'pay_at_store';
@@ -1378,7 +1515,7 @@ function ECpayStoreDataBackTransfer() {
         document.getElementById('pickup-store-info-display').style.display = 'none';
         currentShippingCost = 0;
         updateOrderSummaryDisplay(cart, currentShippingCost, currentDiscountRate);
-        alert("請重新選擇7-11門市，或選擇其他取貨方式。");
+        Swal.fire("請重新選擇7-11門市，或選擇其他取貨方式。");
          const event = new Event('change');
          shippingSelect.dispatchEvent(event); // Trigger validation
     }
@@ -1400,9 +1537,10 @@ function validateDiscountCode(inputCode) {
         sessionStorage.setItem('discountTier', member.tier);
         const tier = member.tier.toLowerCase();
         switch (tier) {
-            case 'gold': return 5;   // 5%
-            case 'silver': return 3; // 3%
-            case 'bronze': return 1; // 1%
+            case '鑽石級': return 10;
+            case '金級': return 5;   // 5%
+            case '銀級': return 3; // 3%
+            case '銅級': return 2; // 1%
             default: return 0;
         }
     } else {
@@ -1453,17 +1591,53 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentView !== 'content') switchView('content');
             document.getElementById('about-container')?.scrollIntoView({ behavior: 'smooth' });
         });
+        navbar.aboutLink_m.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('about-container')?.scrollIntoView({ behavior: 'smooth' });
+        });
         navbar.productLink.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentView !== 'content') switchView('content');
             document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
         });
-         navbar.contactLink.addEventListener('click', (e) => {
+        navbar.productLink_m.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        navbar.mediaLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('media-container')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        navbar.mediaLink_m.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('media-container')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        navbar.memberLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('membership-container')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        navbar.memberLink_m.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentView !== 'content') switchView('content');
+            document.getElementById('membership-container')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        navbar.contactLink.addEventListener('click', (e) => {
+            e.preventDefault();
+             // Assuming contact scrolls to footer
+            document.querySelector('.footer')?.scrollIntoView({ behavior: 'smooth' });
+        });
+        navbar.contactLink_m.addEventListener('click', (e) => {
             e.preventDefault();
              // Assuming contact scrolls to footer
             document.querySelector('.footer')?.scrollIntoView({ behavior: 'smooth' });
         });
         
+
         //Listener for Category Filter Button
         if (contentContainers.categoryFiltersContainer) {
             contentContainers.categoryFiltersContainer.addEventListener('click', (e) => {
@@ -1506,11 +1680,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Product Item Click (Event Delegation)
         contentContainers.productContainer.addEventListener('click', (e) => {
             const productItem = e.target.closest('.product-item');
-            if (productItem) {
+
+            // MODIFIED: Add a check to ensure the item is NOT out of stock before proceeding.
+            if (productItem && !productItem.classList.contains('out-of-stock')) {
                 const productId = productItem.dataset.productId;
                 renderItemDetails(productId); // Render the detail view
-                switchView('item');        // Switch to the item view
+                switchView('item');           // Switch to the item view
             }
+            // If the item has the 'out-of-stock' class, nothing happens.
         });
 
          // Add to Cart Click (Event Delegation on item wrapper)
@@ -1518,7 +1695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.classList.contains('add-to-cart-btn')) {
                 const productId = e.target.dataset.productId;
                 addToCart(productId);
-                alert(`${allItemDetails[productId]?.name || 'Item'} added to cart!`); // Simple feedback
+                Swal.fire(`${allItemDetails[productId]?.name || 'Item'} 已加入購物車!`); // Simple feedback
             }
         });
 
@@ -1563,11 +1740,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 switchView('checkout');
                 sideCart.aside.classList.remove('open'); // Close side cart
             } else {
-                alert("您的購物車是空的, 無法結帳。");
+                swal("您的購物車是空的, 無法結帳。");
             }
         });
      
     }
+    /*
     async function checkLINELogin() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
@@ -1594,13 +1772,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // Normal page load
             const storedUserName = sessionStorage.getItem('lineUserName');
+            console.log("userName is", storedUserName);
             if (storedUserName) {
+                    const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${storedUserName}`);
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                      isMember = true;
+                    }
+                  }
+            if (storedUserName && isMember) {
                 updateNavbarWithUserName(storedUserName);
             }
         }
     }
+    */
     async function exchangeCodeForToken(code) {
-      const cloudFunctionURL = 'https://save-to-sheet-545199463340.asia-east1.run.app'; // <-- replace with your real function URL
+      const cloudFunctionURL = 'https://mrbean-website-line-login-545199463340.asia-east1.run.app'; // <-- replace with your real function URL
 
       try {
         const response = await fetch(`${cloudFunctionURL}?mode=getLineProfile&code=${encodeURIComponent(code)}`);
@@ -1640,31 +1827,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const text = await response.text();
             console.log('Order Save Result:', text);
 
-            alert('✅ 訂單已成功送出！謝謝您的購買！');
+            Swal.fire('✅ 訂單已成功送出！謝謝您的購買！');
         } catch (error) {
             console.error('Failed to submit order:', error);
-            alert('❌ 訂單提交失敗，請稍後再試。');
+            Swal.fire('❌ 訂單提交失敗，請稍後再試。');
         }
     }
+    /*
     function updateNavbarWithUserName(userName) {
       const loginBtn = document.getElementById('member-login-btn');
       if (loginBtn) {
         loginBtn.textContent = `👤 ${userName}`;
         loginBtn.disabled = true; // Optional: prevent re-clicking
       }
+    }*/
+    function showUserDropdown(displayName) {
+      document.getElementById('login-link').style.display = 'none';
+      document.getElementById('user-name').textContent = displayName || '會員';
+      document.getElementById('user-dropdown').style.display = 'block';
     }
 
     // Call this after login is confirmed
     const storedUserName = sessionStorage.getItem('lineUserName');
+    console.log("LINE user name exit!");
     if (storedUserName) updateNavbarWithUserName(storedUserName);
 
 
     // --- Initialization Function ---
     async function init() {
         // Fetch all necessary data concurrently
-        const [bannerData, aboutData, productsData, itemDetailsData] = await Promise.all([
+        const [bannerData, aboutData,mediaData, productsData, itemDetailsData] = await Promise.all([
             fetchData('banner.json'),
             fetchData('about.json'),
+            fetchData('media.json'),
             fetchData('products.json'),
             fetchData('items.json')
         ]);
@@ -1692,6 +1887,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bannerRendered = renderBanner(bannerData);
         renderAbout(aboutData);
         renderProductGrid(allProductsData);
+        renderMedia(mediaData);
         renderSideCart();
         setupEventListeners();
 
@@ -1707,19 +1903,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const CVSStoreID = urlParams.get('CVSStoreID');
 
     // --- Case 1: Returning from LINE login ---
+
     if (code) {
-      await exchangeCodeForToken(code);
+    const profile = await exchangeCodeForToken(code);
+    console.log("LINE info: ", profile);
+          // Update UI
+   //document.getElementById("member-login-button").style.display = 'none';
+   // document.getElementById('user-dropdown').style.display = 'block';
+   // document.getElementById("member-name-display").textContent = profile.displayName || '會員';
+
+    // Optional: save login info to localStorage/session
+     localStorage.setItem('lineUser', JSON.stringify(profile));
 
       const savedCart = localStorage.getItem('cart');
+      console.log("Item saved !Return from LINE Login: ", savedCart);
       if (savedCart) cart = JSON.parse(savedCart);
-
+      switchView('content');
+        /*
       if (state === 'checkout') {
         renderCheckoutPage(cart); // cart + user
         switchView('checkout');
       } else {
         switchView('content');
-      }
-
+      }*/
       window.history.replaceState({}, document.title, window.location.pathname);
       return; // ✅ exit early
     }
