@@ -1249,7 +1249,7 @@ const orderData = {
 console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(orderData, null, 2));
 
         // Send to your Cloud Function or Web App here
-      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbyKfffwlWGP9uEMnaQgms5OpjVBLSws1MuuMYKRwXh7VNiwhYbUJ8v8MlGLv_iM_nUQzg/exec', {
         method: 'POST',
         mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
