@@ -1249,9 +1249,9 @@ const orderData = {
 console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(orderData, null, 2));
 
         // Send to your Cloud Function or Web App here
-        await fetch('https://script.google.com/macros/s/AKfycbyKfffwlWGP9uEMnaQgms5OpjVBLSws1MuuMYKRwXh7VNiwhYbUJ8v8MlGLv_iM_nUQzg/exec', {
+        await fetch('https://script.google.com/macros/s/AKfycbz8-LmbE9L_0ebvl5-mN09nWH5bkEGZshaK9HjELxlVqU5rbhk5KTpfdmv9Sn8yeDQ3Bg/exec', {
         method: 'POST',
-      //  mode: "no-cors",
+        mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
@@ -1360,7 +1360,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
         console.log("Data for ECPay Credit Card (to be sent to server):", ecpayData);
 
         // Send to your Cloud Function or Web App here
-      await fetch('https://script.google.com/macros/s/AKfycbyKfffwlWGP9uEMnaQgms5OpjVBLSws1MuuMYKRwXh7VNiwhYbUJ8v8MlGLv_iM_nUQzg/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbz8-LmbE9L_0ebvl5-mN09nWH5bkEGZshaK9HjELxlVqU5rbhk5KTpfdmv9Sn8yeDQ3Bg/exec', {
         method: 'POST',
         mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
@@ -1812,7 +1812,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     async function submitOrderToWebApp(orderData) {
         try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbz8-LmbE9L_0ebvl5-mN09nWH5bkEGZshaK9HjELxlVqU5rbhk5KTpfdmv9Sn8yeDQ3Bg/exec', {
                 method: 'POST',
                 mode: "no-cors", // Required for Google Apps Script
                 body: JSON.stringify({
