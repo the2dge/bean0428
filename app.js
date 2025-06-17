@@ -481,7 +481,7 @@ function openLogisticsMap(orderId, ExtraData) {
         ExtraData: ExtraData || 'bean0428' // Use provided ExtraData or default fallback
     });
     
-    const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?${params.toString()}`;
+    const url = `https://pickup-store-selection-545199463340.asia-east1.run.app?${params.toString()}`;
     window.open(url, "_self");
 }
 
