@@ -1,4 +1,5 @@
 let cart =[];
+let ExtraData = "bean0428"; //IT is the Github project name
 document.addEventListener('DOMContentLoaded', async () => {
 
     // --- DOM Element References ---
