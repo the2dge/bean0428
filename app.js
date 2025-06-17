@@ -466,77 +466,23 @@ function renderProductGrid(products) {
             renderSideCart(); // Re-render cart after change
         }
     }
-
-function openLogisticsMap(orderId) {
-      //const orderId = window.currentOrderId;
+function openLogisticsMap(orderId, ExtraData) {
+    //const orderId = window.currentOrderId;
         
     if (!orderId) {
         alert("Order ID 尚未生成，無法開啟門市選擇頁面");
         return;
     }
-    // Open the Cloud Function, passing orderId to ECPay
-    const url = `https://pickup-store-selection-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
+    
+    // Build URL with both orderId and ExtraData parameters
+    const params = new URLSearchParams({
+        orderId: orderId,
+        ExtraData: ExtraData || 'bean0428' // Use provided ExtraData or default fallback
+    });
+    
+    const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?${params.toString()}`;
     window.open(url, "_self");
 }
-/*
-function ECpayStoreDataBackTransfer() {
-  const urlParams = new URLSearchParams(window.location.search);
-
-  const MerchantID = urlParams.get('MerchantID');
-  const CVSStoreID = urlParams.get('CVSStoreID');
-  const CVSStoreName = urlParams.get('CVSStoreName');
-  const CVSAddress = urlParams.get('CVSAddress');
-  const MerchantTradeNo = urlParams.get('MerchantTradeNo');
-
-  if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
-      window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
-
-    // Save to sessionStorage so it persists across re-renders
-    sessionStorage.setItem('selectedStoreInfo', JSON.stringify(window.selectedStoreInfo));
-    // Fill store info
-    const pickupInfoDiv = document.getElementById('pickup-store-info');
-    if (pickupInfoDiv) {
-      pickupInfoDiv.innerHTML = `
-        <p><strong>7-11 門市資訊</strong></p>
-        <p>店號: ${CVSStoreID}</p>
-        <p>店名: ${CVSStoreName}</p>
-        <p>地址: ${CVSAddress}</p>
-      `;
-    }
-
-    // Update address select
-    const addressSelect = document.getElementById('address');
-    if (addressSelect) addressSelect.value = '7-11 商店取貨';
-
-    // 🧠 Recalculate Total and Display Summary
-    const totalDiv = document.querySelector('.checkout-total');
-    let totalAmount = 0;
-    if (totalDiv) {
-      const match = totalDiv.textContent.match(/\$([\d.]+)/);
-      if (match) {
-        totalAmount = parseFloat(match[1]);
-      }
-    }
-
-    const shippingFee = totalAmount < 1200 ? 70 : 0;
-    const finalTotal = totalAmount + shippingFee;
-
-    // Update checkout total block
-    if (totalDiv) {
-      totalDiv.innerHTML = `
-        <div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div>
-        ${shippingFee > 0 ? `<div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1200):</strong> $70</div>` : ''}
-        <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
-      `;
-    }
-
-    // Save store info globally
-    window.selectedStoreInfo = {
-      CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
-      shippingFee, finalTotal // optional for reuse
-    };
-  }
-} */
 
 // Global or module-scoped variables for checkout state
 let currentShippingCost = 0;
