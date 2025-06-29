@@ -77,7 +77,112 @@ function getPaymentMethodInChinese(paymentMethod) {
   
   return paymentMethodMap[paymentMethod] || paymentMethod;
 }
+function handleOrdersClick(element) {
+    const originalText = element.textContent;
+    element.textContent = '正在處理...';
+    element.classList.add('processing');
+    
+    // Call your original function
+    checkOrders().then(() => {
+        // Restore original text after processing
+        element.textContent = originalText;
+        element.classList.remove('processing');
+    }).catch(() => {
+        // Handle error and restore text
+        element.textContent = originalText;
+        element.classList.remove('processing');
+    });
+}
+
+function handleMemberClick(element) {
+    const originalText = element.textContent;
+    element.textContent = '正在處理...';
+    element.classList.add('processing');
+    
+    // Call your original function
+    loadMemberInfo().then(() => {
+        element.textContent = originalText;
+        element.classList.remove('processing');
+    }).catch(() => {
+        element.textContent = originalText;
+        element.classList.remove('processing');
+    });
+}
 async function checkOrders() {
+  const lineUserId = sessionStorage.getItem('lineUserId');
+  if (!lineUserId) {
+    Swal.fire("請先登入以查看訂單");
+    return;
+  }
+
+  // 1) Define your status translation map
+  const statusMap = {
+    "New":        "新訂單",
+    "Processing": "已交付小7",
+    "Completed":  "已取貨",
+    "Cancelled":  "訂單取消"
+  };
+
+  try {
+    const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getOrders`);
+    const data = await res.json();
+
+    if (data.status !== 'success' || !Array.isArray(data.orders)) {
+      Swal.fire("查詢失敗", "無法獲取訂單資料", "error");
+      return;
+    }
+
+    // 2) Filter only this user’s orders
+    const userOrders = data.orders.filter(order => 
+      order.lineUserId && String(order.lineUserId).trim() === lineUserId.trim()
+    );
+
+    if (userOrders.length === 0) {
+      Swal.fire("目前沒有您的訂單紀錄");
+      return;
+    }
+
+    // 3) Build the HTML table including a “Status” column
+    let html = `
+      <h3>我的訂單</h3>
+      <table border="1" style="width:100%; text-align:left;">
+        <tr>
+          <th>訂單編號</th>
+          <th>付款方式</th>
+          <th>取貨門市</th>
+          <th>狀態</th>
+        </tr>`;
+
+    userOrders.forEach(order => {
+      // translate status or fallback to original
+      const rawStatus = order.Status || order.status || "";
+      const zhStatus  = statusMap[rawStatus] || rawStatus;
+
+      html += `
+        <tr>
+          <td>${order.Order_ID || ""}</td>
+          <td>${getPaymentMethodInChinese(order.Payment_Method) || ""}</td>
+          <td>${order.StoreAddress || ""}</td>
+          <td>${zhStatus}</td>
+        </tr>`;
+    });
+
+    html += `</table>`;
+
+    // 4) Show it in a Swal modal
+    Swal.fire({
+      title: '您的訂單查詢',
+      html: html,
+      width: '90%',
+      confirmButtonText: '關閉'
+    });
+
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    Swal.fire("錯誤", "查詢訂單時發生錯誤", "error");
+  }
+}
+async function checkOrdersB() {
   const lineUserId = sessionStorage.getItem('lineUserId');
   if (!lineUserId) {
     Swal.fire("請先登入以查看訂單");
@@ -243,74 +348,7 @@ function loginWithLINE() {
   window.location.href = loginUrl;
 }
 
-async function updateNavbarWithUserName(userName) {
-  let isMember = false;
-  const loginBtn = document.getElementById('member-login-button');
-  const memberService = document.getElementById('member-service-container');
-  const storedUserId = sessionStorage.getItem('lineUserId');
 
-  if (!storedUserId) return;
-
-  try {
-   const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${storedUserId}`);
-   const data = await res.json();
-
-    if (data.status === 'success') {
-      isMember = true;
-    }
-
-    if (loginBtn) {
-      loginBtn.textContent = `👤 ${userName}`;
-      loginBtn.disabled = true;
-    }
-
-    if (isMember) {
-      memberService.style.display = "block";
-    } else {
-      // Ask to complete registration
-      const { value: phoneNumber } = await Swal.fire({
-        title: '歡迎加入會員 🎉',
-        text: '是否願意提供電話號碼以完成會員註冊？',
-        input: 'tel',
-        inputLabel: '手機號碼',
-        inputPlaceholder: '請輸入您的手機號碼',
-        inputAttributes: {
-          maxlength: 12,
-          autocapitalize: 'off',
-          autocorrect: 'off'
-        },
-        confirmButtonText: '提交',
-        showCancelButton: true,
-        cancelButtonText: '稍後再說'
-      });
-
-      if (phoneNumber) {
-        // Send registration request
-        await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
-          method: 'POST',
-          mode: "no-cors",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            mode: 'registerMember',
-            lineUserId: storedUserId,
-            lineUserName: userName,
-            telephone: phoneNumber
-          })
-        });
-
-        Swal.fire('完成註冊', '感謝您提供資料！已成功註冊會員。', 'success');
-        memberService.style.display = "block";
-      }
-    }
-
-    console.log("LineId is:", storedUserId, "IsMember:", isMember);
-
-  } catch (err) {
-    console.error('Error checking membership:', err);
-  }
-}
 /*
 async function updateNavbarWithUserName(userName) {
   let isMember = false;
@@ -391,8 +429,3 @@ function generateCustomOrderId() {
 
   return `${aaCode}${day}${yyy}`;
 }
-
-// Call this after login is confirmed
-const storedUserName = sessionStorage.getItem('lineUserName');
-if (storedUserName) updateNavbarWithUserName(storedUserName);
-  

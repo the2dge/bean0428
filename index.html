@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr.Bean website </title>
+    <link rel="icon" type="image/png" href="image/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <title>Mr.Bean website </title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 <div class="backTopBtn" id="backTopBtn" style="display:block;">
@@ -35,7 +37,7 @@
       <button id="member-login-button" style="color: orange;font-size:1rem"><a href="#" onclick="loginWithLINE()">會員登入</a></button>
   <!-- Member Service (shown after login) -->
   <div id="member-service-container" style="display: none; position: relative;">
-    <button id="member-service-toggle" style="font-size: 1.1rem;">會員服務 ▾</button>
+    <button id="member-service-toggle" style="font-size:1.1rem">會員服務 ▾</button>
     
     <!-- Hidden dropdown menu -->
     <ul id="member-service-menu" class="member-service-menu" style="display: none;">
@@ -85,7 +87,7 @@
     <main class="main-body">
         <div id="content-wrapper" class="wrapper active">
             <section id="banner-slider-container">
-                </section>
+            </section>
 
             <section id="product-container">
                 <h2>荳荳精選</h2>
@@ -101,11 +103,10 @@
                 <div class="product-grid">
                 </div>
             </section>
-
             <section id="about-container">
             </section>
             <section id="media-container">
-                  <h2 style="color: orange;">荳荳 YouTube 頻道</h2>
+                  <h2 style="color: orange">荳荳 YouTube 頻道</h2>
                   <div id="media-grid" class="media-grid"></div>
             </section>
             <section id="membership-container" style="padding: 40px 20px; background: #f9f9f9; font-family: 'Helvetica Neue', sans-serif;">
@@ -127,8 +128,8 @@
                       <thead>
                         <tr style="background-color: #ddd;">
                           <th style="padding: 10px;">等級</th>
-                          <th>儲值門檻</th>
-                          <th>年消費門檻</th>
+                          <th>儲值金額</th>
+                          <th>年消費金額</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -171,10 +172,10 @@
                       <li>朋友購物可享折扣</li>
                       <li>您可獲得等級對應的獎勵積分</li>
                       <li>2% / 3% / 5% / 10% 根據您的會員等級</li>
-                      <li>每累積 500 積分 ➜ 可兌換為儲值積分</li>
+                      <li>每累積 500 積分 ➜ 可兌換為儲值金</li>
                     </ol>
 
-                    <p style="text-align:center; margin-top: 40px;">
+                    <p id="joinNow" style="text-align:center; margin-top: 40px;">
                       <a href="javascript:void(0)" 
                          style="background: #ff9900; color: white; padding: 10px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;" 
                          onclick="loginWithLINE()">
@@ -200,13 +201,20 @@
         <div class="footer-container">
             <img src="image/logo.png" width="100px">
             <p>&copy; [2025] [荳荳先生]. All rights reserved.</p>
-            <p>非會員訂單查詢: 首先進入 <a href="https://line.me/ti/p/~@657teosg" style="text-decoration: none; color:#876">荳荳先生</a> LINE官方帳號，然後輸入 <span style="color:black">&nbsp訂單查詢: 09xxxxxxx</span></p>
-            <p>客服信箱： mrbean@gmail.com | [客服專線： <a href="tel:0925528072">0925 528 072</a>]</p>
+            <p>非會員訂單查詢: 首先進入 <a href="https://line.me/ti/p/~@657teosg" style="text-decoration: none;font-size: 1.3rem; color:#976">荳荳先生</a> LINE官方帳號，然後輸入 <span style="color:black">&nbsp訂單查詢: 09xxxxxxxx</span></p>
+            <p>客服信箱： a120035340@gmail.com | [客服專線：<a href="tel:0925528072" style="color: #976"> 0925 528 072</a>]</p>
             <p>[台北市內湖區康寧路三段99巷10弄1號]</p>
             <p>營業人統一編號： 88395197</p>
             <p>本公司已投保產品責任險一千萬元(投保金額不等同理賠金額)</p>
             <p>保單號碼 0525字第25AML0004616號</p>
             </div>
+        <p style="text-align:center; margin-top: 10px;">
+                      <a href="https://www.mrbean.tw/orders/" 
+                         style="background: #f0f0f0; color: white; padding: 10px 25px; border-radius: 5px; text-decoration: none; font-weight: bold;" 
+                         >
+                         荳荳管理員
+                      </a>
+         </p>
     </footer>
 
     <aside id="side-cart" class="side-cart">
@@ -223,13 +231,18 @@
     </aside>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="app.js"></script>
     <script src="login.js"></script>
+    <script src="app.js"></script>
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
   const hamburger = document.getElementById('hamburger-toggle');
   const mobileNav = document.getElementById('mobile-nav');
+  const joinNow = sessionStorage.getItem('lineUserId');
+
+  if (joinNow){
+      document.getElementById("joinNow").style.display = 'none';
+  }
 
   if (hamburger && mobileNav) {
     hamburger.addEventListener('click', function () {
@@ -253,24 +266,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
-// Function to handle scroll event
-window.onscroll = function() {
-    scrollFunction();
-};
-function scrollFunction() {
-    // Get the backTopBtn element
-    const backTopBtn = document.getElementById('backTopBtn');
-    
-    // Check if the scroll has passed 30% of the document height
-    if (document.body.scrollTop > (document.documentElement.scrollHeight * 0.34) || 
-        document.documentElement.scrollTop > (document.documentElement.scrollHeight * 0.34)) {
-        // Show the button
-        backTopBtn.style.display = "block";
-    } else {
-        // Hide the button
-        backTopBtn.style.display = "none";
-    }
-}
 </script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {

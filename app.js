@@ -1,5 +1,5 @@
+//document.addEventListener('DOMContentLoaded', () => {
 let cart =[];
-let ExtraData = "bean0428"; //IT is the Github project name
 document.addEventListener('DOMContentLoaded', async () => {
 
     // --- DOM Element References ---
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         mediaLink_m: document.getElementById('nav-media-mobile'),
         memberLink: document.getElementById('nav-member'),
         memberLink_m: document.getElementById('nav-member-mobile'),
-        contactLink: document.getElementById('nav-contact'), 
+        contactLink: document.getElementById('nav-contact'), // Assuming contact might scroll to footer
         contactLink_m: document.getElementById('nav-contact-mobile'),
         cartIconBtn: document.getElementById('cart-icon'),
         cartItemCountSpan: document.getElementById('cart-item-count')
@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return total;
     }
     //Validate Promo Code
+    /*
     function validateDiscountCode(inputCode) {
       const member = membershipData.find(m =>
         m.discountCode.toLowerCase() === inputCode.trim().toLowerCase()
@@ -103,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         sessionStorage.removeItem('discountTier'); 
         return 0;
       }
-    }
+    }*/
 
     //Read Discount Code pushed from GAS!
         let membershipData = []; // Store membership data globally
@@ -178,8 +179,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div>${aboutData.content}</div>
         `;
     }
-
-    function renderMedia(mediaData) {
+    
+function renderMedia(mediaData) {
   const mediaGrid = document.getElementById('media-grid');
   if (!mediaGrid || !mediaData || !mediaData.length) return;
 
@@ -238,7 +239,6 @@ function extractYouTubeId(url) {
             container.appendChild(button);
         });
     }
-
 function renderProductGrid(products) {
     const grid = contentContainers.productGrid;
     if (!grid) {
@@ -294,7 +294,7 @@ function renderProductGrid(products) {
             productDiv.classList.add('product-item');
             productDiv.setAttribute('data-product-id', product.id);
             productDiv.innerHTML = `
-                <img src="${product.thumbnailUrl}" alt="${product.name}">
+                <img src="${product.imgUrl}" alt="${product.name}">
                 <h3>${product.name}</h3>
                 <p>${product.price}</p>
             `;
@@ -302,7 +302,10 @@ function renderProductGrid(products) {
         });
     }
 */ 
-    function renderItemDetails(productId) {
+   async function renderItemDetails(productId) {
+        if (!allItemDetails || !Object.keys(allItemDetails).length) {
+        allItemDetails = await fetchData('items_test.json');
+    }
         const itemData = allItemDetails[productId];
         if (!itemData) {
             mainBody.itemWrapper.innerHTML = `<p>Error: Product details not found for ID ${productId}.</p>`;
@@ -312,17 +315,17 @@ function renderProductGrid(products) {
 
         mainBody.itemWrapper.innerHTML = `
             <article class="item-detail">
-                <img src="${itemData.ImgUrl}" alt="${itemData.name}">
+                <img src="${itemData.imgUrl}" alt="${itemData.name}">
                 <div class="item-info">
                     <h2>${itemData.name}</h2>
                     <p>${itemData.description}</p>
                     ${itemData.specs ? `<ul>${Object.entries(itemData.specs).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}</ul>` : ''}
                     <p class="price">${itemData.price}</p>
-                    <button class="button-row">
-                    <button class="add-to-cart-btn" data-product-id="${itemData.id}">加入購物車</button>
-                     <button class="back-to-products-btn" styple="cursor: 'pointer">返回產品頁</button>
+                    <div class="button-row">
+                     <button class="add-to-cart-btn" data-product-id="${itemData.id}">加入購物車</button>
+                     <button class="back-to-products-btn" styple="cursor: 'pointer">返回產品頁</button> 
                     </div>
-                 </div>
+                </div>
             </article>
         `;
          // Add listener specifically for the new back button
@@ -339,10 +342,10 @@ function renderProductGrid(products) {
     function renderSideCart() {
         sideCart.itemsContainer.innerHTML = ''; // Clear current items
         if (cart.length === 0) {
-            sideCart.itemsContainer.innerHTML = '<p>您的購物車是空的。</p>';
-                setTimeout(() => {
-          switchView('content');
-        }, 1500);
+            sideCart.itemsContainer.innerHTML = '<p>您的購物車是空的。<br>歡迎重選您喜歡的商品</p>';
+            setTimeout(() => {
+              switchView('content');
+            }, 1500);
 
         } else {
             cart.forEach(item => {
@@ -420,7 +423,7 @@ function renderProductGrid(products) {
                 id: productId,
                 name: productToAdd.name,
                 price: productToAdd.price, // Use price from product grid data
-                img: productToAdd.ImgUrl, // Use thumbnail for cart
+                img: productToAdd.imgUrl, // Use thumbnail for cart
                 quantity: 1
             });
         }
@@ -467,23 +470,77 @@ function renderProductGrid(products) {
             renderSideCart(); // Re-render cart after change
         }
     }
-function openLogisticsMap(orderId, ExtraData) {
-    //const orderId = window.currentOrderId;
+
+function openLogisticsMap(orderId) {
+      //const orderId = window.currentOrderId;
         
     if (!orderId) {
-        alert("Order ID 尚未生成，無法開啟門市選擇頁面");
+        Swal.fire("Order ID 尚未生成，無法開啟門市選擇頁面");
         return;
     }
-    
-    // Build URL with both orderId and ExtraData parameters
-    const params = new URLSearchParams({
-        orderId: orderId,
-        ExtraData: ExtraData || 'bean0428' // Use provided ExtraData or default fallback
-    });
-    
-    const url = `https://pickup-store-selection-545199463340.asia-east1.run.app?${params.toString()}`;
+    // Open the Cloud Function, passing orderId to ECPay
+    const url = `https://mrbean-website-store-select-545199463340.asia-east1.run.app?orderId=${encodeURIComponent(orderId)}`;
     window.open(url, "_self");
 }
+/*
+function ECpayStoreDataBackTransfer() {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const MerchantID = urlParams.get('MerchantID');
+  const CVSStoreID = urlParams.get('CVSStoreID');
+  const CVSStoreName = urlParams.get('CVSStoreName');
+  const CVSAddress = urlParams.get('CVSAddress');
+  const MerchantTradeNo = urlParams.get('MerchantTradeNo');
+
+  if (MerchantID && CVSStoreID && CVSStoreName && CVSAddress) {
+      window.selectedStoreInfo = { CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo };
+
+    // Save to sessionStorage so it persists across re-renders
+    sessionStorage.setItem('selectedStoreInfo', JSON.stringify(window.selectedStoreInfo));
+    // Fill store info
+    const pickupInfoDiv = document.getElementById('pickup-store-info');
+    if (pickupInfoDiv) {
+      pickupInfoDiv.innerHTML = `
+        <p><strong>7-11 門市資訊</strong></p>
+        <p>店號: ${CVSStoreID}</p>
+        <p>店名: ${CVSStoreName}</p>
+        <p>地址: ${CVSAddress}</p>
+      `;
+    }
+
+    // Update address select
+    const addressSelect = document.getElementById('address');
+    if (addressSelect) addressSelect.value = '7-11 商店取貨';
+
+    // 🧠 Recalculate Total and Display Summary
+    const totalDiv = document.querySelector('.checkout-total');
+    let totalAmount = 0;
+    if (totalDiv) {
+      const match = totalDiv.textContent.match(/\$([\d.]+)/);
+      if (match) {
+        totalAmount = parseFloat(match[1]);
+      }
+    }
+
+    const shippingFee = totalAmount < 1000 ? 60 : 0;
+    const finalTotal = totalAmount + shippingFee;
+
+    // Update checkout total block
+    if (totalDiv) {
+      totalDiv.innerHTML = `
+        <div><strong>商品總額:</strong> $${totalAmount.toFixed(0)}</div>
+        ${shippingFee > 0 ? `<div style="color:red;"><strong>🚚 運費 (7-11 未滿 $1200):</strong> $70</div>` : ''}
+        <div><strong>總金額:</strong> $${finalTotal.toFixed(0)}</div>
+      `;
+    }
+
+    // Save store info globally
+    window.selectedStoreInfo = {
+      CVSStoreID, CVSStoreName, CVSAddress, MerchantTradeNo,
+      shippingFee, finalTotal // optional for reuse
+    };
+  }
+} */
 
 // Global or module-scoped variables for checkout state
 let currentShippingCost = 0;
@@ -550,7 +607,7 @@ async function renderCheckoutPage(cartItems) {
     // This function will set up all event listeners and may call updateOrderSummaryDisplay again
     // if, for example, it restores a discount code from session storage.
     initializeCheckoutFormStateAndListeners(checkoutFormElement, cartItems, storedStoreInfo);
-
+    switchView("checkout");
     // Note: The call to updateOrderSummaryDisplay at the end of initializeCheckoutFormStateAndListeners
     // will ensure the display is accurate after all its internal setup, including potential restoration
     // of discount codes which would affect currentDiscountRate.
@@ -559,7 +616,7 @@ async function renderCheckoutPage(cartItems) {
 // --- Helper for Top Header: "結帳" Title & Member/Login Button ---
 function handleTopUp(amount) {
   // TODO: replace with real top-up call
-  alert(`您選擇了儲值 ${amount}`);
+  Swal.fire(`您選擇了儲值 ${amount}`);
 }
 function renderCheckoutHeaderDOM(lineUserName) {
     const titleRow = document.createElement('div');
@@ -609,7 +666,7 @@ function renderCheckoutHeaderDOM(lineUserName) {
         creditBalance.addEventListener('click', async () => {
             const lineUserId = sessionStorage.getItem('lineUserId');
             if (!lineUserId) {
-                alert('⚠️ 尚未登入 LINE 帳號，請先登入會員');
+                Swal.fire('⚠️ 尚未登入 LINE 帳號，請先登入會員');
                 dropdown.style.display = 'none';
                 return;
             }
@@ -618,18 +675,18 @@ function renderCheckoutHeaderDOM(lineUserName) {
                 const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${lineUserId}`);
                 const data = await res.json();
                 if (data.status === 'success') {
-                    alert(`💰 目前點數餘額：${data.creditBalance}`);
+                    Swal.fire(`💰 目前點數餘額：${data.creditBalance}`);
                 } else if (data.status === 'not_found') {
                   const goToSignup = confirm('⚠️ 查無此會員資料，是否前往註冊頁面？');
                   if (goToSignup) {
                     window.location.href = 'https://www.mrbean.tw/signup';
                   }
                 } else {
-                    alert(`❌ 無法取得點數資料：${data.message || '請稍後再試'}`);
+                    Swal.fire(`❌ 無法取得點數資料：${data.message || '請稍後再試'}`);
                 }
             } catch (err) {
                 console.error('Error fetching credit balance:', err);
-                alert('🚫 發生錯誤，請檢查網路或稍後再試');
+                Swal.fire('🚫 發生錯誤，請檢查網路或稍後再試');
             }
             dropdown.style.display = 'none';
         });
@@ -698,7 +755,7 @@ dropdown.appendChild(creditBalance);
           //  sessionStorage.removeItem('selectedStoreInfo');
           //  sessionStorage.removeItem('discountCode');
           //  sessionStorage.removeItem('discountTier');
-            alert('已登出，購物車及部分結帳資訊已清除。');
+            Swal.fire('已登出，購物車及部分結帳資訊已清除。');
             window.location.reload();
         });
 
@@ -731,7 +788,7 @@ dropdown.appendChild(creditBalance);
                 loginWithLINE();
             } else {
                 console.error('loginWithLINE function is not defined.');
-                alert('登入功能暫時無法使用。');
+                Swal.fire('登入功能暫時無法使用。');
             }
         });
         titleRow.appendChild(memberLoginBtn);
@@ -866,7 +923,7 @@ function createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo) {
         <div id="submit-area" style="margin-top: 20px;">
             <button type="submit" id="final-submit-btn" class="btn btn-primary btn-lg btn-block" style="display:block; width:100%; padding:10px; font-size:1.2em;">確認訂單</button>
               <div id="credit-card-wrapper" style="display:none; text-align: center;">
-                <h4>Please click the credit card</h4>
+                <h4>💳 請點選信用卡圖示進行付款</h4>
                 <img src="image/creditcard.png" alt="Pay with Credit Card" id="ecpay-credit-card-btn"
                   style="cursor:pointer; max-width:150px;" />
               </div>
@@ -929,7 +986,6 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
     const shippingSelect = form.querySelector('#shipping-method');
     const paymentSelect = form.querySelector('#payment-option');
     const submitButton = form.querySelector('#final-submit-btn');
-    //const creditCardImageButton = form.querySelector('#ecpay-credit-card-btn');
     const creditCardImageButton = form.querySelector('#credit-card-wrapper');
     const nameInput = form.querySelector('#customer_name');
     const emailInput = form.querySelector('#customer_email');
@@ -967,7 +1023,7 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
                 if (creditBalance >= submitAmount) {
                     submitButton.disabled = false;
                 } else {
-                    Swal.fire(`❌ 點數不足。目前餘額：${creditBalance}，需支付：${submitAmount}`);
+                    Swal.fire(`❌ 儲值金不足。目前餘額：${creditBalance}，需支付：${submitAmount}`);
                 }
             } else {
                 Swal.fire('⚠️ 無法取得會員點數，請稍後再試');
@@ -983,7 +1039,7 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
     }
 }
 
-function validateCustomerName() {
+    function validateCustomerName() {
   const nameField = document.getElementById('customer_name');
   const name = nameField.value.trim();
 
@@ -1140,8 +1196,8 @@ shippingSelect.addEventListener('change', () => {
     });
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault(); 
-      const submitBtn = document.getElementById('final-submit-btn');
+        e.preventDefault(); 
+        const submitBtn = document.getElementById('final-submit-btn');
       // Prevent double submission
       if (submitBtn.disabled) return; 
       if (!validateCustomerName()) return;
@@ -1150,7 +1206,7 @@ shippingSelect.addEventListener('change', () => {
         
         e.preventDefault();
         if (!validateFormFields()) {
-            Swal.fire('請完整填寫表單並選擇有效的取貨方式。');
+            alert('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
 const shippingMethodValue = shippingSelect.value; // e.g., 'seven_eleven' or 'store_pickup'
@@ -1196,7 +1252,7 @@ const orderData = {
 console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(orderData, null, 2));
 
         // Send to your Cloud Function or Web App here
-        await fetch('https://script.google.com/macros/s/AKfycbz8-LmbE9L_0ebvl5-mN09nWH5bkEGZshaK9HjELxlVqU5rbhk5KTpfdmv9Sn8yeDQ3Bg/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
         method: 'POST',
         mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
@@ -1210,7 +1266,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
       sessionStorage.removeItem('cart')
       renderSideCart();
       switchView('content');
-      Swal.fire('✅ 感謝您的訂購!');
+      Swal.fire('✅ 感謝您的訂購！');
         // Clear cart, session storage for checkout, and redirect or show success message
         // cart.length = 0; // Clear the global cart array
         // renderSideCart(); // Update side cart display
@@ -1223,7 +1279,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
 
     creditCardImageButton.addEventListener('click', async () => {
         if (!validateFormFields()) {
-            Swal.fire('請完整填寫表單並選擇有效的取貨方式。');
+            alert('請完整填寫表單並選擇有效的取貨方式。');
             return;
         }
         creditCardImageButton.style.pointerEvents = 'none';              
@@ -1296,18 +1352,18 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
             // MerchantTradeDate: Formatted YYYY/MM/DD HH:MM:SS (Server should generate this ideally)
             totalAmount: sessionStorage.getItem('finalOrderAmountForSubmission') || 0,
             customField1: pickupOption,
-            customField2: cvsStoreIDValue || null,
+            customField2: sessionStorage.getItem('lineUserId') || null,
             customField3: nameInput.value,
             customField4: phoneInput.value,
             tradeDesc: 'Order Description', // Replace with your order description
             itemName: itemsString, // Replace with your product name
-            returnUrl: 'https://creditcard-paid-message-forwarder-545199463340.europe-west1.run.app', // Replace with your ReturnURL
-            clientBackUrl: 'https://the2dge.github.io/bean0428/' 
+            returnUrl: 'https://asia-east1-ecpay-rtnmessage.cloudfunctions.net/handleECPayPost', // Replace with your ReturnURL
+            clientBackUrl: 'https://www.mrbean.tw/' 
         };
         console.log("Data for ECPay Credit Card (to be sent to server):", ecpayData);
 
         // Send to your Cloud Function or Web App here
-      await fetch('https://script.google.com/macros/s/AKfycbz8-LmbE9L_0ebvl5-mN09nWH5bkEGZshaK9HjELxlVqU5rbhk5KTpfdmv9Sn8yeDQ3Bg/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
         method: 'POST',
         mode: "no-cors",
         headers: { 'Content-Type': 'application/json' },
@@ -1322,13 +1378,13 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
       renderSideCart();
         
           // Send a POST request to the Cloud Function
-  fetch('https://ecpay-mrbean-creditcard-payment-545199463340.asia-east1.run.app', {
+  fetch('https://mrbean-creditpayment-production-545199463340.asia-east1.run.app', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(ecpayData)
-  }) 
+  })
   .then(response => {
     if (!response.ok) {
       // If we get an error response, convert it to text and throw
@@ -1359,7 +1415,7 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
     document.getElementById('creditCardImage').style.pointerEvents = 'auto';
     
     // Show error message
-    Swal.fire('Failed 未能付款。請重試。 Error: ' + error.message);
+    alert('Failed to initiate payment. Please try again. Error: ' + error.message);
   });
 });
 
@@ -1390,6 +1446,11 @@ console.log("Order Data for Submission to GAS (New Structure):", JSON.stringify(
 // --- Modified ECpayStoreDataBackTransfer ---
 // This function is assumed to be called on DOMContentLoaded or when ECPay redirects back.
 function ECpayStoreDataBackTransfer() {
+    const shippingSelect = document.querySelector('#shipping-method');
+    if (!shippingSelect) {
+        console.warn('shippingSelect not found');
+        return;
+    }
     const urlParams = new URLSearchParams(window.location.search);
     const CVSStoreID = urlParams.get('CVSStoreID');
     const CVSStoreName = urlParams.get('CVSStoreName');
@@ -1687,52 +1748,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 switchView('checkout');
                 sideCart.aside.classList.remove('open'); // Close side cart
             } else {
-                swal("您的購物車是空的, 無法結帳。");
+                Swal.fire("您的購物車是空的, 無法結帳。");
             }
         });
      
     }
-    /*
-    async function checkLINELogin() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const state = urlParams.get('state'); // <-- Get "state"
 
-        if (code) {
-            console.log('Detected LINE login code:', code);
-            console.log('Detected state:', state);
-
-            await exchangeCodeForToken(code); // Do the login exchange
-
-            // After login success, check state
-            if (state === 'checkout') {
-                console.log('State=checkout → Switch to checkout page');
-                renderCheckoutPage(cart); // ⬅️ Must render using restored cart
-                switchView('checkout');
-            } else {
-                switchView('content'); // Default
-            }
-
-            // Clean up URL (remove code/state)
-            window.history.replaceState({}, document.title, window.location.pathname);
-
-        } else {
-            // Normal page load
-            const storedUserName = sessionStorage.getItem('lineUserName');
-            console.log("userName is", storedUserName);
-            if (storedUserName) {
-                    const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${storedUserName}`);
-                    const data = await res.json();
-                    if (data.status === 'success') {
-                      isMember = true;
-                    }
-                  }
-            if (storedUserName && isMember) {
-                updateNavbarWithUserName(storedUserName);
-            }
-        }
-    }
-    */
     async function exchangeCodeForToken(code) {
       const cloudFunctionURL = 'https://mrbean-website-line-login-545199463340.asia-east1.run.app'; // <-- replace with your real function URL
 
@@ -1748,6 +1769,7 @@ document.addEventListener('DOMContentLoaded', () => {
           sessionStorage.setItem('lineUserName', name);
           sessionStorage.setItem('lineUserEmail', email);
           sessionStorage.setItem('lineUserId', sub);
+          console.log("In Code Exchange: LindID is: ", sessionStorage.getItem('lineUserId'));
 
           updateNavbarWithUserName(name); // Optional UI update
         } else {
@@ -1759,7 +1781,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     async function submitOrderToWebApp(orderData) {
         try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbz8-LmbE9L_0ebvl5-mN09nWH5bkEGZshaK9HjELxlVqU5rbhk5KTpfdmv9Sn8yeDQ3Bg/exec', {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
                 method: 'POST',
                 mode: "no-cors", // Required for Google Apps Script
                 body: JSON.stringify({
@@ -1780,35 +1802,217 @@ document.addEventListener('DOMContentLoaded', () => {
             Swal.fire('❌ 訂單提交失敗，請稍後再試。');
         }
     }
-    /*
-    function updateNavbarWithUserName(userName) {
-      const loginBtn = document.getElementById('member-login-btn');
-      if (loginBtn) {
-        loginBtn.textContent = `👤 ${userName}`;
-        loginBtn.disabled = true; // Optional: prevent re-clicking
+async function updateNavbarWithUserName(userName) {
+  let isMember = false;
+  const loginBtn = document.getElementById('member-login-button');
+  const memberService = document.getElementById('member-service-container');
+  const storedUserId = sessionStorage.getItem('lineUserId');
+
+  if (!storedUserId) return;
+
+  try {
+   const res = await fetch(`https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec?mode=getMemberInfo&lineUserId=${storedUserId}`);
+   const data = await res.json();
+
+    if (data.status === 'success') {
+      isMember = true;
+    }
+
+    if (loginBtn) {
+      loginBtn.textContent = `👤 ${userName}`;
+      loginBtn.disabled = true;
+    }
+
+    if (isMember) {
+      memberService.style.display = "block";
+    } else {
+      // Ask to complete registration
+      const { value: phoneNumber } = await Swal.fire({
+        title: '歡迎加入會員 🎉',
+        text: '是否願意提供電話號碼以完成會員註冊？',
+        input: 'tel',
+        inputLabel: '手機號碼',
+        inputPlaceholder: '請輸入您的手機號碼',
+        inputAttributes: {
+          maxlength: 12,
+          autocapitalize: 'off',
+          autocorrect: 'off'
+        },
+        confirmButtonText: '提交',
+        showCancelButton: true,
+        cancelButtonText: '稍後再說'
+      });
+
+      if (phoneNumber) {
+        // Send registration request
+        await fetch('https://script.google.com/macros/s/AKfycbzZhiPYkL62ZHeRMi1-RCkVQUodJDe6IR7UvNouwM1bkHmepJAfECA4JF1_HHLn9Zu7Yw/exec', {
+          method: 'POST',
+          mode: "no-cors",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            mode: 'registerMember',
+            lineUserId: storedUserId,
+            lineUserName: userName,
+            telephone: phoneNumber
+          })
+        });
+
+        Swal.fire('完成註冊', '感謝您提供資料！已成功註冊會員。', 'success');
+        memberService.style.display = "block";
       }
-    }*/
+    }
+
+    console.log("LineId is:", storedUserId, "IsMember:", isMember);
+
+  } catch (err) {
+    console.error('Error checking membership:', err);
+  }
+}
     function showUserDropdown(displayName) {
       document.getElementById('login-link').style.display = 'none';
       document.getElementById('user-name').textContent = displayName || '會員';
       document.getElementById('user-dropdown').style.display = 'block';
     }
 
-    // Call this after login is confirmed
-    const storedUserName = sessionStorage.getItem('lineUserName');
-    console.log("LINE user name exit!");
-    if (storedUserName) updateNavbarWithUserName(storedUserName);
-
 
     // --- Initialization Function ---
-    async function init() {
+async function init() {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // ── Case A: OAuth “code” return ──
+  const code = urlParams.get('code');
+  if (code) {
+  //  let profile = {};
+    try {
+      profile = await exchangeCodeForToken(code) || {};
+    } catch (e) {
+      console.error("LINE exchange failed:", e);
+    }
+ //   const nameToSave  = profile.displayName || profile.name || "";
+ //   const emailToSave = profile.email       || "";
+ //   const idToSave    = profile.userId      || profile.id   || "";
+ //   console.log("Stored LINE Profile is:", profile);
+
+ //   sessionStorage.setItem('lineUserName',  nameToSave);
+ //   sessionStorage.setItem('lineUserEmail', emailToSave);
+ //   sessionStorage.setItem('lineUserId',    idToSave);
+ //   localStorage.setItem('lineUser', JSON.stringify(profile));
+    console.log("lineUserId Check after LINE Login: ", sessionStorage.getItem('lineUserId'));
+    // restore cart
+    const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    if (savedCart.length) {
+      cart = savedCart;
+      renderSideCart();
+    }
+
+    // now render home UI
+    await renderMainContent();
+    defer(renderDeferredContent);
+    switchView('content');
+
+    // clean URL & done
+    window.history.replaceState({}, document.title, window.location.pathname);
+    console.log("last lineUserId Check: ", sessionStorage.getItem('lineUserId'));
+    return;
+  }
+
+  // ── Case B: legacy name/email/lineUserId ──
+  const name        = urlParams.get('name');
+  const email       = urlParams.get('email');
+  const legacyId    = urlParams.get('lineUserId');
+  if (name && legacyId) {
+    sessionStorage.setItem('lineUserName',  name);
+    sessionStorage.setItem('lineUserEmail', email || "");
+    sessionStorage.setItem('lineUserId',    legacyId);
+
+    const saved = JSON.parse(localStorage.getItem('cart') || '[]');
+    if (saved.length) {
+      cart = saved;
+      renderSideCart();
+    }
+
+    await renderMainContent();
+    defer(renderDeferredContent);
+    switchView('content');
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return;
+  }
+
+  // ── Case C: 7-11 store return (unchanged) ──
+  const storeID      = urlParams.get('CVSStoreID');
+  const storeName    = urlParams.get('CVSStoreName');
+  const storeAddress = urlParams.get('CVSAddress');
+  if (storeID && storeName && storeAddress) {
+    sessionStorage.setItem('selectedStoreInfo', JSON.stringify({
+      CVSStoreID:   storeID,
+      CVSStoreName: storeName,
+      CVSAddress:   storeAddress
+    }));
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    const saved = JSON.parse(localStorage.getItem('cart') || '[]');
+    if (saved.length) {
+      cart = saved;
+      await renderCheckoutPage(cart);
+      return;
+    }
+  }
+
+  // ── Normal startup ──
+  await renderMainContent();
+  defer(renderDeferredContent);
+}
+async function renderMainContent() {
+    try {
+        const [bannerData, aboutData, productData] = await Promise.all([
+            fetchData('banner.json'),
+            fetchData('about.json'),
+            fetchData('products_test.json'),
+        ]);
+
+        const bannerRendered = renderBanner(bannerData);
+        renderAbout(aboutData);
+        renderProductGrid(productData);
+        allProductsData = productData;
+
+        startSlideshowIfReady(bannerRendered);
+    } catch (error) {
+        console.error("Error rendering main content:", error);
+    }
+}
+
+function renderDeferredContent() {
+    fetchData('media.json').then(renderMedia);
+    loadMembershipData();  // Only needed for checkout or discounts
+    renderSideCart();      // UI enhancement only
+    setupEventListeners(); // DOM event bindings
+}
+
+function startSlideshowIfReady(bannerRendered) {
+    if (bannerRendered) {
+        startBannerSlideshow();
+    }
+}
+
+// Utility: Use browser idle time or fallback to timeout
+function defer(callback) {
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(callback);
+    } else {
+        setTimeout(callback, 200);
+    }
+}
+/*    async function init() {
         // Fetch all necessary data concurrently
-        const [bannerData, aboutData,mediaData, productsData, itemDetailsData] = await Promise.all([
+        const [bannerData, aboutData, mediaData, productsData, itemDetailsData] = await Promise.all([
             fetchData('banner.json'),
             fetchData('about.json'),
             fetchData('media.json'),
-            fetchData('products.json'),
-            fetchData('items.json')
+            fetchData('products_test.json'),
+            fetchData('items_test.json')
         ]);
 
         // --- Restore Cart & OrderId from SessionStorage ---
@@ -1866,13 +2070,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log("Item saved !Return from LINE Login: ", savedCart);
       if (savedCart) cart = JSON.parse(savedCart);
       switchView('content');
-        /*
-      if (state === 'checkout') {
-        renderCheckoutPage(cart); // cart + user
-        switchView('checkout');
-      } else {
-        switchView('content');
-      }*/
+
       window.history.replaceState({}, document.title, window.location.pathname);
       return; // ✅ exit early
     }
@@ -1897,11 +2095,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Normal load ---
     switchView('content');
-}//END of init()
+} *///END of init()
 
     // --- Start the application ---
-    await loadMembershipData();
+    // --- Start the application when DOM is ready ---
     init();
+        // Call this after login is confirmed
+    const storedUserName = sessionStorage.getItem('lineUserName');
+    
+    console.log("LINE user name exist!", sessionStorage.getItem('lineUserName'));
+    if (storedUserName) updateNavbarWithUserName(storedUserName);
+
     ECpayStoreDataBackTransfer();
 
 }); // End DOMContentLoaded
