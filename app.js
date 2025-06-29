@@ -1,4 +1,3 @@
-//document.addEventListener('DOMContentLoaded', () => {
 let cart =[];
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -302,43 +301,167 @@ function renderProductGrid(products) {
         });
     }
 */ 
-   async function renderItemDetails(productId) {
-        if (!allItemDetails || !Object.keys(allItemDetails).length) {
+async function renderItemDetails(productId) {
+    if (!allItemDetails || !Object.keys(allItemDetails).length) {
         allItemDetails = await fetchData('items_test.json');
     }
-        const itemData = allItemDetails[productId];
-        if (!itemData) {
-            mainBody.itemWrapper.innerHTML = `<p>Error: Product details not found for ID ${productId}.</p>`;
-            switchView('content'); // Go back if details aren't found
-            return;
-        }
+    
+    const itemData = allItemDetails[productId];
+    if (!itemData) {
+        mainBody.itemWrapper.innerHTML = `<p>Error: Product details not found for ID ${productId}.</p>`;
+        switchView('content'); // Go back if details aren't found
+        return;
+    }
 
-        mainBody.itemWrapper.innerHTML = `
-            <article class="item-detail">
-                <img src="${itemData.imgUrl}" alt="${itemData.name}">
-                <div class="item-info">
-                    <h2>${itemData.name}</h2>
-                    <p>${itemData.description}</p>
-                    ${itemData.specs ? `<ul>${Object.entries(itemData.specs).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}</ul>` : ''}
-                    <p class="price">${itemData.price}</p>
-                    <div class="button-row">
-                     <button class="add-to-cart-btn" data-product-id="${itemData.id}">加入購物車</button>
-                     <button class="back-to-products-btn" styple="cursor: 'pointer">返回產品頁</button> 
-                    </div>
+    // Parse pricing data
+    const pricingData = parsePricingData(itemData.price);
+    const pricingHtml = generatePricingHtml(pricingData, itemData.id);
+    
+    mainBody.itemWrapper.innerHTML = `
+        <article class="item-detail">
+            <img src="${itemData.imgUrl}" alt="${itemData.name}">
+            <div class="item-info">
+                <h2>${itemData.name}</h2>
+                <p>${itemData.description}</p>
+                ${itemData.specs ? `<ul>${Object.entries(itemData.specs).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}</ul>` : ''}
+                ${pricingHtml}
+                <div class="button-row">
+                    <button class="back-to-products-btn" style="cursor: pointer">返回產品頁</button> 
                 </div>
-            </article>
-        `;
-         // Add listener specifically for the new back button
-        const backBtn = mainBody.itemWrapper.querySelector('.back-to-products-btn');
-        if (backBtn) {
-          backBtn.addEventListener('click', (e) => {
+            </div>
+        </article>
+    `;
+    
+    // Add listener for the back button
+    const backBtn = mainBody.itemWrapper.querySelector('.back-to-products-btn');
+    if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentView !== 'content') switchView('content');
             document.getElementById('product-container')?.scrollIntoView({ behavior: 'smooth' });
-          });
-        }
+        });
     }
 
+    // Add listeners for add to cart buttons
+    // Add event listener for single dropdown-based add-to-cart
+    const singleAddBtn = mainBody.itemWrapper.querySelector('.add-to-cart-single-btn');
+    if (singleAddBtn) {
+        singleAddBtn.addEventListener('click', () => {
+            const productId = singleAddBtn.getAttribute('data-product-id');
+            const selectEl = mainBody.itemWrapper.querySelector('.size-selector');
+            const selectedSize = selectEl.value;
+            const selectedPrice = selectEl.options[selectEl.selectedIndex].dataset.price;
+
+            handleAddToCartManual(productId, selectedSize, selectedPrice);
+        });
+    }
+    const addToCartBtns = mainBody.itemWrapper.querySelectorAll('.add-to-cart-btn');
+    addToCartBtns.forEach(btn => {
+        btn.addEventListener('click', handleAddToCart);
+    });
+}
+
+/**
+ * Parses pricing data from various formats (string, array, or single price)
+ * @param {string|array|number} priceData - The price data to parse
+ * @returns {array} Array of pricing objects with size and price
+ */
+function parsePricingData(priceData) {
+    try {
+        // If it's already an array, return it
+        if (Array.isArray(priceData)) {
+            return priceData.filter(p => p.size && p.price);
+        }
+        
+        // If it's a string, try to parse as JSON
+        if (typeof priceData === 'string') {
+            // Check if it looks like JSON array
+            if (priceData.trim().startsWith('[')) {
+                const parsed = JSON.parse(priceData);
+                if (Array.isArray(parsed)) {
+                    return parsed.filter(p => p.size && p.price);
+                }
+            }
+            
+            // If it's just a number string, convert to single pricing
+            const numPrice = parseFloat(priceData);
+            if (!isNaN(numPrice)) {
+                return [{ size: 'Standard', price: numPrice }];
+            }
+        }
+        
+        // If it's a number, convert to single pricing
+        if (typeof priceData === 'number') {
+            return [{ size: 'Standard', price: priceData }];
+        }
+        
+        // Fallback: return empty array
+        console.warn('Unable to parse pricing data:', priceData);
+        return [];
+        
+    } catch (error) {
+        console.error('Error parsing pricing data:', error, priceData);
+        return [];
+    }
+}
+
+/**
+ * Generates HTML for pricing options with add to cart functionality
+ * @param {array} pricingData - Array of pricing objects
+ * @param {string} productId - Product ID
+ * @returns {string} HTML string for pricing section
+ */
+function generatePricingHtml(pricingData, productId) {
+    if (!pricingData || pricingData.length === 0) {
+        return '<p class="price-error">Price information not available</p>';
+    }
+
+    if (pricingData.length === 1) {
+        const pricing = pricingData[0];
+        return `
+            <div class="pricing-section single-price">
+                <p class="price">$${pricing.price}</p>
+                <button class="add-to-cart-btn" 
+                        data-product-id="${productId}" 
+                        data-size="${pricing.size}" 
+                        data-price="${pricing.price}">
+                    加入購物車
+                </button>
+            </div>
+        `;
+    }
+
+    // For multiple sizes, use dropdown
+    return `
+        <div class="pricing-section multiple-prices">
+            <h3>選擇包裝尺寸:</h3>
+            <select class="size-selector" data-product-id="${productId}">
+                ${pricingData.map(p => `<option value="${p.size}" data-price="${p.price}">${p.size} - $${p.price}</option>`).join('')}
+            </select>
+            <button class="add-to-cart-single-btn" data-product-id="${productId}">加入購物車</button>
+        </div>
+    `;
+}
+function handleAddToCartManual(productId, size, price) {
+    const product = allItemDetails[productId];
+    const cartKey = `${productId}_${size}`;
+
+    const existingItem = cart.find(item => item.cartKey === cartKey);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            cartKey,
+            id: productId,
+            name: product.name,
+            size,
+            price: `$${price}`,
+            img: product.imgUrl,
+            quantity: 1
+        });
+    }
+    renderSideCart();
+}
     function renderSideCart() {
         sideCart.itemsContainer.innerHTML = ''; // Clear current items
         if (cart.length === 0) {
@@ -351,7 +474,7 @@ function renderProductGrid(products) {
             cart.forEach(item => {
                 const cartItemDiv = document.createElement('div');
                 cartItemDiv.classList.add('side-cart-item');
-                cartItemDiv.setAttribute('data-cart-item-id', item.id);
+                cartItemDiv.setAttribute('data-cart-item-id', item.cartKey);
                 cartItemDiv.innerHTML = `
                     <img src="${item.img}" alt="${item.name}">
                     <div class="item-info">
