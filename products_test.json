@@ -2,7 +2,7 @@
   {
     "id": "p001",
     "name": "Ginger Walnut",
-    "pricing": "[{\"price\":300,\"size\":\"標準半斤\"}]",
+    "pricing": "[{\"size\":\"Small\",\"price\":300},{\"price\":600,\"size\":\"Large\"}]",
     "price": "$300",
     "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/appleCashewBudgetPack.jpg",
     "title": "Walnut",
