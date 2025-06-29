@@ -2,7 +2,7 @@
   {
     "id": "p001",
     "name": "TEST",
-    "pricing": "{size=Small, price=300.0}",
+    "pricing": "[{\"price\":300,\"size\":\"Small\"},{\"price\":580,\"size\":\"Large\"}]",
     "price": "$300",
     "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/20240707_160913-min.jpg",
     "title": "TEST",
