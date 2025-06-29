@@ -4,7 +4,7 @@
     "name": "Ginger Walnut",
     "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/appleCashewBudgetPack.jpg",
     "description": "Best Walnut",
-    "price": "$300",
+    "price": "[{\"size\":\"Small\",\"price\":300},{\"price\":600,\"size\":\"Large\"}]",
     "specs": {
       "原產地": "Taiwan",
       "成分": "nuts"
