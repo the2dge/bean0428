@@ -1,20 +1,11 @@
 [
   {
     "id": "p001",
-    "name": "TEST",
-    "pricing": "[{\"price\":300,\"size\":\"Small\"},{\"price\":580,\"size\":\"Large\"}]",
+    "name": "Ginger Walnut",
+    "pricing": "[{\"price\":300,\"size\":\"標準半斤\"}]",
     "price": "$300",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/20240707_160913-min.jpg",
-    "title": "TEST",
-    "category": "堅果"
-  },
-  {
-    "id": "p002",
-    "name": "TEST",
-    "pricing": "",
-    "price": "$100",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/20240707_160913-min.jpg",
-    "title": "TEST",
+    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/appleCashewBudgetPack.jpg",
+    "title": "Walnut",
     "category": "堅果"
   }
 ]
