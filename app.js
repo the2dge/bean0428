@@ -479,6 +479,7 @@ function handleAddToCartManual(productId, size, price) {
                     <img src="${item.img}" alt="${item.name}">
                     <div class="item-info">
                         <p class="name">${item.name}</p>
+                        <p class="size">${item.size}</p>
                         <p class="price">${item.price}</p>
                         <div class="quantity-control">
                             <button class="decrease-qty-btn" data-product-id="${item.id}">➖</button>
@@ -581,7 +582,7 @@ function handleAddToCartManual(productId, size, price) {
       return `$${total.toFixed(2)}`;
     }
     function changeCartQuantity(productId, changeAmount) {
-        const cartItemIndex = cart.findIndex(item => item.id === productId);
+        const cartItemIndex = cart.findIndex(item => item.cartKey === productId);
         if (cartItemIndex > -1) {
             cart[cartItemIndex].quantity += changeAmount;
 
