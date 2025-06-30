@@ -11,7 +11,7 @@
   {
     "id": "p002",
     "name": "腰果",
-    "pricing": "[{\"price\":300,\"size\":\"Small\"},{\"size\":\"Large\",\"price\":600}]",
+    "pricing": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"size\":\"1斤(600g)\",\"price\":580}]",
     "price": "$300",
     "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/cashew.jpg",
     "title": "腰果",
