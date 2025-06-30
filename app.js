@@ -942,8 +942,8 @@ function renderOrderedItemsSummaryDOM(cartItems) {
             itemDiv.style.justifyContent = 'space-between';
             itemDiv.style.padding = '5px 0';
             itemDiv.innerHTML = `
-                <span style="flex-basis: 50%;"><img src="${item.img}" alt="${item.name}" style="width:30px; height:30px; margin-right:10px; vertical-align:middle;"> ${item.name}</span>
-                <span style="flex-basis: 20%; text-align:center;">x ${item.size}</span>
+                <span style="flex-basis: 50%;"><img src="${item.img}" alt="${item.name}" style="width:40px; height:40px; margin-right:10px; vertical-align:middle;"> ${item.name}</span>
+                <span style="flex-basis: 25%; text-align:center;">${item.size}</span>
                 <span style="flex-basis: 20%; text-align:center;">x ${item.quantity}</span>
                 <span style="flex-basis: 30%; text-align:right;">${item.price}</span>
             `;
