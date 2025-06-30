@@ -1,13 +1,13 @@
 {
   "p001": {
     "id": "p001",
-    "name": "Ginger Walnut",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/appleCashewBudgetPack.jpg",
-    "description": "Best Walnut",
-    "price": "[{\"size\":\"Small\",\"price\":300},{\"price\":600,\"size\":\"Large\"}]",
+    "name": "核桃",
+    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
+    "description": "核桃核桃核桃核桃核桃核桃核桃核桃核桃",
+    "price": "[{\"price\":400,\"size\":\"Small\"},{\"price\":780,\"size\":\"Large\"}]",
     "specs": {
-      "原產地": "Taiwan",
-      "成分": "nuts"
+      "原產地": "核桃",
+      "成分": "核桃核桃核桃"
     }
   }
 }
