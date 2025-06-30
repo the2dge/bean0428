@@ -307,7 +307,7 @@ body { margin: 0; font-family: sans-serif; }
   margin: 12px 0;
 }
 
-.item-detail .add-to-cart-btn,
+.item-detail .add-to-cart-single-btn,
 .item-detail .back-to-products-btn {
   display: inline-block;
   width: calc(50% - 8px);
@@ -326,7 +326,7 @@ body { margin: 0; font-family: sans-serif; }
   background-color: #6c757d;
 }
 
-.item-detail .add-to-cart-btn:hover,
+.item-detail .add-to-cart-single-btn:hover,
 .item-detail .back-to-products-btn:hover {
   opacity: 0.9;
 }
