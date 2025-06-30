@@ -330,6 +330,10 @@ body { margin: 0; font-family: sans-serif; }
 .item-detail .back-to-products-btn:hover {
   opacity: 0.9;
 }
+.pricing-section.multiple-prices .size-selector{
+  width: 50%;
+  font-size: 1.5rem;
+}
 /**Out of Stock Display**/
 /* Style for the base product item to contain the overlay */
 .product-item {
