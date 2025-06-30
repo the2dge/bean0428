@@ -1,11 +1,11 @@
 [
   {
     "id": "p001",
-    "name": "Ginger Walnut",
-    "pricing": "[{\"size\":\"Small\",\"price\":300},{\"price\":600,\"size\":\"Large\"}]",
-    "price": "$300",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/appleCashewBudgetPack.jpg",
-    "title": "Walnut",
+    "name": "核桃",
+    "pricing": "[{\"price\":400,\"size\":\"Small\"},{\"price\":780,\"size\":\"Large\"}]",
+    "price": "$400",
+    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
+    "title": "核桃",
     "category": "堅果"
   }
 ]
