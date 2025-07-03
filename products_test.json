@@ -9,21 +9,21 @@
     "category": "堅果"
   },
   {
-    "id": "p003",
-    "name": "杏仁",
-    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":400},{\"price\":780,\"size\":\"1斤(600g)\"},{\"price\":100,\"size\":\"試吃包(100g)\"}]",
-    "price": "$400",
-    "imgUrls": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_fishlet.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_slices.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg\"]",
-    "title": "試吃口味吃包",
-    "category": "堅果"
-  },
-  {
     "id": "p001",
     "name": "核桃",
     "pricing": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"price\":600,\"size\":\"1斤(600g)\"}]",
     "price": "$300",
     "imgUrls": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
     "title": "核桃",
+    "category": "堅果"
+  },
+  {
+    "id": "p0011",
+    "name": "Almond",
+    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600},{\"size\":\"Taster(60g)\",\"price\":100}]",
+    "price": "$300",
+    "imgUrls": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_slices.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg\"]",
+    "title": "Almond!",
     "category": "堅果"
   }
 ]
