@@ -11,10 +11,10 @@
   {
     "id": "p001",
     "name": "核桃",
-    "pricing": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"price\":600,\"size\":\"1斤(600g)\"}]",
+    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600}]",
     "price": "$300",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
-    "imgUrls": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
+    "imgUrl": "",
+    "imgUrls": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg\"]",
     "title": "核桃"
   },
   {
