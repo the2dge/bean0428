@@ -2,7 +2,7 @@
   "p002": {
     "id": "p002",
     "name": "腰果",
-    "imgUrl": "",
+    "imgUrl": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/cashew_peel.jpg\"]",
     "description": "腰果腰果腰果腰果腰果腰果腰果腰果腰果",
     "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":580}]",
     "specs": {
@@ -13,7 +13,7 @@
   "p001": {
     "id": "p001",
     "name": "核桃",
-    "imgUrl": "",
+    "imgUrl": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg\"]",
     "description": "核桃核桃核桃核桃核桃",
     "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600}]",
     "specs": {
@@ -24,9 +24,9 @@
   "p0011": {
     "id": "p0011",
     "name": "Almond",
-    "imgUrl": "",
+    "imgUrl": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_slices.jpg\"]",
     "description": "The best of the class!",
-    "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600},{\"size\":\"試吃包(60g)\",\"price\":100}]",
+    "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"price\":600,\"size\":\"1斤(600g)\"},{\"size\":\"試吃包(60g)\",\"price\":100}]",
     "specs": {
       "原產地": "Taiwan",
       "成分": "almond"
