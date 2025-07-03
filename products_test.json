@@ -11,9 +11,9 @@
   {
     "id": "p003",
     "name": "杏仁",
-    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":400},{\"price\":780,\"size\":\"1斤(600g)\"},{\"size\":\"試吃包(100g)\",\"price\":100}]",
+    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":400},{\"price\":780,\"size\":\"1斤(600g)\"},{\"price\":100,\"size\":\"試吃包(100g)\"}]",
     "price": "$400",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg",
+    "imgUrl": "",
     "title": "試吃口味吃包",
     "category": "堅果"
   },
