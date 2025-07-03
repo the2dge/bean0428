@@ -20,10 +20,10 @@
   {
     "id": "p0011",
     "name": "Almond",
-    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600},{\"size\":\"試吃包(60g)\",\"price\":100}]",
+    "pricing": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"price\":600,\"size\":\"1斤(600g)\"},{\"size\":\"試吃包(60g)\",\"price\":100}]",
     "price": "$300",
     "imgUrl": "",
-    "imgUrls": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_slices.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_fishlet.jpg\"]",
+    "imgUrls": "[\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg\",\"https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond_slices.jpg\"]",
     "title": "Almond!"
   }
 ]
