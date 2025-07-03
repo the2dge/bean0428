@@ -13,9 +13,9 @@
   "p001": {
     "id": "p001",
     "name": "核桃",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
+    "imgUrl": "",
     "description": "核桃核桃核桃核桃核桃",
-    "price": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"price\":600,\"size\":\"1斤(600g)\"}]",
+    "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600}]",
     "specs": {
       "原產地": "核桃",
       "成分": "核桃"
