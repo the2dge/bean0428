@@ -2,7 +2,6 @@
   "p002": {
     "id": "p002",
     "name": "腰果",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/cashew.jpg",
     "description": "腰果腰果腰果腰果腰果腰果腰果腰果腰果",
     "price": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"size\":\"1斤(600g)\",\"price\":580}]",
     "specs": {
@@ -13,7 +12,6 @@
   "p003": {
     "id": "p003",
     "name": "杏仁",
-    "imgUrl": "",
     "description": "試吃口味吃包試吃口味吃包試吃口味吃包",
     "price": "[{\"size\":\"半斤(300g)\",\"price\":400},{\"price\":780,\"size\":\"1斤(600g)\"},{\"price\":100,\"size\":\"試吃包(100g)\"}]",
     "specs": {
@@ -24,7 +22,6 @@
   "p001": {
     "id": "p001",
     "name": "核桃",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
     "description": "核桃核桃核桃核桃核桃",
     "price": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"price\":600,\"size\":\"1斤(600g)\"}]",
     "specs": {
