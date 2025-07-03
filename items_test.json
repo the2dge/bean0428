@@ -26,7 +26,7 @@
     "name": "Almond",
     "imgUrl": "",
     "description": "The best of the class!",
-    "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600},{\"size\":\"Taster(60g)\",\"price\":100}]",
+    "price": "[{\"size\":\"半斤(300g)\",\"price\":300},{\"size\":\"1斤(600g)\",\"price\":600},{\"size\":\"試吃包(60g)\",\"price\":100}]",
     "specs": {
       "原產地": "Taiwan",
       "成分": "almond"
