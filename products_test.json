@@ -1,14 +1,5 @@
 [
   {
-    "id": "p001",
-    "name": "核桃",
-    "pricing": "[{\"price\":400,\"size\":\"半斤(300g)\"},{\"price\":780,\"size\":\"1斤(600g)\"},{\"price\":100,\"size\":\"試吃包(100g)\"}]",
-    "price": "$400",
-    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
-    "title": "核桃",
-    "category": "堅果"
-  },
-  {
     "id": "p002",
     "name": "腰果",
     "pricing": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"size\":\"1斤(600g)\",\"price\":580}]",
@@ -24,6 +15,15 @@
     "price": "$400",
     "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/almond.jpg",
     "title": "試吃口味吃包",
+    "category": "堅果"
+  },
+  {
+    "id": "p001",
+    "name": "核桃",
+    "pricing": "[{\"price\":300,\"size\":\"半斤(300g)\"},{\"price\":600,\"size\":\"1斤(600g)\"}]",
+    "price": "$300",
+    "imgUrl": "https://mrbeana1200.s3.ap-northeast-2.amazonaws.com/bean0629/walnut.jpg",
+    "title": "核桃",
     "category": "堅果"
   }
 ]
