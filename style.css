@@ -381,6 +381,9 @@ body { margin: 0; font-family: sans-serif; }
 #checkout-form input, #checkout-form textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; box-sizing: border-box; }
 #checkout-form button { padding: 12px 25px; background-color: #007bff; color: white; border: none; cursor: pointer; }
 .form-group{font-size: 1.3rem; margin: 5px 0;}
+#delivery-city{
+    font-size: 1.2rem;
+}
 #shipping-method, #payment-option, .form-group input{font-size: 1.3rem; margin: 2px 0;}
 /* Side Cart */
 .side-cart { position: fixed; top: 0; right: -370px; /* Initially hidden */ width: 350px; height: 100%; background-color: white; box-shadow: -2px 0 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; transition: right 0.3s ease-in-out; z-index: 1000; padding: 20px; box-sizing: border-box; }
