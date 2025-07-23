@@ -1258,7 +1258,27 @@ function initializeCheckoutFormStateAndListeners(form, cartItems, initialStoredS
 shippingSelect.addEventListener('change', () => {
   const selection = shippingSelect.value;
   const currentCartTotal = calculateCartTotal();
+  const deliveryAddressWrapper = document.getElementById('home-delivery-address-wrapper');
+  const paymentSelect = form.querySelector('#payment-option');
+  const payAtStoreOption = paymentSelect.querySelector('option[value="pay_at_store"]');
+  
+    if (shippingSelect.value === 'store_pickup') {
+      // 宅配：hide 到店付款
+      if (payAtStoreOption) payAtStoreOption.style.display = 'none';
 
+      // Optionally switch to credit card by default if needed
+      if (paymentSelect.value === 'pay_at_store') {
+        paymentSelect.value = 'credit_card_ecpay';
+      }
+    } else {
+      // 非宅配：show 到店付款
+      if (payAtStoreOption) payAtStoreOption.style.display = 'block';
+    }
+  if (shippingSelect.value === 'store_pickup') {
+    deliveryAddressWrapper.style.display = 'block';
+  } else {
+    deliveryAddressWrapper.style.display = 'none';
+  }
   // If user picks 7-11…
   if (selection === 'seven_eleven') {
     const existingStore = JSON.parse(sessionStorage.getItem('selectedStoreInfo'));
