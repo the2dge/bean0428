@@ -1015,7 +1015,7 @@ function createCheckoutFormDOM(lineUserName, lineUserEmail, storedStoreInfo) {
             <label for="shipping-method">取貨方式:</label>
             <select id="shipping-method" name="shipping_method" class="form-control" required>
                 <option value="">請選擇取貨方式</option>
-                <option value="store_pickup">來商店取貨</option>
+                <option value="store_pickup">宅配</option>
                 <option value="seven_eleven">7-11 商店取貨</option>
             </select>
         </div>
