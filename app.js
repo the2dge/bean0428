@@ -376,7 +376,8 @@ async function renderItemDetails(productId) {
                 </div>
             </div>
             <div class="item-info">
-                <h2>${itemData.name}</h2>
+                <h2>${itemData.name} <img src="image/share.png" class='share-btn'>
+                </h2>
                 <p>${itemData.description}</p>
                 ${itemData.specs ? `<ul>${Object.entries(itemData.specs).map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`).join('')}</ul>` : ''}
                 ${pricingHtml}
@@ -396,6 +397,34 @@ async function renderItemDetails(productId) {
         });
     }
 
+    const shareBtn = mainBody.itemWrapper.querySelector('.share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', () => {
+        const shareUrl = `${window.location.origin}?product=${encodeURIComponent(itemData.id)}`;
+        
+        Swal.fire({
+          title: '分享商品',
+          html: `
+            <div style="display:flex;justify-content:space-around;align-items:center;font-size:2rem;">
+              <a href="https://line.me/R/msg/text/?${encodeURIComponent(itemData.name + ' ' + shareUrl)}" target="_blank" title="LINE">
+                <img src="image/line.png" alt="LINE" style="width:40px;height:40px;">
+              </a>
+              <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" title="Facebook">
+                <img src="image/facebook.png" alt="Facebook" style="width:40px;height:40px;">
+              </a>
+              <a href="https://www.instagram.com/?url=${encodeURIComponent(shareUrl)}" target="_blank" title="Instagram">
+                <img src="image/instagram.png" alt="Instagram" style="width:40px;height:40px;">
+              </a>
+              <a href="https://www.threads.net/intent/post?url=${encodeURIComponent(shareUrl)}" target="_blank" title="Threads">
+                <img src="image/icons/threads.pgg" alt="Threads" style="width:40px;height:40px;">
+              </a>
+            </div>
+          `,
+          showConfirmButton: false,
+          showCloseButton: true
+        });
+      });
+    }
     const thumbs = mainBody.itemWrapper.querySelectorAll('.gallery-thumb');
     thumbs.forEach(img => {
         img.style.cursor = 'pointer';
