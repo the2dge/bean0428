@@ -374,7 +374,10 @@ a { text-decoration: none;}
   width: 100%;
   box-sizing: border-box;
 }
-
+.item-detail .item-info img{
+    margin-left: 10%;
+    width: 12%;
+}
 .item-detail .item-info h2 {
   margin: 0 0 8px;
   font-size: 1.5em;
