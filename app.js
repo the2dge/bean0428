@@ -2389,14 +2389,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     ECpayStoreDataBackTransfer();
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('product');
-  
-      if (productId) {
-        // Load product details directly
-        renderItemDetails(productId);
-        switchView('item');
-      }
 });
     //For Page Refresh when returning from ECPay Payment
     window.addEventListener('pageshow', async (event) => {
@@ -2771,7 +2763,19 @@ async function init() {
       return;
     }
   }
+  const productId = urlParams.get('product');
+  if (productId) {
+    // Ensure products data is ready before rendering details
+    if (!Object.keys(allItemDetails).length) {
+      allItemDetails = await fetchData('items_test.json');
+    }
+    await renderItemDetails(productId);
+    switchView('item');
 
+    // Clean URL after loading
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return;
+  }
   // ── Normal startup ──
   await renderMainContent();
   defer(renderDeferredContent);
