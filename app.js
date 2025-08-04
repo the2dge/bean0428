@@ -2394,7 +2394,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
       if (productId) {
         // Load product details directly
-        await renderItemDetails(productId);
+        renderItemDetails(productId);
         switchView('item');
       }
 });
