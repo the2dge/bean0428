@@ -416,7 +416,7 @@ async function renderItemDetails(productId) {
                 <img src="image/instagram.png" alt="Instagram" style="width:40px;height:40px;">
               </a>
               <a href="https://www.threads.net/intent/post?url=${encodeURIComponent(shareUrl)}" target="_blank" title="Threads">
-                <img src="image/icons/threads.pgg" alt="Threads" style="width:40px;height:40px;">
+                <img src="image/threads.png" alt="Threads" style="width:40px;height:40px;">
               </a>
             </div>
           `,
