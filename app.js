@@ -400,22 +400,29 @@ async function renderItemDetails(productId) {
     const shareBtn = mainBody.itemWrapper.querySelector('.share-btn');
     if (shareBtn) {
       shareBtn.addEventListener('click', () => {
-        const shareUrl = `${window.location.origin}?product=${encodeURIComponent(itemData.id)}`;
-        
+        const shareUrl = `${window.location.origin}/bean0428?product=${encodeURIComponent(itemData.id)}`;
+
+        // --- Check for member discount code ---
+        const discountCode = sessionStorage.getItem('discountCode') || '';
+        let shareText = `${itemData.name} ${shareUrl}`;
+        if (discountCode) {
+          shareText += `\n使用我的優惠碼: ${discountCode}`;
+        }
+
         Swal.fire({
           title: '分享商品',
           html: `
             <div style="display:flex;justify-content:space-around;align-items:center;font-size:2rem;">
-              <a href="https://line.me/R/msg/text/?${encodeURIComponent(itemData.name + ' ' + shareUrl)}" target="_blank" title="LINE">
+              <a href="https://line.me/R/msg/text/?${encodeURIComponent(shareText)}" target="_blank" title="LINE">
                 <img src="image/line.png" alt="LINE" style="width:40px;height:40px;">
               </a>
-              <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}" target="_blank" title="Facebook">
+              <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}" target="_blank" title="Facebook">
                 <img src="image/facebook.png" alt="Facebook" style="width:40px;height:40px;">
               </a>
               <a href="https://www.instagram.com/?url=${encodeURIComponent(shareUrl)}" target="_blank" title="Instagram">
                 <img src="image/instagram.png" alt="Instagram" style="width:40px;height:40px;">
               </a>
-              <a href="https://www.threads.net/intent/post?url=${encodeURIComponent(shareUrl)}" target="_blank" title="Threads">
+              <a href="https://www.threads.net/intent/post?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}" target="_blank" title="Threads">
                 <img src="image/threads.png" alt="Threads" style="width:40px;height:40px;">
               </a>
             </div>
