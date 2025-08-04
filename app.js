@@ -2389,6 +2389,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     ECpayStoreDataBackTransfer();
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product');
+  
+      if (productId) {
+        // Load product details directly
+        await renderItemDetails(productId);
+        switchView('item');
+      }
 });
     //For Page Refresh when returning from ECPay Payment
     window.addEventListener('pageshow', async (event) => {
